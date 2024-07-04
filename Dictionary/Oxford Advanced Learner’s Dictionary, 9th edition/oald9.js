@@ -413,8 +413,8 @@ class CustomConsole {
             oald9_collapse();
 
             modifyElements();
-            if (Hazuki_DEBUG.EUDIC && Hazuki_DEBUG.MACOS_IPAD_SIM) {
-                addNoteCopyButton();
+            if (Hazuki_DEBUG.EUDIC) {
+                observeCustomNoteAdded();
             }
         }
     });
@@ -511,43 +511,46 @@ function oald9_collapse() {
     }
 }
 
-function addNoteCopyButton() {
+function modifyCustomNote() {
     var expCustomNote = document.getElementById('expCustomNote');
-    if (expCustomNote) {
-        addCopyButton(expCustomNote);
-    } else {
-        var observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                if (mutation.addedNodes) {
-                    mutation.addedNodes.forEach(function (node) {
-                        if (node.id === 'expCustomNote') {
-                            addCopyButton(node);
-                            observer.disconnect(); // Stop observing when we found the node
-                        }
-                    });
-                }
-            });
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
-}
-
-function addCopyButton(expCustomNote) {
     var eudicNoteHead = expCustomNote.querySelector('.eudic_note_head');
+
+    if (typeof noteDataArray === 'undefined') {
+        console.error('noteDataArray is not defined');
+        return;
+    }
+
     var newButton = document.createElement('button');
     newButton.textContent = '复制';
     newButton.classList.add('editNote');
     newButton.style.marginLeft = '10px';
     newButton.addEventListener('click', function () {
-        var div = document.getElementById("customeNoteText");
-        var innerHTML = div.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-        var tempDiv = document.createElement("div");
-        tempDiv.innerHTML = innerHTML;
-        var plainNote = tempDiv.textContent;
-        copyToClipboard(plainNote);
+        copyToClipboard(JSON.stringify(noteDataArray));
     })
     eudicNoteHead.appendChild(newButton);
+
+    // Move the image container to the inside of the flex container
+    if (noteDataArray.length > 1) {
+        var elementToMove = document.getElementById('customeNoteImageContainer')
+        var newParent = document.querySelector('.note-block[data-label="source"]')
+        newParent.prepend(elementToMove);
+    }
+}
+
+function observeCustomNoteAdded() {
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.addedNodes) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.className === 'Hazuki-note') {
+                        modifyCustomNote();
+                        observer.disconnect();
+                    }
+                });
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 }
 
 // http://iamdustan.com/smoothscroll/
