@@ -1,4 +1,4 @@
-/// remove Eudict header info
+/// remove Eudic header info
 setTimeout(function(){var e=document.getElementById('wordInfoHead');e&&e.remove()},0);
 
 ////////////////////////////////== Settings ==\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -31,29 +31,6 @@ var _OALD9_PICS = 1; // 是否显示图片：0:不显示，1：显示；由于�
 ///----------------------------------------------------------------------------
 
 /* Hazuki Debug */
-const getAncestorId = (dictName, innerNodeSelector) => {
-    const dictString = `(Dictionary '${dictName}')`;
-
-    // Dictionary root element
-    const innerNode = document.querySelector(innerNodeSelector);
-    if (!innerNode) {
-        console.warn(`[Hazuki] ${dictString} Inner node with selector '${innerNodeSelector}' not found.`);
-        return null;
-    }
-
-    // Eudic ancestor node
-    const ancestor = innerNode.closest(Hazuki_DEBUG.EUDIC_ANCESTOR_CLASS);
-    if (!ancestor) {
-        console.warn(`[Hazuki] ${dictString} Ancestor with class '${Hazuki_DEBUG.EUDIC_ANCESTOR_CLASS}' not found.`);
-        return null;
-    }
-
-    // Eudic dictionary id
-    const ancestorId = ancestor.id;
-    console.log(`[Hazuki] ${dictString} Ancestor found:`, ancestorId);
-    return ancestorId;
-}
-
 var Hazuki_DEBUG = {
     // User agent and platform
     USER_AGENT: navigator.userAgent.toLowerCase(),
@@ -69,6 +46,7 @@ var Hazuki_DEBUG = {
 
     // Dictionary information
     DICT_OALD9: { name: 'OALD9', rootElement: '.OALD9_online', id: '' },
+    DICT_LM5PP: { name: 'LM5PP', rootElement: '.lm5ppbody', id: '' },
     DICT_VOCABULARY: { name: 'Vocabulary.com', rootElement: '.definitionsContainer', id: '' },
 
     CONSOLE_ENABLED: false,
@@ -82,109 +60,150 @@ var Hazuki_DEBUG = {
 
         this.EUDIC = this.EUDIC();
 
+        // Initialize debugging
         if (this.CONSOLE_ENABLED) {
-            const CustomConsoleInstance = new CustomConsole('.OALD9_online');
-            CustomConsoleInstance.initialize();
-        }
+            const customConsole = new CustomConsole();
 
+            const ancestor = document.querySelector(this.DICT_OALD9.rootElement);
+            if (ancestor) {
+                ancestor.insertBefore(customConsole.container, ancestor.firstChild);
+                console.log('[Hazuki] Custom console initialized.');
+            } else {
+                console.error('[Hazuki] Custom console initialization failed.');
+                console.error(`[Hazuki] Ancestor with selector '${this.DICT_OALD9.rootElement}' not found.`);
+            }
+        }
         console.info(`[Hazuki] User agent: ${this.USER_AGENT}`);
 
+        // Get Eudic ancestor IDs
         if (this.EUDIC) {
             console.log('[Hazuki] Eudic detected.');
-            this.DICT_OALD9.id = getAncestorId(this.DICT_OALD9.name, this.DICT_OALD9.rootElement);
-            this.DICT_VOCABULARY.id = getAncestorId(this.DICT_VOCABULARY.name, this.DICT_VOCABULARY.rootElement);
-        } else {
-            console.log('[Hazuki] Eudic not detected.');
+            this.DICT_OALD9.id = this.Eudic_getAncestorId(this.DICT_OALD9.name, this.DICT_OALD9.rootElement);
+            this.DICT_LM5PP.id = this.Eudic_getAncestorId(this.DICT_LM5PP.name, this.DICT_LM5PP.rootElement);
+            this.DICT_VOCABULARY.id = this.Eudic_getAncestorId(this.DICT_VOCABULARY.name, this.DICT_VOCABULARY.rootElement);
         }
+
         console.log('[Hazuki] Debugging initialized.');
     },
 
-    functionStats: {},
+    // Eudic ancestor ID
+    Eudic_getAncestorId(dictName, rootElementSelector) {
+        // Dictionary name
+        const dictString = `(Dictionary '${dictName}')`;
 
+        // Dictionary root element
+        const rootElement = document.querySelector(rootElementSelector);
+        if (!rootElement) {
+            console.warn(`[Hazuki] ${dictString} Root element with selector '${rootElementSelector}' not found.`);
+            return null;
+        }
+
+        // Eudic ancestor node
+        const ancestor = rootElement.closest(Hazuki_DEBUG.EUDIC_ANCESTOR_CLASS);
+        if (!ancestor) {
+            console.warn(`[Hazuki] ${dictString} Ancestor with class '${Hazuki_DEBUG.EUDIC_ANCESTOR_CLASS}' not found.`);
+            return null;
+        }
+
+        // Eudic dictionary id
+        const ancestorId = ancestor.id;
+        if (Hazuki_DEBUG.MACOS_IPAD_SIM) {
+            const rootElements = ancestor.querySelectorAll(rootElementSelector);
+            rootElements.forEach(rootElement => rootElement.classList.add('macos_ipad_sim'));
+        }
+        console.log(`[Hazuki] ${dictString} Ancestor found:`, ancestorId);
+        return ancestorId;
+    },
+
+    // Function tracking
+    functionStats: {},
     trackFunction: function (func, name) {
         return new Proxy(func, {
             apply: (target, thisArg, argumentsList) => {
                 // Initialize stats object for this function if it doesn't exist
-                if (!this.functionStats[name]) {
-                    this.functionStats[name] = { callCount: 0 };
-                }
-
-                // Update stats
-                this.functionStats[name].callCount++;
+                if (!this.functionStats[name]) this.functionStats[name] = { callCount: 0 };
+                this.functionStats[name].callCount++; // Update stats
 
                 console.log(`[Hazuki] Function call: ${name}() ${this.functionStats[name].callCount} call(s)`);
 
+                // Call the original function
                 return target.apply(thisArg, argumentsList);
             }
         });
-    },
-
-    extractScriptContent: async function () {
-        let allScriptsContent = '';
-        const scripts = document.querySelectorAll('script');
-        const fetchPromises = [];
-
-        scripts.forEach((script, index) => {
-            const scriptBoundaries = (content, src = '') => `
-            // --- Start of Script ${index + 1} ${src} ---
-            ${content}
-            // --- End of Script ${index + 1} ---
-            `;
-
-            if (script.src) {
-                fetchPromises.push(
-                    fetch(script.src)
-                        .then(response => response.text())
-                        .then(data => {
-                            allScriptsContent += scriptBoundaries(data, `(${script.src})`);
-                        })
-                        .catch(error => console.error(`[Hazuki] Error fetching ${script.src}:`, error))
-                );
-            } else {
-                allScriptsContent += scriptBoundaries(script.textContent);
-            }
-        });
-
-        await Promise.all(fetchPromises);
-        return allScriptsContent;
-    },
-
-    copyScriptContent: function () {
-        this.extractScriptContent().then(scriptsContent => {
-            if (copyToClipboard(scriptsContent)) {
-                console.log('[Hazuki] Copied script content to clipboard.');
-            };
-        });
-    },
+    }
 };
 
 class CustomConsole {
-    constructor(ancestorSelector) {
-        this.container = document.createElement('div');
-        this.container.innerHTML = `
-        <div id="customConsole" class="hidden">
-            <div id="consoleOutput"></div>
-            <div id="consoleInput""></div>
-            <div class="buttons">
-                <button id="clearButton">Clear</button>
-                <div class="spacer" style="flex-grow: 1;"></div>
-                <button id="executeButton">Execute</button>
-            </div>
-            <div class="buttons">
-                <div class="toggle-buttons">
-                    <button id="autocompleteButton">Autocomplete</button>
-                    <button id="loadButton">Load Code</button>
-                </div>
-                <div class="spacer" style="flex-grow: 1;"></div>
-                <button id="copyConsoleTextButton">Copy Console</button>
-                <button id="copyButton">Copy HTML</button>
-            </div>
-        </div>
-        `;
+    constructor() {
+        // Create the console container
+        const container = document.createElement('div');
+        container.id = 'customConsole';
+        container.className = 'hidden';
+        this.container = container;
 
-        this.consoleOutput = this.container.querySelector('#consoleOutput');
-        this.consoleInput = this.container.querySelector('#consoleInput');
+        // Create the console output and input elements
+        const consoleOutput = document.createElement('div');
+        consoleOutput.id = 'consoleOutput';
+        container.appendChild(consoleOutput);
+        this.consoleOutput = consoleOutput;
 
+        const consoleInput = document.createElement('div');
+        consoleInput.id = 'consoleInput';
+        container.appendChild(consoleInput);
+        this.consoleInput = consoleInput;
+        this.loadCodeMirror();
+
+        function createSpacer() {
+            const spacer = document.createElement('div');
+            spacer.className = 'spacer';
+            spacer.style.flexGrow = '1';
+            return spacer;
+        }
+
+        // Append first row buttons
+        const buttonsFirstRow = document.createElement('div');
+        buttonsFirstRow.className = 'buttons';
+
+        const clearButton = document.createElement('button');
+        clearButton.id = 'clearButton';
+        clearButton.textContent = 'Clear';
+        /* Clear all console messages */
+        clearButton.addEventListener('click', () => {
+            while (consoleOutput.firstChild) {
+                consoleOutput.removeChild(consoleOutput.firstChild);
+            }
+            this.editor.setValue('');
+        });
+
+        const executeButton = document.createElement('button');
+        executeButton.id = 'executeButton';
+        executeButton.textContent = 'Execute';
+        /* Execute code from the input field */
+        executeButton.addEventListener('click', () => {
+            const code = this.editor.getValue().trim();
+            if (code) {
+                this.appendToConsoleOutput(code, 'input');
+                try {
+                    const result = eval(code);
+                    this.appendToConsoleOutput(result, result === undefined ? 'undefined' : 'output');
+                } catch (error) {
+                    console.error('[Hazuki] Execution error:', error.message || 'Unknown error');
+                }
+                this.editor.setValue('');
+            }
+        });
+
+        buttonsFirstRow.append(clearButton, createSpacer(), executeButton);
+        container.appendChild(buttonsFirstRow);
+
+        // Append second row buttons
+        const buttonsSecondRow = document.createElement('div');
+        buttonsSecondRow.className = 'buttons';
+
+        buttonsSecondRow.append(this.createToggleButtons(), createSpacer(), ...this.createCopyButtons());
+        container.appendChild(buttonsSecondRow);
+
+        // Override console methods
         this.originalConsole = {
             log: console.log,
             warn: console.warn,
@@ -192,17 +211,7 @@ class CustomConsole {
             info: console.info,
             trace: console.trace,
         };
-
         this.overrideConsoleMethods();
-
-        const ancestor = document.querySelector(ancestorSelector);
-        if (ancestor) {
-            ancestor.insertBefore(this.container, ancestor.firstChild);
-            console.log('[Hazuki] Custom console initialized.');
-        } else {
-            console.error('[Hazuki] Custom console initialization failed.');
-            console.error(`[Hazuki] Ancestor with selector '${ancestorSelector}' not found.`);
-        }
     }
 
     overrideConsoleMethods() {
@@ -227,22 +236,41 @@ class CustomConsole {
         };
     }
 
+    async loadCodeMirror() {
+        try {
+            await loadStyle('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css');
+            await loadStyle('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.css');
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js');
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js');
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.js');
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/javascript-hint.min.js');
+
+            this.initializeEditor();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    initializeEditor() {
+        const editor = CodeMirror(this.consoleInput, {
+            lineNumbers: true,
+            lineWrapping: true,
+            mode: 'javascript',
+            extraKeys: {
+                'Tab': 'autocomplete'
+            }
+        });
+
+        this.editor = editor;
+    }
+
     createMessage(message, type) {
         const newMessage = document.createElement('div');
         newMessage.className = `custom-${type}`;
         newMessage.textContent = message;
 
-        const copyButton = document.createElement('button');
-        copyButton.className = 'append-button copy';
-        copyButton.addEventListener('click', () => {
-            copyToClipboard(message);
-            copyButton.classList.add('copied');
-            setTimeout(() => copyButton.classList.remove('copied'), 2000);
-        });
-
+        const copyButton = createButtonWithHandler('copy', () => copyToClipboard(message));
         newMessage.appendChild(copyButton);
-        newMessage.addEventListener('mouseover', () => copyButton.style.display = 'block');
-        newMessage.addEventListener('mouseout', () => copyButton.style.display = 'none');
 
         return newMessage;
     }
@@ -258,48 +286,27 @@ class CustomConsole {
         this.createAndAppendMessage([message], type);
     }
 
-    setupConsole() {
-        this.consoleInput = CodeMirror(this.consoleInput, {
-            lineNumbers: true,
-            lineWrapping: true,
-            mode: 'javascript',
-            extraKeys: {
-                'Tab': 'autocomplete'
-            }
-        });
+    createToggleButtons() {
+        const toggleButtons = document.createElement('div');
+        toggleButtons.className = 'toggle-buttons';
 
-        const codeMirror = this.container.querySelector('.CodeMirror');
-        codeMirror.style.maxHeight = '100%';
-        codeMirror.style.maxWidth = '100%';
+        const autocompleteButton = document.createElement('button');
+        autocompleteButton.id = 'autocompleteButton';
+        autocompleteButton.textContent = 'Autocomplete';
 
-        const executeButton = this.container.querySelector('#executeButton');
+        const loadButton = document.createElement('button');
+        loadButton.id = 'loadButton';
+        loadButton.textContent = 'Load Code';
 
-        // Execute code from the input field
-        executeButton.addEventListener('click', () => {
-            const code = this.consoleInput.getValue().trim();
-            if (code) {
-                this.appendToConsoleOutput(code, 'input');
-                try {
-                    const result = eval(code);
-                    this.appendToConsoleOutput(result, result === undefined ? 'undefined' : 'output');
-                } catch (error) {
-                    console.error('[Hazuki] Execution error:', error.message || 'Unknown error');
-                }
-                this.consoleInput.setValue('');
-            }
-        });
-    }
-
-    setupToggleButtons() {
-        const autocompleteButton = this.container.querySelector('#autocompleteButton');
-        const loadButton = this.container.querySelector('#loadButton');
+        toggleButtons.appendChild(autocompleteButton);
+        toggleButtons.appendChild(loadButton);
 
         if (!Hazuki_DEBUG.MACOS_IPAD_SIM) {
             autocompleteButton.classList.add('active');
             autocompleteButton.addEventListener('click', () => {
                 event.preventDefault();
-                this.consoleInput.showHint({ completeSingle: false });
-                this.consoleInput.focus();
+                this.editor.showHint({ completeSingle: false });
+                this.editor.focus();
             });
         } else {
             loadButton.classList.add('active');
@@ -314,7 +321,7 @@ class CustomConsole {
                         }
                     })
                     .then(text => {
-                        this.consoleInput.setValue(text.trim());
+                        this.editor.setValue(text.trim());
                         console.log(`[Hazuki] Loaded code from ${staticUrl}`);
                     })
                     .catch(error => {
@@ -322,103 +329,82 @@ class CustomConsole {
                     });
             });
         }
+
+        return toggleButtons;
     }
 
-    setupClearAndCopyButtons() {
-        const clearButton = this.container.querySelector('#clearButton');
-        const copyButton = this.container.querySelector('#copyButton');
-        const copyConsoleTextButton = this.container.querySelector('#copyConsoleTextButton');
-
-        // Clear all console messages
-        clearButton.addEventListener('click', () => {
-            while (this.consoleOutput.firstChild) {
-                this.consoleOutput.removeChild(this.consoleOutput.firstChild);
-            }
-            this.consoleInput.setValue('');
-        });
-
-        // Copy the entire HTML content
+    createCopyButtons() {
+        const copyButton = document.createElement('button');
+        copyButton.id = 'copyButton';
+        copyButton.textContent = 'Copy HTML';
+        /* Copy the entire HTML content */
         copyButton.addEventListener('click', () => {
             const htmlContent = document.documentElement.outerHTML;
             copyToClipboard(htmlContent);
             console.log('[Hazuki] Copied HTML content to clipboard.');
         });
 
-        // Copy the entire console content
+        const copyConsoleTextButton = document.createElement('button');
+        copyConsoleTextButton.id = 'copyConsoleTextButton';
+        copyConsoleTextButton.textContent = 'Copy Console';
+        /* Copy the entire console content */
         copyConsoleTextButton.addEventListener('click', () => {
             const consoleDivs = Array.from(this.consoleOutput.children);
             const consoleText = consoleDivs.map(div => div.innerText).join('\n');
             copyToClipboard(consoleText);
             console.log('[Hazuki] Copied console text to clipboard.');
         });
+
+        return [copyButton, copyConsoleTextButton];
     }
+}
 
-    initialize() {
-        this.loadResources().then(() => {
-            this.setupConsole();
-            this.setupToggleButtons();
-            this.setupClearAndCopyButtons();
-        }).catch((error) => {
-            console.error('[Hazuki] Error loading resources:', error.message || 'Unknown error');
-        });
-    }
+function loadScript(url) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = () => resolve();
+        script.onerror = () => reject(`Failed to load script ${url}`);
+        document.head.appendChild(script);
+    });
+}
 
-    loadResources() {
-        // Configuration for different resource types
-        const resourceConfig = {
-            js: { element: 'script', attribute: 'src' },
-            css: { element: 'link', attribute: 'href', rel: 'stylesheet' }
-        };
-
-        // Function to load a resource of a given type from a URL
-        const loadResource = (type, url) => new Promise((resolve, reject) => {
-            const config = resourceConfig[type];
-            const element = document.createElement(config.element);
-            element[config.attribute] = url;
-
-            // Set up event listeners for load and error events
-            element.onload = resolve;
-            element.onerror = reject;
-
-            // If the resource type has a 'rel' attribute, set it
-            if (config.rel) element.rel = config.rel;
-
-            // Append the new element to the head of the document
-            document.head.appendChild(element);
-        });
-
-        return loadResource('css', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css')
-            .then(() => loadResource('js', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js'))
-            .then(() => loadResource('js', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js'))
-            .then(() => loadResource('js', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/hint/show-hint.min.js'))
-            .then(() => loadResource('js', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/hint/javascript-hint.min.js'))
-            .then(() => loadResource('css', 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/hint/show-hint.min.css'));
-    }
+function loadStyle(url) {
+    return new Promise((resolve, reject) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        link.onload = () => resolve();
+        link.onerror = () => reject(`Failed to load stylesheet ${url}`);
+        document.head.appendChild(link);
+    });
 }
 /* Hazuki Debug */
 
 /// Actual start point of the script
-(function () {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (Hazuki_DEBUG.OALD9_SCRIPT_RUNED_ONCE === undefined) {
-            Hazuki_DEBUG.OALD9_SCRIPT_RUNED_ONCE = true;
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.OALD9_SCRIPT_RUNED_ONCE === undefined) {
+        window.OALD9_SCRIPT_RUNED_ONCE = true;
 
-            Hazuki_DEBUG.initialize();
+        Hazuki_DEBUG.initialize();
 
-            console.info(`[Hazuki] Detect 'DOMContentLoaded' event is fired.`)
+        console.info(`[Hazuki] Detect 'DOMContentLoaded' event is fired.`)
 
-            _setupGears();
+        _setupGears();
 
-            oald9();
-            oald9_collapse();
+        oald9();
+        oald9_collapse();
+        oald9_modifyElements();
 
-            modifyElements();
-            if (Hazuki_DEBUG.EUDIC) {
-                observeCustomNoteAdded();
-            }
+        if (Hazuki_DEBUG.EUDIC) {
+            observeCustomNoteAdded();
         }
-    });
-})();
+
+        if (Hazuki_DEBUG.EUDIC && Hazuki_DEBUG.MACOS_IPAD_SIM) {
+            enableClickToCopy();
+        }
+    }
+});
 
 async function copyToClipboard(text) {
     if (Hazuki_DEBUG.MACOS_IPAD_SIM) {
@@ -442,6 +428,19 @@ async function copyToClipboard(text) {
     }
 }
 
+function createButtonWithHandler(className, clickHandler) {
+    const button = document.createElement('button');
+    button.classList.add('append-button', className);
+    button.addEventListener('click', function () {
+        clickHandler.call(this);
+        if (className === 'copy') {
+            this.classList.add('copied');
+            setTimeout(() => this.classList.remove('copied'), 2000);
+        }
+    });
+    return button;
+}
+
 function oald9_collapse() {
     // Expand all collapsible elements with the specified title
     document.querySelectorAll('.res-g .collapse[title="Word Origin"] .heading')
@@ -454,22 +453,24 @@ function oald9_collapse() {
     const collapsibleSelector = '.x-gs, .collapse';
 
     // Attend buttons to the definitions
-    function createButton(className, clickHandler) {
-        const button = document.createElement('button');
-        button.classList.add('append-button', className);
-        button.addEventListener('click', clickHandler);
-        return button;
-    }
-
     document.querySelectorAll(defContainerSelector).forEach(definitionContainer => {
         const definition = definitionContainer.querySelector('.def');
         if (!definition) return;
 
+        // Line height issue
+        definition.innerHTML = definition.innerHTML.trim();
+
         // Copy Button Logic
-        const copyButton = createButton('copy', function () {
-            copyToClipboard(definition.textContent);
-            this.classList.add('copied');
-            setTimeout(() => this.classList.remove('copied'), 2000);
+        const copyButton = createButtonWithHandler('copy', function () {
+            var textContent = definition.textContent;
+
+            /* If the sibling element is a dis-g element, append its text content to the definition */
+            let previousSibling = definition.previousElementSibling;
+            if (previousSibling && previousSibling.classList.contains('dis-g')) {
+                textContent = `${previousSibling.textContent} ${textContent}`;
+            }
+
+            copyToClipboard(`&${textContent.trim()}&`);
         });
 
         definition.appendChild(copyButton);
@@ -479,7 +480,7 @@ function oald9_collapse() {
         const collapsibleElements = definitionContainer.querySelectorAll(collapsibleSelector);
 
         if (collapsibleElements.length > 0) {
-            const collapseButton = createButton(autoHideCollapsible ? 'collapsed' : 'expanded', function () {
+            const collapseButton = createButtonWithHandler(autoHideCollapsible ? 'collapsed' : 'expanded', function () {
                 const isCollapsed = this.classList.contains('collapsed');
                 collapsibleElements.forEach(e => e.style.display = isCollapsed ? 'block' : 'none');
                 this.className = `append-button ${isCollapsed ? 'expanded' : 'collapsed'}`;
@@ -511,27 +512,76 @@ function oald9_collapse() {
     }
 }
 
+// Enable click to copy for the specified elements
+function enableClickToCopy() {
+    const copyElementConfigurations = {
+        oald: {
+            ancestorId: Hazuki_DEBUG.DICT_OALD9.id,
+            elements: [
+                { selector: '.top-container .webtop-g .pos', leadingString: '', trailingString: '' },
+                { selector: '.shcut', leadingString: '*', trailingString: '*' },
+                { selector: '.idm, .cf', leadingString: '@', trailingString: '@' },
+                { selector: '.pv', leadingString: '@^', trailingString: '^@' },
+                { selector: '.subj', leadingString: '@_{⟨', trailingString: '⟩}_@' }
+            ]
+        },
+        lm5pp: {
+            ancestorId: Hazuki_DEBUG.DICT_LM5PP.id,
+            elements: [
+                { selector: '.SIGNPOST', leadingString: '*', trailingString: '*' },
+                { selector: '.DEF', leadingString: '&', trailingString: '&' }
+            ]
+        }
+    };
+
+    for (const [key, value] of Object.entries(copyElementConfigurations)) {
+        const { ancestorId, elements } = value;
+        elements.forEach(({ selector, leadingString, trailingString }) => {
+            const matchingElements = document.querySelectorAll(`#${ancestorId} ${selector}`);
+
+            matchingElements.forEach(element => {
+                element.style.cursor = 'pointer';
+                element.addEventListener('click', function (event) {
+                    event.stopPropagation();
+
+                    let textContent = element.textContent.trim();
+                    textContent = `${leadingString}${textContent}${trailingString}`;
+
+                    copyToClipboard(textContent);
+                    element.style.cursor = 'default';
+                    setTimeout(() => { element.style.cursor = 'pointer'; }, 2000);
+                });
+            });
+        });
+    }
+}
+
 function modifyCustomNote() {
     var expCustomNote = document.getElementById('expCustomNote');
     var eudicNoteHead = expCustomNote.querySelector('.eudic_note_head');
+
+    // Remove Eudic '查看公开笔记'
+    const eudicNoteMore = expCustomNote.querySelector('.eudicNoteMore');
+    if (eudicNoteMore) eudicNoteMore.remove();
 
     if (typeof noteDataArray === 'undefined') {
         console.error('noteDataArray is not defined');
         return;
     }
 
-    var newButton = document.createElement('button');
-    newButton.textContent = '复制';
-    newButton.classList.add('editNote');
-    newButton.style.marginLeft = '10px';
-    newButton.addEventListener('click', function () {
+    // Create a copy button to get the noteDataArray
+    const copyButton = document.createElement('button');
+    copyButton.textContent = '复制';
+    copyButton.classList.add('editNote');
+    copyButton.style.marginLeft = '10px';
+    copyButton.addEventListener('click', function () {
         copyToClipboard(JSON.stringify(noteDataArray));
     })
-    eudicNoteHead.appendChild(newButton);
+    eudicNoteHead.appendChild(copyButton);
 
     // Move the image container to the inside of the flex container
-    if (noteDataArray.length > 1) {
-        var elementToMove = document.getElementById('customeNoteImageContainer')
+    var elementToMove = document.getElementById('customeNoteImageContainer')
+    if (elementToMove) {
         var newParent = document.querySelector('.note-block[data-label="source"]')
         newParent.prepend(elementToMove);
     }
@@ -543,6 +593,7 @@ function observeCustomNoteAdded() {
             if (mutation.addedNodes) {
                 mutation.addedNodes.forEach(function (node) {
                     if (node.className === 'Hazuki-note') {
+                        if (Hazuki_DEBUG.MACOS_IPAD_SIM) node.classList.add('macos_ipad_sim');
                         modifyCustomNote();
                         observer.disconnect();
                     }
@@ -635,14 +686,10 @@ function oald9(){
 
     if (Hazuki_DEBUG.CONSOLE_ENABLED) {
         const customConsole = document.getElementById('customConsole');
-        customConsole.className = 'customConsole ' + (_OALD9_CUSTOM_CONSOLE === 1 ? 'visible' : 'hidden');
+        customConsole.className = _OALD9_CUSTOM_CONSOLE ? 'visible' : 'hidden';
     }
 
     for (var i=0, l=oalds.length; i<l; ++i){
-        if (Hazuki_DEBUG.MACOS_IPAD_SIM) {
-            oalds[i].classList.add('macos_ipad_sim');
-        }
-
         wordFinderConfigeration(oalds[i]);
         translationIndividual(oalds[i]);
 
@@ -1028,7 +1075,7 @@ function _setGear(key, value) {
             _OALD9_CUSTOM_CONSOLE = value;
             if (Hazuki_DEBUG.CONSOLE_ENABLED) {
                 const customConsole = document.getElementById('customConsole');
-                customConsole.className = 'customConsole ' + (value === 1 ? 'visible' : 'hidden');
+                customConsole.className = _OALD9_CUSTOM_CONSOLE ? 'visible' : 'hidden';
             }
             break;
         case 'fontSize':
@@ -1251,7 +1298,7 @@ function pos_tabs() {
 }
 
 // post-processing functions
-function modifyElements() {
+function oald9_modifyElements() {
     /// click head word to toggle trans
     (function () {
         var i = 0, es = document.querySelectorAll('.webtop-g > .h'), l = es.length;

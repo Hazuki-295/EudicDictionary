@@ -50,7 +50,7 @@
     font-style: normal;
 }
 
-/* custom console CSS */
+/* Custom Console */
 #customConsole {
     font-family: Menlo, Consolas, monospace;
     background-color: #F5F5F5;
@@ -60,18 +60,21 @@
     width: 90%;
     margin: 5px auto;
 }
+
 #customConsole.hidden {
     visibility: hidden;
     height: 0;
     padding: 0;
     margin: 0;
 }
+
 #customConsole.visible {
     visibility: visible;
     height: auto;
     padding: 10px;
     margin: 5px auto;
 }
+
 #consoleOutput {
     background-color: #FFF;
     border: 1px solid #CCC;
@@ -83,7 +86,8 @@
     white-space: pre-wrap;
     margin-bottom: 10px;
 }
-#consoleInput {
+
+#consoleInput .CodeMirror {
     background-color: #FFF;
     border: 1px solid #CCC;
     padding: 0;
@@ -93,6 +97,7 @@
     color: #333;
     margin-bottom: 10px;
 }
+
 #customConsole .buttons button {
     padding: 6px 10px;
     background-color: #007ACC;
@@ -102,28 +107,34 @@
     cursor: pointer;
     margin-right: 5px;
 }
+
 #customConsole .buttons button:hover {
     background-color: #005A9E;
 }
+
 .buttons {
     display: flex;
     align-items: center;
     margin-top: 10px;
 }
+
 .toggle-buttons {
     position: relative;
     width: 100px;
     height: 27.5px;
 }
+
 .toggle-buttons button {
     position: absolute;
     width: 100%;
     height: 100%;
     display: none;
 }
+
 .toggle-buttons button.active {
     display: block;
 }
+
 .custom-log, .custom-info, .custom-error, .custom-warn, .custom-trace,
 .custom-input, .custom-output, .custom-undefined {
     color: #333;
@@ -137,32 +148,41 @@
     max-width: 100%;
     word-wrap: break-word;
 }
+
 .custom-info, .custom-trace {
     background-color: #E0F7FA;
 }
+
 .custom-error {
     background-color: #FFECEC;
 }
+
 .custom-warn {
     background-color: #FFFACD;
 }
+
 .custom-input {
     color: #4169E1;
 }
+
 .custom-input::before {
     content: '> ';
     color: #4169E1;
 }
+
 .custom-output {
     color: #E4544C;
 }
+
 .custom-output::before {
     content: '* ';
     color: #E4544C;
 }
+
 .custom-undefined {
     color: #888;
 }
+
 .custom-undefined::before {
     content: '* ';
     color: #888;
@@ -172,40 +192,62 @@
 .append-button {
     display: none;
     opacity: 0.8;
-    font-size: 90%;
-    line-height: 1;
-    width: 25px;
-    height: 20px;
+    width: 20px;
+    height: 16px;
     border: none;
     border-radius: 40%;
-    padding: 2px 5px;
+    padding: 0;
     margin-right: 4px;
+    bottom: 1.5px;
     position: relative;
-    bottom: 1px;
     color: #007a6c;
     background: rgba(0, 122, 108, .2);
     cursor: pointer;
 }
+
+.OALECD_chn + .append-button {
+    margin-left: 4px;
+}
+
 #consoleOutput .append-button {
     position: absolute;
     right: 2px;
     top: 50%;
     transform: translateY(-50%);
 }
+
+#consoleOutput div:hover .append-button,
 .def:hover .append-button {
     display: inline-block;
 }
-.append-button.copy::before {
-    content: "⧉";
+
+.append-button::before {
+    font-size: 0.9em;
 }
+
+.macos_ipad_sim .append-button::before {
+    font-size: 1.1em !important;
+}
+
+.append-button.copy::before,
+.append-button.copied::before {
+    content: "⧉";
+    display: inline-block;
+}
+
 .append-button.copied::before {
     content: "✓";
 }
+
+.append-button.expanded::before,
 .append-button.collapsed::before {
-    content: "▶";
-}
-.append-button.expanded::before {
     content: "▼";
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.append-button.collapsed::before {
+    transform: rotate(-90deg);
 }
 
 .entry {
@@ -4550,7 +4592,7 @@ h2 .oxford3000 {
 /* common */
 @font-face {
     font-family: "oalecd9";
-    src: local("oalecd9"), url("fonts/oalecd9.ttf") format("truetype");
+    src: local("oalecd9"), url("fonts/oalecd9/oalecd9.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
 }
@@ -6660,7 +6702,7 @@ ol.idm-g li.sn-g:before,
     font-style: normal;
     padding-left: 2px;
     padding-right: 2px;
-    margin-left: 2px
+    margin-left: 4px
 }
 
 .shcut .OALECD_chn,
@@ -6679,7 +6721,9 @@ ol.idm-g li.sn-g:before,
     display: inline !important;
     color: #007a6c !important;
     background: rgba(0, 122, 108, .2);
-    border-radius: 3px
+    border-radius: 3px;
+    /* Added by Hazuki */
+    white-space: nowrap;
 }
 #entryContent._trans_def .use .OALECD_chn:not([style*="inline"]),
 .OALD9_online[data-transl] .use .OALECD_chn:not([style*="inline"]) {
