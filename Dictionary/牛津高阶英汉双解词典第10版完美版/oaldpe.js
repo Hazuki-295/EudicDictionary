@@ -5,7 +5,7 @@
 var oaldpeCfg = {
     // 【配置项1：中文翻译选项】（点击"词性导航"白色块可显示/隐藏中文翻译）
     // 选项（默认为0）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏义项中文，5-仅显示义项中文
-    showTranslation: 0,
+    showTranslation: 1,
 
     // 【配置项2：是否使用台湾繁体中文翻译】
     // 选项（默认为false）：false=否，true=是
@@ -17,20 +17,20 @@ var oaldpeCfg = {
 
     // 【配置项4：是否选中词性导航all】
     // 选项（默认为true）：false=否，true=是
-    selectNavbarAll: true,
+    selectNavbarAll: false,
 
     // 【配置项5：是否启用英文点译功能】（单句显示/隐藏中文）
     // 选项（默认为true）：false=否，true=是
-    touchToTranslate: true,
+    touchToTranslate: false,
 
     // 【配置项6：官方例句发音选项】（如果为0或1，则可删除oaldpe.3.mdd文件）
     // 选项（默认为2）：0-不启用官方例句发音，1-启用官方在线例句发音，2-启用官方离线例句发音.ogg 3-启用官方离线例句发音.mp3（需要去网盘“文件替换”文件夹里下载oaldpe.3.mdd替换掉原来的文件）
     // （电脑欧路、IOS等不支持选项2，可填选项3）
-    officialExPronOpt: 2,
+    officialExPronOpt: 3,
 
     // 【配置项7：无官方例句发音时，是否启用在线TTS发音】（需要高版本浏览器内核。发音图标为灰色。Mdict和电脑欧路暂不支持。）
     // 选项（默认为true）：false=否，true=是
-    enableOnlineTTS: true,
+    enableOnlineTTS: false,
 
     // 【配置项8：是否启用在线单词发音】（如果为true，则可删除oaldpe.1.mdd）
     // 选项（默认为false）：true=是，false=否
@@ -46,11 +46,11 @@ var oaldpeCfg = {
 
     // 【配置项11：是否显示音节划分】（点击单词可切换音节划分）
     // 选项（默认为true）：false=不显示，true=显示
-    showSyllable: true,
+    showSyllable: false,
 
     // 【配置项12：是否简化词性】（如verb简化为v.）
     // 选项（默认为true）：false=不简化，true=简化
-    simplifyPos: true,
+    simplifyPos: false,
 
     // 【配置项13：是否简化语法】（如[transitive]简化为[t]）
     // 选项（默认为true）：false=不简化，true=简化
@@ -70,7 +70,7 @@ var oaldpeCfg = {
 
     // 【配置项17：是否展开折叠块3】（Idiom、Phrasal verbs）
     // 选项（默认为false）：false=不展开，true=展开
-    unfoldBox3: false,
+    unfoldBox3: true,
 
     // 【配置项18：是否展开折叠块2的子标题栏下的内容】（浅红色折叠区的子标题栏）
     // 选项（默认为true）：false=不展开，true=展开
@@ -86,7 +86,7 @@ var oaldpeCfg = {
 
     // 【配置项21：点击小火箭返回后，自动折叠内容】
     // 选项（默认为true）：false=不折叠，true=折叠
-    leavesBox3Fold: true,
+    leavesBox3Fold: false,
 
     // 【配置项22：给粗体固定句式添加荧光笔下划线】
     // 选项（默认为true）：false=不添加，true=添加
@@ -94,7 +94,7 @@ var oaldpeCfg = {
 
     // 【配置项23：是否使用普通样式的义项序号】
     // 选项（默认为false）：false=否，true=是
-    normalSenseNumber: false,
+    normalSenseNumber: true,
 
     // 【配置项24：是否全局使用普通英文字体】
     // 选项（默认为false）：false=否，true=是
@@ -1173,9 +1173,10 @@ var oaldpeCfg = {
         });
     }
 
+    /* Bug Fixed by Hazuki */
     function fnSimplifySthSb(itemValue) {
-        itemValue && $('.oaldpe .cf,.x,.def').each(function() {  
-            _newHtml = $(this).html().replace(/something/g, 'sth').replace(/somebody/g,'sb');
+        itemValue && $('.oaldpe .cf, .oaldpe .x, .oaldpe .def, .oaldpe .idm').each(function() {  
+            _newHtml = $(this).html().replace(/something/g, 'sth.').replace(/somebody/g,'sb.');
             $(this).html(_newHtml);  
         });        
     }

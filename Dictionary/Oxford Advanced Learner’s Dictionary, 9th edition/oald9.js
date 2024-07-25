@@ -431,67 +431,72 @@ async function copyToClipboard(text) {
 function createButtonWithHandler(className, clickHandler) {
     const button = document.createElement('button');
     button.classList.add('append-button', className);
+
     button.addEventListener('click', function () {
-        clickHandler.call(this);
+        clickHandler(this);
         if (className === 'copy') {
             this.classList.add('copied');
             setTimeout(() => this.classList.remove('copied'), 2000);
         }
     });
+
     return button;
 }
 
 function oald9_collapse() {
-    // Expand all collapsible elements with the specified title
-    document.querySelectorAll('.res-g .collapse[title="Word Origin"] .heading')
-        .forEach(headingElement => headingElement.click());
+    var oalds = document.querySelectorAll('.OALD9_online');
+    oalds.forEach(function (oald) {
+        // Expand all collapsible elements with the specified title
+        oald.querySelectorAll('.collapse[title="Word Origin"] .heading')
+            .forEach(headingElement => headingElement.click());
 
-    // Definition container selector
-    const defContainerSelector = `${Hazuki_DEBUG.DICT_OALD9.rootElement} .sn-g`;
+        // Definition container selector
+        const defContainerSelector = '.sn-g';
 
-    // Collapsible elements selector
-    const collapsibleSelector = '.x-gs, .collapse';
+        // Collapsible elements selector
+        const collapsibleSelector = '.x-gs, .collapse';
 
-    // Attend buttons to the definitions
-    document.querySelectorAll(defContainerSelector).forEach(definitionContainer => {
-        const definition = definitionContainer.querySelector('.def');
-        if (!definition) return;
+        // Attend buttons to the definitions
+        oald.querySelectorAll(defContainerSelector).forEach(definitionContainer => {
+            const definition = definitionContainer.querySelector('.def');
+            if (!definition) return;
 
-        // Line height issue
-        definition.innerHTML = definition.innerHTML.trim();
+            // Line height issue
+            definition.innerHTML = definition.innerHTML.trim();
 
-        // Copy Button Logic
-        const copyButton = createButtonWithHandler('copy', function () {
-            var textContent = definition.textContent;
+            // Copy Button Logic
+            const copyButton = createButtonWithHandler('copy', function () {
+                var textContent = definition.textContent;
 
-            /* If the sibling element is a dis-g element, append its text content to the definition */
-            let previousSibling = definition.previousElementSibling;
-            if (previousSibling && previousSibling.classList.contains('dis-g')) {
-                textContent = `${previousSibling.textContent} ${textContent}`;
-            }
+                /* If the sibling element is a dis-g element, append its text content to the definition */
+                let previousSibling = definition.previousElementSibling;
+                if (previousSibling && previousSibling.classList.contains('dis-g')) {
+                    textContent = `${previousSibling.textContent} ${textContent}`;
+                }
 
-            copyToClipboard(`&${textContent.trim()}&`);
-        });
-
-        definition.appendChild(copyButton);
-
-        // Collapse Button Logic
-        const autoHideCollapsible = false; // Hide by default
-        const collapsibleElements = definitionContainer.querySelectorAll(collapsibleSelector);
-
-        if (collapsibleElements.length > 0) {
-            const collapseButton = createButtonWithHandler(autoHideCollapsible ? 'collapsed' : 'expanded', function () {
-                const isCollapsed = this.classList.contains('collapsed');
-                collapsibleElements.forEach(e => e.style.display = isCollapsed ? 'block' : 'none');
-                this.className = `append-button ${isCollapsed ? 'expanded' : 'collapsed'}`;
+                copyToClipboard(`&${textContent.trim()}&`);
             });
 
-            if (autoHideCollapsible) {
-                collapsibleElements.forEach(e => e.style.display = 'none');
-            }
+            definition.appendChild(copyButton);
 
-            definition.appendChild(collapseButton);
-        }
+            // Collapse Button Logic
+            const autoHideCollapsible = false; // Hide by default
+            const collapsibleElements = definitionContainer.querySelectorAll(collapsibleSelector);
+
+            if (collapsibleElements.length > 0) {
+                const collapseButton = createButtonWithHandler(autoHideCollapsible ? 'collapsed' : 'expanded', function (button) {
+                    const isCollapsed = button.classList.contains('collapsed');
+                    collapsibleElements.forEach(e => e.style.display = isCollapsed ? 'block' : 'none');
+                    button.className = `append-button ${isCollapsed ? 'expanded' : 'collapsed'}`;
+                });
+
+                if (autoHideCollapsible) {
+                    collapsibleElements.forEach(e => e.style.display = 'none');
+                }
+
+                definition.appendChild(collapseButton);
+            }
+        });
     });
 
     // Add click event listener to the gear menu icon

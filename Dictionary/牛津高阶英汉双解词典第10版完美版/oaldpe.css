@@ -12,6 +12,41 @@ html {
     margin: .3rem 0rem 1rem 0rem;
 }
 
+/* Added by Hazuki */
+@font-face {
+    font-family: 'oalecd9';
+    src: local('oalecd9'), url("fonts/oalecd9/oalecd9.ttf") format("truetype");
+}
+
+/* Mimic `:root {}`, which is disabled in Eudic */
+.oaldpe {
+    --font-size-oald: 15px;
+    --line-height-oald: 1.4;
+    --color-oald-red: #de002d;
+    --color-oald-green: #007a6c;
+    --color-oald-blue: #0072cf;
+}
+
+/* Mimic `html {}` */
+.oaldpe {
+    font-family: Bookerly, Optima, 'Source Han Serif CN', 'Source Sans Pro', sans-serif;
+    font-size: var(--font-size-oald);
+    line-height: var(--line-height-oald);
+    word-spacing: 0.1rem;
+}
+
+.entry {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+a {
+    font-size: inherit; /* Eudic Bug Fix */
+    line-height: inherit; /* Eudic Bug Fix */
+    text-decoration: none;
+}
+/* End of addition */
+
 p.definition-title {
     font-size: 14px;
     color: #999999;
@@ -76,6 +111,45 @@ h1.headword {
     margin: 0rem 0rem 0rem 0.25rem;
 
 }
+
+/* Added by Hazuki */
+h1.headword, .oaldpe > .idm-g .idm {
+    font-family: Bookerly;
+    font-style: normal;
+    font-size: 1.25em;
+    font-weight: normal;
+    color: var(--color-oald-blue);
+}
+
+h1.headword .st {
+    font-family: inherit;
+    font-style: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: var(--color-oald-red);
+}
+
+.pos, .oaldpe > .idm-g .idm::after {
+    font-family: Bookerly;
+    font-size: 0.9em !important;
+    font-weight: normal;
+    color: #db8c39;
+    background: none;
+    margin-left: 0;
+    padding: 0 2px;
+}
+
+.oaldpe > .idm-g .idm {
+    font-weight: bold;
+}
+
+.oaldpe > .idm-g .idm::after {
+    content: "Idiom";
+    font-style: italic;
+    font-size: calc(var(--font-size-oald) * 0.9) !important;
+    margin-left: 0.4em;
+}
+/* End of addition */
 
 .sense span.pos {
     font-size: 17px;
@@ -770,6 +844,82 @@ span.prefix {
     font-style: normal;
 }
 
+/* Added by Hazuki */
+.li_sense .li_sense_before {
+    font-family: Optima;
+    font-size: 0.9em;
+    color: var(--color-oald-red);
+    padding: 2px;
+    margin: calc(var(--font-size-oald) * 0.5) 0.25em 0 0.2em;
+}
+
+.li_sense li.sense {
+    margin-top: calc(var(--font-size-oald) * 0.5) !important;
+}
+
+ol.sense_single > .li_sense .li_sense_before {
+    display: none;
+}
+
+ol.senses_multiple > .li_sense .li_sense_before {
+    display: inline-block;
+}
+
+ul.examples > li > .exText {
+    margin-left: calc(var(--font-size-oald) * 1.5);
+}
+
+ul.examples > li > .exText > .x,
+ul.examples > li > .exText > .unx {
+    font-family: Bookerly, Optima !important;
+    font-style: italic;
+    color: rgb(119, 119, 119) !important;
+}
+
+ul.examples > li > .exText .cl {
+    font-weight: normal;
+    font-style: normal;
+}
+
+ul.examples > li > .exText .cl::before {
+    content: "▲";
+    font-size: 0.6em;
+    color: var(--color-oald-blue);
+}
+
+ul.examples > li > .exText chn {
+    color: rgb(119, 119, 119);
+}
+
+ul.examples > li:before,
+ul.examples > li > example-audio {
+    display: inline-flex;
+    justify-content: center;
+    flex-shrink: 0;
+    width: calc(var(--font-size-oald) * 1.5);
+    padding: unset;
+    margin: unset;
+}
+
+ul.examples > li:before {
+    position: absolute;
+    content: "◆";
+    font-size: 0.8em;
+    font-family: Helvetica;
+    color: #aaa;
+    line-height: calc(1em / 0.8 * var(--line-height-oald));
+}
+
+ul.examples > li > example-audio {
+    position: absolute;
+    height: calc(1em * var(--line-height-oald));
+}
+
+ul.examples > li > example-audio > a {
+    position: absolute;
+}
+/* End of addition */
+
 .xref,
 topic,
 .topic, .xh {
@@ -821,7 +971,143 @@ topic:hover,
     font-weight: bold;
 }
 
+/* Added by Hazuki */
+.xrefs, .topic-g {
+    font-size: 0.85em;
+    padding-left: 0 !important;
+    line-height: calc(1em / 0.85 * var(--line-height-oald));
+}
 
+.xrefs .prefix, .topic-g .prefix,
+.seealso::before {
+    display: inline-block;
+    font-family: Optima;
+    font-weight: 600;
+    font-size: 15px;
+    font-variant: small-caps;
+    color: white;
+    height: 16px;
+    line-height: 15px;
+    border-radius: 4px 0 0 4px;
+    background-color: var(--color-oald-blue);
+    padding: 0 2px 0 5px;
+    margin-right: 5px;
+    position: relative;
+}
+
+.xrefs .prefix::after, .topic-g .prefix::after {
+    position: absolute;
+    content: "";
+    left: 100%;
+    border-style: solid;
+    border-width: 8px 0 8px 6px;
+    border-color: transparent transparent transparent var(--color-oald-blue);
+}
+
+.topic-g .prefix {
+    margin-right: 0.6em;
+}
+
+.seealso {
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.seealso::before {
+    position: absolute;
+    content: "idioms in";
+    padding: 0 5px;
+    border-radius: 4px;
+}
+
+.seealso a:first-of-type {
+    margin-left: 1.6em;
+}
+
+a.Ref * {
+    font-size: inherit;
+    font-weight: normal;
+}
+
+a.Ref .xr-g, a.Ref .topic, .seealso a {
+    color: var(--color-oald-blue);
+}
+
+a.Ref .xs {
+    color: var(--color-oald-green);
+}
+
+.ndv {
+    font-style: italic;
+    color: var(--color-oald-green);
+}
+
+.xref {
+    font-size: inherit;
+    font-weight: normal;
+    color: var(--color-oald-blue);
+}
+
+.ndv:hover, .xref:hover, .topic:hover, .xh:hover {
+    text-decoration: none;
+}
+
+.xrefs a.Ref:not(:last-of-type) .xr-g::after, .topic-g a.Ref:not(:last-of-type) .topic::after {
+    content: '•';
+    color: #aaa;
+    display: inline-block;
+    margin-left: .25em;
+}
+
+.xrefs a.Ref + .sep, .topic-g a.Ref + .sep {
+    display: none;
+}
+
+.topic .topic_cefr, .belong-to, ai::after {
+    vertical-align: middle;
+    padding: 2px !important;
+    margin: 0 0.4em;
+}
+
+ai::after {
+    display: inline-block;
+}
+
+.topic .topic_cefr, .belong-to {
+    font-size: 0.5rem !important;
+    background-color: #223a68 !important;
+}
+
+.opal_symbol {
+    font-size: 0.8em !important;
+    font-style: normal !important;
+    margin: 0 0.25em !important;
+    background-color: #223a68 !important;
+}
+
+.oaldpe > ul.top-g {
+    padding: 1em !important;
+    background: rgba(0, 136, 221, 0.06);
+    border-radius: 10px;
+    margin: 0 !important;
+}
+
+.oaldpe > ul.top-g li:not(:last-child) {
+    margin-bottom: 0.5em;
+}
+
+.oaldpe > ul.top-g li a {
+    color: var(--color-oald-blue);
+    margin-right: 0.25em;
+}
+
+.oaldpe > ul.top-g li div {
+    display: flex;
+    align-items: center;
+}
+/* End of addition */
 
 xh {
     font-weight: 600;
@@ -1167,6 +1453,236 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child{
     margin-bottom:1rem;
 }
 
+/* Added by Hazuki */
+.collapse {
+    display: block !important;
+    font-size: 0.9em;
+    background: none !important;
+    border-left-color: rgba(0, 136, 221, .35) !important;
+}
+
+.collapse .unbox .box_title {
+    font-family: Optima;
+    font-weight: bold;
+    color: var(--color-oald-blue);
+}
+
+.collapse .unbox .box_title:hover,
+.collapse .unbox.is-active .box_title {
+    background-color: rgba(0, 136, 221, .06);
+}
+
+.collapse .unbox .box_title:before {
+    display: inline !important;
+    background: none !important;
+    content: "⊕" !important;
+    font-weight: normal;
+    margin-right: 5px !important;
+    top: 0 !important;
+}
+
+.collapse .unbox.is-active .box_title:before {
+    content: "⊖" !important;
+}
+
+.collapse .unbox .box_title .closed,
+.collapse .unbox .body .unbox:first-of-type {
+    font-weight: 600;
+    color: seagreen;
+}
+
+.collapse .unbox .body .patterns {
+    font-weight: 600;
+    color: rgba(128, 0, 255, 0.6);
+}
+
+.collapse .unbox .body,
+.collapse .unbox ul.examples {
+    background: none !important;
+}
+
+.collapse .unbox[unbox="snippet"] .body,
+.collapse .unbox[unbox="verbforms"] .body,
+.collapse .unbox[unbox="wordorigin"] .body,
+.collapse .unbox[unbox="extra_examples"] ul.examples {
+    padding: 4px 8px !important;
+}
+
+.collapse .unbox .body > .unbox,
+.collapse .unbox .body > .p {
+    font-size: var(--font-size-oald);
+}
+
+.collapse .unbox .body .deflist > .defpara,
+.collapse .unbox .body ul.bullet > li,
+.collapse .unbox[unbox="colloc"] .body ul.bullet,
+.collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet {
+    padding: 10px;
+    background-color: rgba(0, 136, 221, 0.06);
+    border-radius: 10px;
+    margin-top: 1em !important;
+}
+
+.collapse .unbox[unbox="colloc"] .body ul.bullet > li,
+.collapse .unbox[unbox="wordfinder"] .body ul.bullet > li,
+.collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet > li {
+    padding: unset;
+    background-color: unset;
+    margin-top: unset !important;
+}
+
+/* Verb Forms 动词形式 */
+table.verb_forms_table {
+    font-size: inherit;
+}
+
+tr.verb_form td.verb_form {
+    display: inline;
+    font-weight: normal;
+    color: black;
+}
+
+tr.verb_form td.verb_form .vf_prefix {
+    display: none;
+}
+
+tr.verb_form td.verb_form::before {
+    display: inline-block;
+    font-size: 0.9em;
+    color: var(--color-oald-green);
+    text-align: center;
+    width: 3em;
+    background: rgba(0, 122, 108, 0.2);
+    border-radius: 3px;
+}
+
+tr.verb_form[form="root"] td.verb_form::before { /* present simple */
+    content: "p.s.";
+}
+
+tr.verb_form[form="thirdps"] td.verb_form::before { /* third person singular */
+    content: "h.s.i.";
+}
+
+tr.verb_form[form="past"] td.verb_form::before { /* past simple */
+    content: "p.";
+}
+
+tr.verb_form[form="pastpart"] td.verb_form::before { /* past participle */
+    content: "p.p.";
+}
+
+tr.verb_form[form="prespart"] td.verb_form::before { /* present participle */
+    content: "-ing";
+}
+
+tr.verb_form[form="neg"] td.verb_form::before { /* negative */
+    content: "neg";
+}
+
+tr.verb_form[form="short"] td.verb_form::before { /* short form */
+    content: "short";
+}
+
+tr.verb_form[form="neg"] td.verb_form::before,
+tr.verb_form[form="short"] td.verb_form::before {
+    margin-right: 0.4em;
+}
+
+/* Collocations 词语搭配 */
+.collapse .unbox[unbox="colloc"] .body .unbox:not(:first-of-type) {
+    font-family: Optima;
+    font-weight: 600;
+    color: var(--color-oald-blue);
+    border-bottom: 1px solid rgba(0, 114, 207, 0.6);
+}
+
+.collapse .unbox[unbox="colloc"] .body ul.bullet > li:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Synonyms 同义词辨析 */
+.collapse .unbox[unbox="synonyms"] .body .unbox:nth-of-type(2) {
+    color: var(--color-oald-blue);
+    border-bottom: 1px solid rgba(0, 114, 207, 0.6);
+}
+
+.collapse .unbox[unbox="synonyms"] .body .unbox:nth-of-type(2) .bulletsep {
+    color: #aaa;
+}
+
+.collapse .unbox[unbox="synonyms"] .body .un {
+    padding: 1em 1em 0.5em;
+}
+
+.collapse .unbox[unbox="synonyms"] .body .un .h4 {
+    display: block;
+    font-weight: 600;
+    color: var(--color-oald-blue);
+    margin-bottom: 1em;
+}
+
+.collapse .unbox[unbox="synonyms"] .body .un undt {
+    display: block;
+    color: #333333;
+    margin-left: 0;
+    margin-bottom: 0.5em;
+}
+
+/* Word Origin 词源 */
+.collapse .unbox[unbox="wordorigin"] .body .p {
+    font-size: inherit;
+}
+
+.collapse .unbox[unbox="wordorigin"] .body .p ubx {
+    display: block;
+    margin-left: 0;
+}
+
+/* Culture 文化 */
+.collapse .unbox[unbox="cult"] .body .p:not(:last-of-type) {
+    margin-bottom: 2em;
+}
+
+.collapse .unbox[unbox="cult"] .body .p chn {
+    display: block;
+    padding: 0.5em;
+    margin-top: 0.5em;
+}
+
+/* Oxford Collocations Dictionary 牛津搭配词典 */
+.collapse .unbox[unbox="snippet"] .body .unbox {
+    font-size: inherit;
+    font-weight: normal !important;
+    color: var(--color-oald-blue);
+}
+
+.collapse .unbox[unbox="snippet"] .body .p {
+    font-size: inherit;
+    margin-bottom: 0;
+}
+
+/* Homophones 同音词 */
+.collapse .unbox[unbox="homophone"] .body .phonetics {
+    padding-bottom: 0 !important;
+}
+
+/* Which Word? 词语辨析 */
+.collapse .unbox[unbox="which_word"] .body ul.bullet > li .item:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+/* Vocabulary Building 词汇扩充 */
+.collapse .unbox[unbox="vocab"] .body ul.bullet > li ul.examples:last-of-type li:last-child {
+    margin-bottom: 0;
+}
+
+/* More Like This 同类词语学习 */
+.collapse .unbox[unbox="mlt"] .body ul.inline {
+    margin-bottom: 0;
+}
+/* End of addition */
+
 .details_contents .xrefs {
     margin: 0rem;
 }
@@ -1283,6 +1799,62 @@ jumplink[name="Phrasal Verbs"]:hover,
     margin-bottom: -8px;
     font-size: 14px;
 }
+
+/* Added by Hazuki */
+.phonetics * {
+    font-size: inherit !important;
+}
+
+.phonetics [geo="br"] .phon {
+    color: var(--color-oald-blue);
+}
+
+.phonetics [geo="n_am"] .phon {
+    color: var(--color-oald-red);
+}
+
+.phons_br + .phons_n_am {
+    margin-left: 0.5em;
+}
+
+.phons_br *, .phons_n_am * {
+    color: #6F6F6F;
+}
+
+.verb_phons {
+    display: inline !important;
+}
+
+.verb_phons .phonetics {
+    display: inline;
+}
+
+.verb_phons .phonetics,
+.inflections .phonetics {
+    margin: 0 0.2em;
+}
+
+a.pron-uk, a.pron-us,
+example-audio a.audio_uk, example-audio a.audio_us {
+    background-image: none !important;
+    height: unset !important;
+    width: unset !important;
+    vertical-align: unset !important;
+    margin: unset !important;
+}
+
+a.pron-uk::before, a.pron-us::before,
+example-audio a.audio_uk::before, example-audio a.audio_us::before {
+    font-family: 'oalecd9', 'Segoe UI Symbol';
+    content: "🔊";
+    color: var(--color-oald-blue);
+    opacity: 0.7;
+}
+
+a.pron-us::before, example-audio a.audio_us::before {
+    color: var(--color-oald-red);
+}
+/* End of addition */
 
 .idioms {
     border: 0.0625rem solid #27A1B0;
@@ -1879,6 +2451,18 @@ div#ox-enlarge img {
     border: none;
 }
 
+/* Added by Hazuki */
+div#ox-enlarge {
+    border: none !important;
+}
+
+div#ox-enlarge .ox-enlarge-label {
+    width: 20px;
+    height: 20px;
+    background-size: 20px 20px;
+}
+/* End of addition */
+
 /*原*/
 /*#ox-enlarge .ox-enlarge-label{
     text-indent: 0px;
@@ -2059,6 +2643,116 @@ dd {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
+
+/* Added by Hazuki */
+.idioms.expanded {
+    background: rgba(0, 136, 221, 0.06);
+    border-color: white;
+}
+
+.idm-g {
+    display: block;
+    margin: unset;
+}
+
+.idioms > .idm-g {
+    padding: 0.5em 0;
+}
+
+.idioms > .idioms_title + * {
+    margin-top: 0.5em;
+}
+
+.idioms > *:last-child {
+    margin-bottom: 0.5em;
+}
+
+.idioms > .idm-g .idm {
+    display: flex !important;
+    align-items: center;
+    font-size: inherit;
+    font-weight: normal;
+    color: #004D99;
+    margin: 0 !important;
+    position: relative;
+}
+
+.idioms > .idm-g .idm::before {
+    display: inline-block;
+    content: "▶︎";
+    font-size: 0.7em;
+    color: var(--color-oald-red);
+    position: absolute;
+    left: -1em;
+}
+
+.oaldpe > .idm-g {
+    padding: 1em;
+    padding-bottom: 1px;
+    background: rgba(0, 136, 221, 0.06);
+    border-radius: 10px 10px 0 0;
+    margin: 0;
+}
+
+.oaldpe > .idm-g + .seealso {
+    padding: var(--font-size-oald);
+    padding-top: 0;
+    background: rgba(0, 136, 221, 0.06);
+    border-radius: 0 0 10px 10px;
+}
+
+.phrasal_verb_links ul.pvrefs {
+    margin-bottom: 1em;
+}
+
+.phrasal_verb_links ul.pvrefs > li {
+    margin-bottom: 0.35em;
+}
+
+.phrasal_verb_links ul.pvrefs > li::before {
+    display: inline-block;
+    width: 1em;
+    content: "•";
+    color: #aaa;
+    text-align: center;
+}
+
+.pv-g {
+    display: block;
+    background: rgba(0, 136, 221, 0.06);
+    padding: 5px 10px;
+}
+
+.pv-g:first-of-type {
+    border-radius: 10px 10px 0 0;
+    padding-top: 1em;
+    margin-top: 0.5em;
+}
+
+.pv-g:last-of-type {
+    border-radius: 0 0 10px 10px;
+    padding-bottom: 2em;
+}
+
+.pv-g .pv {
+    font-size: inherit;
+    font-weight: normal;
+    color: var(--color-oald-blue);
+    background: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, 0.15) 55%, rgba(0, 114, 207, 0.15) 100%);
+}
+
+.pvarr {
+    font-size: inherit;
+    font-weight: normal;
+}
+
+.pvarr:before {
+    content: "⇿" !important;
+    color: var(--color-oald-red);
+    text-align: center;
+    background: none !important;
+}
+/* End of addition */
 
 .idioms .un{
     margin-top: 1rem;
@@ -2470,6 +3164,142 @@ ai::after {
     vertical-align: center;
     color: white;
 }
+
+/* Added by Hazuki */
+.inflections, .variants,
+.grammar, .labels, .use {
+    font-style: normal;
+    font-size: 0.9em;
+}
+
+.inflections *, .variants *,
+.grammar *, .labels *, .use * {
+    font-size: inherit;
+    font-weight: normal;
+}
+
+.webtop .inflections, .webtop .variants,
+.webtop .grammar, .webtop .labels, .webtop .use {
+    line-height: calc(var(--font-size-oald) * var(--line-height-oald));
+}
+
+.inflections .inflected_form, .variants .v-g, .ei, .eb, .xh {
+    font-size: inherit;
+    font-weight: normal;
+    color: var(--color-oald-blue);
+}
+
+.variants[type="alt"] {
+    font-weight: normal;
+}
+
+.sense .variants[type="alt"]::before {
+    content: "(";
+}
+
+.sense .variants[type="alt"]::after {
+    content: ")";
+}
+
+.grammar {
+    color: seagreen;
+}
+
+.labels chn {
+    color: inherit !important;
+    margin-left: 2px;
+}
+
+.sense .use chn {
+    margin-left: 0;
+}
+
+/* Test words:
+*  - '.inflections': 'hello'
+*  - '.variants': 'perfect (n.)'
+*/
+
+.shcut-g {
+    display: block;
+    margin-top: 0.5em;
+}
+
+.shcut {
+    display: inline;
+    font-family: Optima;
+    font-size: inherit !important;
+    font-weight: 600 !important;
+    color: var(--color-oald-blue);
+    background: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, 0.15) 55%, rgba(0, 114, 207, 0.15) 100%);
+    border: none;
+}
+
+.sense .cf {
+    font-family: Bookerly;
+    font-weight: normal;
+    color: var(--color-oald-blue);
+}
+
+.sense .cf::after {
+    display: none;
+}
+
+.sense .def {
+    margin-right: 5px;
+}
+
+.sense deft {
+    margin-left: 0;
+}
+
+chn {
+    font-family:  Bookerly, Optima, 'Source Han Serif CN';
+    font-size: 0.9em;
+}
+
+chn oald, chn ai {
+    color: unset;
+}
+
+shcut chn {
+    font-weight: normal;
+}
+
+.sense dtxtx > chn,
+.sense deft > chn,
+.un unx > chn,
+.collapse .unbox .body > .p ubx > chn,
+.collapse .unbox .body > .p undt > chn,
+.collapse .unbox .body .deflist > .defpara > undt > chn,
+.collapse .unbox .body ul.bullet > li > undt > chn,
+.collapse .unbox .body ul.bullet > li > .item > undt > chn {
+    display: inline-block;
+    color: var(--color-oald-green);
+    background: rgba(0, 122, 108, .2);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.un {
+    font-size: 0.9em;
+    background: rgba(0, 136, 221, 0.06);
+}
+
+.un unx {
+    display: block;
+}
+
+.webtop > .un, .sense > .un, .idioms .un, .unbox .body .un {
+    background: none;
+    border-left: 2px solid rgba(0, 136, 221, 0.35);
+    border-radius: 0%;
+}
+
+.oaldpe-nav {
+    background-color: rgba(0, 122, 108, 0.8) !important;
+}
+/* End of addition */
+
 .oaldpe-nav {
     font-family: Georgia;
     font-style: italic;
