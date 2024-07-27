@@ -15,7 +15,46 @@ html {
 /* Added by Hazuki */
 @font-face {
     font-family: 'oalecd9';
-    src: local('oalecd9'), url("fonts/oalecd9/oalecd9.ttf") format("truetype");
+    src: url("fonts/oalecd9/oalecd9.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: Bookerly;
+    src: url("fonts/Bookerly/Bookerly-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: Bookerly;
+    src: url("fonts/Bookerly/Bookerly-RegularItalic.ttf") format("truetype");
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Bookerly;
+    src: url("fonts/Bookerly/Bookerly-Bold.ttf") format("truetype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: Optima;
+    src: url("fonts/Optima/Optima.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: Optima;
+    src: url("fonts/Optima/Optima\ Bold.ttf.ttf") format("truetype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Source Han Serif CN';
+    src: url("fonts/SourceHanSerifCN/SourceHanSerifCN-Regular.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'Source Han Serif CN';
+    src: url("fonts/SourceHanSerifCN/SourceHanSerifCN-Bold.otf") format("opentype");
+    font-weight: bold;
 }
 
 /* Mimic `:root {}`, which is disabled in Eudic */
@@ -44,6 +83,7 @@ a {
     font-size: inherit; /* Eudic Bug Fix */
     line-height: inherit; /* Eudic Bug Fix */
     text-decoration: none;
+    color: var(--color-oald-blue);
 }
 /* End of addition */
 
@@ -857,12 +897,17 @@ span.prefix {
     margin-top: calc(var(--font-size-oald) * 0.5) !important;
 }
 
-ol.sense_single > .li_sense .li_sense_before {
+.pv-g ol.sense_single > .li_sense .li_sense_before {
     display: none;
 }
 
-ol.senses_multiple > .li_sense .li_sense_before {
+.idm-g ol.senses_multiple > .li_sense .li_sense_before {
     display: inline-block;
+}
+
+/* Ensure it can contain absolute children */
+ul.examples > li {
+    position: relative;
 }
 
 ul.examples > li > .exText {
@@ -891,8 +936,9 @@ ul.examples > li > .exText chn {
     color: rgb(119, 119, 119);
 }
 
-ul.examples > li:before,
-ul.examples > li > example-audio {
+ul.examples > li::before,
+ul.examples > li > example-audio,
+ul.examples > li > example-audio-ai {
     display: inline-flex;
     justify-content: center;
     flex-shrink: 0;
@@ -901,22 +947,34 @@ ul.examples > li > example-audio {
     margin: unset;
 }
 
-ul.examples > li:before {
+ul.examples > li::before {
     position: absolute;
     content: "◆";
     font-size: 0.8em;
     font-family: Helvetica;
-    color: #aaa;
+    color: rgb(119, 119, 119);
+    opacity: 0.7;
     line-height: calc(1em / 0.8 * var(--line-height-oald));
 }
 
-ul.examples > li > example-audio {
+ul.examples > li.audio-enabled::before {
+    visibility: hidden;
+}
+
+ul.examples > li > example-audio,
+ul.examples > li > example-audio-ai {
     position: absolute;
     height: calc(1em * var(--line-height-oald));
 }
 
-ul.examples > li > example-audio > a {
+ul.examples > li > example-audio > a,
+ul.examples > li > example-audio-ai > a {
     position: absolute;
+}
+
+ul.examples > li > example-audio.audio_hide > a,
+ul.examples > li > example-audio-ai.audio_hide > a {
+    display: none;
 }
 /* End of addition */
 
@@ -978,6 +1036,10 @@ topic:hover,
     line-height: calc(1em / 0.85 * var(--line-height-oald));
 }
 
+ul.examples + .xrefs, ul.examples + .topic-g {
+    margin-top: 0.4em;
+}
+
 .xrefs .prefix, .topic-g .prefix,
 .seealso::before {
     display: inline-block;
@@ -1023,7 +1085,7 @@ topic:hover,
 }
 
 .seealso a:first-of-type {
-    margin-left: 1.6em;
+    margin-left: 1.8em;
 }
 
 a.Ref * {
@@ -1066,6 +1128,7 @@ a.Ref .xs {
 }
 
 .topic .topic_cefr, .belong-to, ai::after {
+    text-align: center;
     vertical-align: middle;
     padding: 2px !important;
     margin: 0 0.4em;
@@ -1095,7 +1158,7 @@ ai::after {
 }
 
 .oaldpe > ul.top-g li:not(:last-child) {
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 
 .oaldpe > ul.top-g li a {
@@ -1104,8 +1167,12 @@ ai::after {
 }
 
 .oaldpe > ul.top-g li div {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+}
+
+.oaldpe > ul.top-g li div * {
+    min-width: 1.5em;
 }
 /* End of addition */
 
@@ -1455,10 +1522,14 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child{
 
 /* Added by Hazuki */
 .collapse {
-    display: block !important;
     font-size: 0.9em;
     background: none !important;
     border-left-color: rgba(0, 136, 221, .35) !important;
+    border-left-width: 0.2em !important;
+}
+
+div.collapse {
+    display: block; /* Override the inline-block in the original CSS */
 }
 
 .collapse .unbox .box_title {
@@ -1472,7 +1543,7 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child{
     background-color: rgba(0, 136, 221, .06);
 }
 
-.collapse .unbox .box_title:before {
+.collapse .unbox .box_title::before {
     display: inline !important;
     background: none !important;
     content: "⊕" !important;
@@ -1481,7 +1552,7 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child{
     top: 0 !important;
 }
 
-.collapse .unbox.is-active .box_title:before {
+.collapse .unbox.is-active .box_title::before {
     content: "⊖" !important;
 }
 
@@ -1513,19 +1584,21 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child{
     font-size: var(--font-size-oald);
 }
 
-.collapse .unbox .body .deflist > .defpara,
-.collapse .unbox .body ul.bullet > li,
-.collapse .unbox[unbox="colloc"] .body ul.bullet,
-.collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet {
+.entry > ol .collapse .unbox .body .deflist > .defpara,
+.entry > ol .collapse .unbox[unbox="colloc"] .body ul.bullet,
+.entry > ol .collapse .unbox[unbox="express"] .body ul.bullet,
+.entry > ol .collapse .unbox[unbox="langbank"] .body ul.bullet,
+.entry > ol .collapse .unbox[unbox="vocab"] .body ul.bullet > li,
+.entry > ol .collapse .unbox[unbox="more_about"] .body ul.bullet > li,
+.entry > ol .collapse .unbox[unbox="which_word"] .body ul.bullet > li,
+.entry > ol .collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet {
     padding: 10px;
     background-color: rgba(0, 136, 221, 0.06);
     border-radius: 10px;
     margin-top: 1em !important;
 }
 
-.collapse .unbox[unbox="colloc"] .body ul.bullet > li,
-.collapse .unbox[unbox="wordfinder"] .body ul.bullet > li,
-.collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet > li {
+.entry > ol .collapse .unbox[unbox="synonyms"] .body .patterns + ul.bullet > li {
     padding: unset;
     background-color: unset;
     margin-top: unset !important;
@@ -1589,8 +1662,9 @@ tr.verb_form[form="short"] td.verb_form::before {
     margin-right: 0.4em;
 }
 
-/* Collocations 词语搭配 */
-.collapse .unbox[unbox="colloc"] .body .unbox:not(:first-of-type) {
+/* Collocations 词语搭配 | Language Bank 用语库 */
+.collapse .unbox[unbox="colloc"] .body .unbox:not(:first-of-type),
+.collapse .unbox[unbox="langbank"] .body .unbox:not(:first-of-type) {
     font-family: Optima;
     font-weight: 600;
     color: var(--color-oald-blue);
@@ -1813,12 +1887,34 @@ jumplink[name="Phrasal Verbs"]:hover,
     color: var(--color-oald-red);
 }
 
-.phons_br + .phons_n_am {
-    margin-left: 0.5em;
+.phons_br {
+    margin-right: 0.5em;
 }
 
 .phons_br *, .phons_n_am * {
     color: #6F6F6F;
+}
+
+.entry > .top-container .webtop > .symbols {
+    display: inline-flex;
+}
+
+.entry > .top-container .webtop > .phonetics {
+    margin-left: 0.2em;
+}
+
+.entry > .top-container .webtop > .phonetics:not(:last-child) {
+    margin-bottom: 0.2em;
+}
+
+.entry > .top-container .webtop > .headword:first-child,
+.entry > .top-container .webtop > .inflections,
+.entry > .top-container .webtop > .variants,
+.entry > .top-container .webtop > .grammar,
+.entry > .top-container .webtop > .labels,
+.entry > .top-container .webtop > .use,
+.entry > .top-container .webtop > .xrefs {
+    margin-left: 2px;
 }
 
 .verb_phons {
@@ -1835,7 +1931,7 @@ jumplink[name="Phrasal Verbs"]:hover,
 }
 
 a.pron-uk, a.pron-us,
-example-audio a.audio_uk, example-audio a.audio_us {
+a.audio_uk, a.audio_us {
     background-image: none !important;
     height: unset !important;
     width: unset !important;
@@ -1843,16 +1939,60 @@ example-audio a.audio_uk, example-audio a.audio_us {
     margin: unset !important;
 }
 
+.oaldpe-config-gear .dictname::before,
 a.pron-uk::before, a.pron-us::before,
-example-audio a.audio_uk::before, example-audio a.audio_us::before {
+a.audio_uk::before, a.audio_us::before {
     font-family: 'oalecd9', 'Segoe UI Symbol';
+    font-style: normal;
+    font-weight: normal;
     content: "🔊";
-    color: var(--color-oald-blue);
     opacity: 0.7;
 }
 
-a.pron-us::before, example-audio a.audio_us::before {
+example-audio-ai a.audio_uk::before,
+example-audio-ai a.audio_us::before {
+    opacity: 0.4;
+}
+
+a.audio_uk::before, a.audio_us::before {
+    color: rgb(119, 119, 119);
+}
+
+a.pron-uk::before,
+ul.examples li:hover example-audio a.audio_uk::before,
+ul.examples li:hover example-audio-ai a.audio_uk::before,
+.oaldpe[pron="uk"] ul.examples li:hover::before,
+.oaldpe[pron="uk"] .oaldpe-config-gear .dictname::before {
+    color: var(--color-oald-blue);
+}
+
+a.pron-us::before,
+ul.examples li:hover example-audio a.audio_us::before,
+ul.examples li:hover example-audio-ai a.audio_us::before,
+.oaldpe[pron="us"] ul.examples li:hover::before,
+.oaldpe[pron="us"] .oaldpe-config-gear .dictname::before {
     color: var(--color-oald-red);
+}
+
+.oaldpe[pron="uk"] a.audio_us {
+    display: none;
+}
+
+.oaldpe[pron="us"] a.audio_uk {
+    display: none;
+}
+
+a.audio_uk, a.audio_us {
+    width: 100% !important;
+    height: 100% !important;
+    padding-right: 1em; /* Easy to click */
+}
+
+a.audio_uk::before, a.audio_us::before {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
 }
 /* End of addition */
 
@@ -2452,14 +2592,260 @@ div#ox-enlarge img {
 }
 
 /* Added by Hazuki */
-div#ox-enlarge {
-    border: none !important;
+div#ox-enlarge, div#ox-enlarge img.thumb {
+    width: 75px;
+    height: 75px;
 }
 
 div#ox-enlarge .ox-enlarge-label {
     width: 20px;
     height: 20px;
     background-size: 20px 20px;
+}
+
+.oaldpe-config-gear {
+    font-family: Optima;
+    font-size: 1rem;
+    word-spacing: normal;
+    position: absolute;
+    right: 0.5rem;
+    z-index: 1;
+    transform: translateY(0.2rem);
+}
+
+.oaldpe-config-gear * {
+    cursor: default;
+    user-select: none;
+}
+
+.oaldpe-config-gear__head {
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+}
+
+.oaldpe-config-gear__head__brand {
+    pointer-events: none;
+    position: absolute;
+    right: 2.4em;
+    bottom: 0.15em;
+    opacity: 0;
+    transform: translateX(1em);
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.oaldpe-config-gear__head__brand * {
+    cursor: pointer;
+}
+
+.oaldpe-config-gear:hover .oaldpe-config-gear__head__brand {
+    pointer-events: initial;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.oaldpe-config-gear__head__brand > * {
+    text-align: right;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.dictname::before {
+    margin-right: 0.25em;
+}
+
+.dictname {
+    font-size: 0.8em;
+    font-weight: 600;
+    padding-left: 1.5em;
+    color: var(--color-oald-green);
+}
+
+.dictname .abbv {
+    font-weight: bold;
+    color: var(--color-oald-blue);
+}
+
+.dictname .ver {
+    color: var(--color-oald-red);
+}
+
+.dictname::after {
+    display: block;
+    width: 4px;
+    content: "";
+    background: white;
+    position: absolute;
+    top: -1em;
+    bottom: -1em;
+    transform: rotate(15deg);
+    left: -5%;
+}
+
+.oaldpe-config-gear:hover .dictname::after {
+    transition: left 0.35s ease-in;
+    transition-delay: 0.2s;
+    left: 110%;
+}
+
+.dictarts {
+    font-size: 0.55em;
+    margin-top: 0.1em;
+}
+
+.oaldpe-config-gear__head__icon {
+    display: block;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background-image: linear-gradient(45deg, rgba(0, 114, 207, .25) 25%, transparent 25%, transparent 50%, rgba(0, 114, 207, .25) 50%, rgba(0, 114, 207, .25) 75%, transparent 75%);
+    background-size: 4px 4px;
+}
+
+.oaldpe-config-gear__head__icon::before,
+.oaldpe-config-gear__head__icon::after {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.oaldpe-config-gear__head__icon::before {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    content: "O10";
+    z-index: 1;
+    font-weight: 600;
+    color: white;
+    opacity: 0.8;
+    transform: scale(0.7) rotate(-45deg);
+    text-shadow: -1px -1px 0 var(--color-oald-blue), 1px -1px 0 rgba(0, 114, 207, .25), -1px 1px 0 rgba(0, 114, 207, .25), 1px 1px 0 rgba(0, 114, 207, .25);
+}
+
+.oaldpe-config-gear:hover .oaldpe-config-gear__head__icon::before {
+    opacity: 1;
+    transform: scale(0.7) rotate(0);
+}
+
+.oaldpe-config-gear__head__icon::after {
+    content: "";
+    border-radius: 50%;
+    background-color: var(--color-oald-blue);
+    transform: scale(0);
+}
+
+.oaldpe-config-gear:hover .oaldpe-config-gear__head__icon::after {
+    transform: scale(0.8);
+}
+
+.oaldpe-config-gear__body {
+    background-color: white;
+    z-index: -1;
+    border: 1px solid var(--color-oald-blue);
+    border-radius: 4px;
+    border-top-right-radius: 1.1em;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s;
+    padding-top: 2.35em;
+    position: relative;
+    overflow: hidden;
+}
+
+.oaldpe-config-gear:hover .oaldpe-config-gear__body {
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+    height: auto;
+    min-width: 11em;
+    box-shadow: -1px 1px 0 1px rgba(0, 0, 0, .1);
+}
+
+.config-group {
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+.config-group:hover {
+    background-color: rgba(0, 114, 207, 0.1);
+}
+
+.config-group::before {
+    display: block;
+    content: "";
+    position: absolute;
+    left: 0.5em;
+    right: 0;
+    height: 1px;
+    opacity: 0.15;
+    background-color: var(--color-oald-blue);
+}
+
+.config-group__label {
+    font-size: 0.8em;
+    color: #333;
+    line-height: 1;
+    white-space: nowrap;
+    text-transform: capitalize;
+    padding: 0.5em 1em 0.2em;
+}
+
+.config-group__label::before {
+    display: inline-block;
+    content: "⟶";
+    color: var(--color-oald-red);
+    margin-right: .25em;
+    transform: translateY(-0.15em);
+}
+
+.config-group__options {
+    white-space: nowrap;
+    padding: 0 1em 0.5em;
+}
+
+.config-group__options span {
+    display: inline-block;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 46px;
+    text-align: center;
+    height: 1.8em;
+    line-height: 1.7em;
+    padding: 0 0.5em;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+    font-variant: small-caps;
+    text-transform: capitalize;
+    color: var(--color-oald-blue);
+    margin-right: 0.25em;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 114, 207, .25);
+}
+
+.oaldpe-config-gear:hover .config-group__options span {
+    transition: transform 0.25s ease-out;
+    transform: translateX(0);
+}
+
+.config-group__options span[checked="true"] {
+    background-size: 4px 4px;
+    background-image: linear-gradient(45deg, rgba(0, 114, 207, .25) 25%, transparent 25%, transparent 50%, rgba(0, 114, 207, .25) 50%, rgba(0, 114, 207, .25) 75%, transparent 75%);
+}
+
+.config-group__options span:first-child {
+    border-top-left-radius: 0.9em;
+    border-bottom-left-radius: 0.9em;
+}
+
+.config-group__options span:last-child {
+    margin-right: 0;
+    border-top-right-radius: 0.9em;
+    border-bottom-right-radius: 0.9em;
 }
 /* End of addition */
 
@@ -2647,11 +3033,15 @@ dd {
 /* Added by Hazuki */
 .idioms.expanded {
     background: rgba(0, 136, 221, 0.06);
-    border-color: white;
+    border-color: transparent;
 }
 
 .idm-g {
     display: block;
+    margin: unset;
+}
+
+.idm-g .webtop {
     margin: unset;
 }
 
@@ -2668,8 +3058,6 @@ dd {
 }
 
 .idioms > .idm-g .idm {
-    display: flex !important;
-    align-items: center;
     font-size: inherit;
     font-weight: normal;
     color: #004D99;
@@ -2681,6 +3069,7 @@ dd {
     display: inline-block;
     content: "▶︎";
     font-size: 0.7em;
+    line-height: calc(1em / 0.7 * var(--line-height-oald));
     color: var(--color-oald-red);
     position: absolute;
     left: -1em;
@@ -2720,18 +3109,24 @@ dd {
 .pv-g {
     display: block;
     background: rgba(0, 136, 221, 0.06);
-    padding: 5px 10px;
+    padding: 0.75em 0.5em;
+}
+
+.pv-g .top-container {
+    margin: unset !important;
+}
+
+.pv-g .sense_single {
+    margin: unset !important;
 }
 
 .pv-g:first-of-type {
     border-radius: 10px 10px 0 0;
-    padding-top: 1em;
     margin-top: 0.5em;
 }
 
 .pv-g:last-of-type {
     border-radius: 0 0 10px 10px;
-    padding-bottom: 2em;
 }
 
 .pv-g .pv {
@@ -2746,11 +3141,15 @@ dd {
     font-weight: normal;
 }
 
-.pvarr:before {
+.pvarr::before {
     content: "⇿" !important;
     color: var(--color-oald-red);
     text-align: center;
     background: none !important;
+}
+
+.idmsep {
+    color: var(--color-oald-red);
 }
 /* End of addition */
 
@@ -3168,7 +3567,8 @@ ai::after {
 /* Added by Hazuki */
 .inflections, .variants,
 .grammar, .labels, .use {
-    font-style: normal;
+    font-family: unset !important;
+    font-style: normal !important;
     font-size: 0.9em;
 }
 
@@ -3180,7 +3580,7 @@ ai::after {
 
 .webtop .inflections, .webtop .variants,
 .webtop .grammar, .webtop .labels, .webtop .use {
-    line-height: calc(var(--font-size-oald) * var(--line-height-oald));
+    line-height: calc(1em / 0.9 * var(--line-height-oald));
 }
 
 .inflections .inflected_form, .variants .v-g, .ei, .eb, .xh {
@@ -3199,6 +3599,14 @@ ai::after {
 
 .sense .variants[type="alt"]::after {
     content: ")";
+}
+
+.ei a {
+    margin: 0 0.2em !important;
+}
+
+.ei a.audio_hide {
+    display: none !important;
 }
 
 .grammar {
@@ -3234,13 +3642,13 @@ ai::after {
     border: none;
 }
 
-.sense .cf {
+.cf {
     font-family: Bookerly;
     font-weight: normal;
     color: var(--color-oald-blue);
 }
 
-.sense .cf::after {
+.cf::after {
     display: none;
 }
 

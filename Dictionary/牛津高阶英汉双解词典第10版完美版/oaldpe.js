@@ -4,7 +4,7 @@
 
 var oaldpeCfg = {
     // 【配置项1：中文翻译选项】（点击"词性导航"白色块可显示/隐藏中文翻译）
-    // 选项（默认为0）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏义项中文，5-仅显示义项中文
+    // 选项（默认为1）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏义项中文，5-仅显示义项中文
     showTranslation: 1,
 
     // 【配置项2：是否使用台湾繁体中文翻译】
@@ -16,20 +16,20 @@ var oaldpeCfg = {
     showNavbar: true,
 
     // 【配置项4：是否选中词性导航all】
-    // 选项（默认为true）：false=否，true=是
+    // 选项（默认为false）：false=否，true=是
     selectNavbarAll: false,
 
     // 【配置项5：是否启用英文点译功能】（单句显示/隐藏中文）
-    // 选项（默认为true）：false=否，true=是
+    // 选项（默认为false）：false=否，true=是
     touchToTranslate: false,
 
     // 【配置项6：官方例句发音选项】（如果为0或1，则可删除oaldpe.3.mdd文件）
-    // 选项（默认为2）：0-不启用官方例句发音，1-启用官方在线例句发音，2-启用官方离线例句发音.ogg 3-启用官方离线例句发音.mp3（需要去网盘“文件替换”文件夹里下载oaldpe.3.mdd替换掉原来的文件）
+    // 选项（默认为3）：0-不启用官方例句发音，1-启用官方在线例句发音，2-启用官方离线例句发音.ogg 3-启用官方离线例句发音.mp3（需要去网盘“文件替换”文件夹里下载oaldpe.3.mdd替换掉原来的文件）
     // （电脑欧路、IOS等不支持选项2，可填选项3）
     officialExPronOpt: 3,
 
     // 【配置项7：无官方例句发音时，是否启用在线TTS发音】（需要高版本浏览器内核。发音图标为灰色。Mdict和电脑欧路暂不支持。）
-    // 选项（默认为true）：false=否，true=是
+    // 选项（默认为false）：false=否，true=是
     enableOnlineTTS: false,
 
     // 【配置项8：是否启用在线单词发音】（如果为true，则可删除oaldpe.1.mdd）
@@ -45,11 +45,11 @@ var oaldpeCfg = {
     imgTranslationOpt: 3,
 
     // 【配置项11：是否显示音节划分】（点击单词可切换音节划分）
-    // 选项（默认为true）：false=不显示，true=显示
+    // 选项（默认为false）：false=不显示，true=显示
     showSyllable: false,
 
     // 【配置项12：是否简化词性】（如verb简化为v.）
-    // 选项（默认为true）：false=不简化，true=简化
+    // 选项（默认为false）：false=不简化，true=简化
     simplifyPos: false,
 
     // 【配置项13：是否简化语法】（如[transitive]简化为[t]）
@@ -60,19 +60,19 @@ var oaldpeCfg = {
     // 选项（默认为true）：false=不简化，true=简化
     simplifySthSb: true,
 
-    // 【配置项15：是否展开折叠块1】（绿虚线折叠区）
+    // 【配置项15：是否展开折叠块1】（浅蓝色下划线折叠区）
     // 选项（默认为true）：false=不展开，true=展开
     unfoldBox1: true,
 
-    // 【配置项16：是否展开折叠块2】（浅红色折叠区）
+    // 【配置项16：是否展开折叠块2】（浅蓝色折叠区）
     // 选项（默认为false）：false=不展开，true=展开
     unfoldBox2: false,
 
     // 【配置项17：是否展开折叠块3】（Idiom、Phrasal verbs）
-    // 选项（默认为false）：false=不展开，true=展开
+    // 选项（默认为true）：false=不展开，true=展开
     unfoldBox3: true,
 
-    // 【配置项18：是否展开折叠块2的子标题栏下的内容】（浅红色折叠区的子标题栏）
+    // 【配置项18：是否展开折叠块2的子标题栏下的内容】（浅蓝色折叠区的子标题栏）
     // 选项（默认为true）：false=不展开，true=展开
     unfoldBox2Subtitle: true,
 
@@ -85,15 +85,15 @@ var oaldpeCfg = {
     jumpsBox3Unfold: true,
 
     // 【配置项21：点击小火箭返回后，自动折叠内容】
-    // 选项（默认为true）：false=不折叠，true=折叠
+    // 选项（默认为false）：false=不折叠，true=折叠
     leavesBox3Fold: false,
 
     // 【配置项22：给粗体固定句式添加荧光笔下划线】
-    // 选项（默认为true）：false=不添加，true=添加
-    phrasesAddUnderline: true,
+    // 选项（默认为false）：false=不添加，true=添加
+    phrasesAddUnderline: false,
 
     // 【配置项23：是否使用普通样式的义项序号】
-    // 选项（默认为false）：false=否，true=是
+    // 选项（默认为true）：false=否，true=是
     normalSenseNumber: true,
 
     // 【配置项24：是否全局使用普通英文字体】
@@ -132,7 +132,7 @@ var oaldpeCfg = {
     // 选项（默认为true）：false=否，true=是
     examplesChineseBeAlone: true,
 
-    // 【配置项33：自定义折叠块2开关】（浅红色折叠区）
+    // 【配置项33：自定义折叠块2开关】（浅蓝色折叠区）
     // 选项（默认都为true）：false=不显示，true=显示
     box2ShowSwitch: {
         "verbforms": true, // 动词形式
@@ -218,6 +218,41 @@ var oaldpeCfg = {
     // 选项（默认为false）：false=否，true=是
     disableConfigWord: false,
 
+    // 【配置项38：是否默认英音例句发音】
+    // 选项（默认为false）：true=英音，false=美音
+    defaultBritishExPron: false,
+
+    // 【配置项39：是否启用Eruda Console】（用于词典应用调试）
+    // 选项（默认为true）：false=否，true=是
+    enableErudaConsole: true,
+
+    // 【配置项40：是否移除Eudic单词界面词头】（词典内置发音、分级等）
+    // 选项（默认为true）：true=移除，false=不移除
+    removeEudicHeader: true,
+
+    // 【配置项41：自动展开折叠块2开关】（浅蓝色折叠区）
+    // 选项（默认仅展开词源）：false=不展开，true=展开
+    autoUnfoldBox2: {
+        "verbforms": false, // 动词形式
+        "wordorigin": true, // 词源
+        "colloc": false,     // 词语搭配
+        "snippet": false,   // 牛津搭配词典
+        "wordfinder": false, // 联想词
+        "extra_examples": false, // 更多例句
+        "cult": false,       // 文化
+        "synonyms": false,   // 同义词辨析
+        "which_word": false, // 词语辨析
+        "homophone": false,  // 同音词
+        "more_about": false, // 词语辨析
+        "mlt": false,        // 同类词语学习
+        "wordfamily": false, // 词族
+        "grammar": false,    // 语法说明
+        "express": false,    // 情景表达
+        "langbank": false,   // 用语库
+        "vocab": false,      // 词汇扩充
+        "british_american": false,  // 英式 / 美式
+        "more_about": false, // 补充说明
+    },
 };
 /* ********用户自定义配置区结束******** */
 
@@ -396,6 +431,8 @@ var oaldpeCfg = {
     fnUnfoldBox1(oaldpeCfg.unfoldBox1);
 
     fnUnfoldBox2(oaldpeCfg.unfoldBox2);
+
+    fnAutoUnfoldBox2(oaldpeCfg.autoUnfoldBox2);
 
     fnUnfoldBox3(oaldpeCfg.unfoldBox3);
 
@@ -667,11 +704,100 @@ var oaldpeCfg = {
     function initialize() {
         $(".oaldpe").show();
 
+        /* Added by Hazuki */
+        setupConfigGear();
+
+        setupErudaConsole();
+
+        removeEudicHeader();
+
+        hideExamplesLabel();
+
+        setupEudicConfigurations();
+
+        observeCustomNoteAdded();
+        /* End of addition */
+
         updateConfigFromLocalStorage();
 
         updateConfigToUI();
 
         fnExamplesChineseBeAlone(oaldpeCfg.examplesChineseBeAlone);
+    }
+
+    function setupConfigGear() {
+        const $oaldpe = $(".oaldpe");
+        const $configGear = $('<div>', { class: 'oaldpe-config-gear' });
+        const $configGearHead = $('<div>', { class: 'oaldpe-config-gear__head' })
+            .append($('<div>', { class: 'oaldpe-config-gear__head__brand' })
+                .append($('<div>', { class: 'dictname' })
+                    .append([
+                        $('<span>', { class: 'abbv', text: 'OALD' }),
+                        $('<span>', { class: 'ver', text: ' 10th ' }),
+                        'edition'
+                    ])
+                )
+                .append($('<div>', { class: 'dictarts', text: '—— Artworks from OXFORD' }))
+            )
+            .append($('<div>', { class: 'oaldpe-config-gear__head__icon' }));
+        const $configGearBody = $('<div>', { class: 'oaldpe-config-gear__body' });
+        const $configGroup = $('<div>', { class: 'config-group' })
+            .append($('<div>', { class: 'config-group__label', text: 'Eruda Console' }))
+            .append($('<div>', { class: 'config-group__options' })
+                .append($('<span>', { id: 'showEruda', text: 'show' }))
+                .append($('<span>', { id: 'inputEruda', text: 'input' }))
+                .append($('<span>', { id: 'hideEruda', text: 'hide' }))
+            );
+
+        $oaldpe.prepend($configGear);
+        $configGear.append($configGearHead, $configGearBody);
+        $configGearBody.append($configGroup);
+
+        // Set initial pronunciation
+        $oaldpe.attr("pron", oaldpeCfg.defaultBritishExPron ? "uk" : "us");
+
+        // Toggle pronunciation on click
+        $configGear.find('.oaldpe-config-gear__head__brand').click(function () {
+            const currentPron = $oaldpe.attr('pron');
+            $oaldpe.attr('pron', currentPron === 'uk' ? 'us' : 'uk');
+        });
+    }
+
+    async function setupErudaConsole() {
+        if (!oaldpeCfg.enableErudaConsole) return;
+        await $.getScript('https://cdn.jsdelivr.net/npm/eruda');
+        eruda.init({
+            defaults: {
+                displaySize: 40,
+                theme: 'Atom One Light'
+            }
+        });
+
+        $('#showEruda').click(() => eruda.show());
+        $('#hideEruda').click(() => eruda.hide());
+        $('#inputEruda').click(function () {
+            eruda.show();
+            eruda.show('console');
+        });
+
+        $('#eruda')[0].shadowRoot.querySelector('.eruda-entry-btn').style.display = 'none';
+    }
+
+    function removeEudicHeader() {
+        if (oaldpeCfg.removeEudicHeader && isEudic())
+            $('#wordInfoHead').remove();
+    }
+
+    function hideExamplesLabel() {
+        if (oaldpeCfg.officialExPronOpt === 0) return;
+        if (oaldpeCfg.enableOnlineTTS) {
+            $('.oaldpe example-audio-ai').each(function () {
+                $(this).parent().addClass('audio-enabled');
+            });
+        }
+        $('.oaldpe example-audio').each(function () {
+            $(this).parent().addClass('audio-enabled');
+        });
     }
 
     function updateConfigFromLocalStorage() {
@@ -685,6 +811,9 @@ var oaldpeCfg = {
                 oaldpeCfg[_oaldpeCfgKey] = configDataConvertToCfg(_oaldpeCfgKey, _key);
             }
         }
+
+        // 需要重新更新以下变量
+        conciseMeaning = !oaldpeCfg.unfoldSense;
     }
 
     function updateConfigToUI() {
@@ -830,22 +959,35 @@ var oaldpeCfg = {
 
     }
 
+    /* Modified by Hazuki */
     function termNumberClickEvent() {
-        $(".oaldpe .li_sense_before, .oaldpe .idm").click(function(e) {
+        $(".oaldpe .li_sense_before, .oaldpe .idm, .oaldpe .pv").click(function (e) {
             e.stopPropagation(); 
-            if ($(this).hasClass("li_sense_before")) {
-                var _$objEle = $(this).next();
-            } else {
-                var _$objEle = $(this).parents(".idm-g");
+            const $this = $(this);
+            if ($this.hasClass("li_sense_before")) {
+                var _$objEle = $this.next();
+            } else if ($this.hasClass("idm")) {
+                var _$objEle = $this.parents(".idm-g");
+            } else if ($this.hasClass("pv")) {
+                var _$objEle = $this.parents(".pv-g");
             }
             var _isVisible = _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g, div#ox-enlarge").is(":visible");
 
             if (_isVisible) {
-                _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideUp("fast");
-                _$objEle.find("div#ox-enlarge").slideUp("fast");
+                if ($this.hasClass("li_sense_before")) {
+                    _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideUp("fast");
+                    _$objEle.find("div#ox-enlarge").slideUp("fast");
+                } else {
+                    _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g").slideUp("fast");
+                }
             } else {
-                _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideDown("fast");
-                _$objEle.find("div#ox-enlarge").slideDown("fast");
+                if ($this.hasClass("li_sense_before")) {
+                    _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideDown("fast");
+                    _$objEle.find("div#ox-enlarge").slideDown("fast");
+                } else {
+                    _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g").slideDown("fast");
+                    box3RefreshHeight();
+                }
             }
         });
     }
@@ -872,14 +1014,15 @@ var oaldpeCfg = {
         }
     }
 
+    /* Bug fixed by Hazuki */
     function fnOfficialExPronOpt(itemValue) {
         if (itemValue === 0) {
-            $('.oaldpe example-audio').addClass('audio_hide');  
+            $('.oaldpe example-audio, .oaldpe .ei a').addClass('audio_hide');  
             return;
         } 
 
         // 启用官方例句在线发音
-        (itemValue === 1) && $(".oaldpe example-audio a")
+        (itemValue === 1) && $(".oaldpe example-audio a, .oaldpe .ei a")
         .each(function(){
             var _thisHref = $(this).attr("href");
             if (isGoldenDict())
@@ -906,7 +1049,7 @@ var oaldpeCfg = {
 
         // 启用官方例句离线发音
         (itemValue === 2 || itemValue === 3) 
-            && $(".oaldpe example-audio a").click(function(e){
+            && $(".oaldpe example-audio a, .oaldpe .ei a").click(function(e){
             e.stopPropagation();
             var _thisHref = $(this).attr("href");
 
@@ -1141,7 +1284,7 @@ var oaldpeCfg = {
     }
 
     function fnUnfoldSense(itemValue) {
-        !itemValue && $(".oaldpe .li_sense_before").next().find(".examples, .collapse, .un, .xrefs, .topic-g").hide();
+        !itemValue && $(".oaldpe .li_sense_before").next().children(".examples, .collapse, .un, .xrefs, .topic-g").hide();
     }
 
     function fnUnfoldBox3(itemValue) {
@@ -1164,6 +1307,16 @@ var oaldpeCfg = {
         }        
     }
 
+    function fnAutoUnfoldBox2(itemValues) {
+        Object.keys(itemValues)
+            .filter(unboxTitle => itemValues[unboxTitle])
+            .forEach(unboxTitle => {
+                const $boxTitle = $(`.oaldpe .unbox[unbox="${unboxTitle}"] .box_title`);
+                $boxTitle.parent().addClass("is-active");
+                $boxTitle.next().show();
+            });
+    }
+
     function fnUnfoldBox1(itemValue) {
         !itemValue && $(".oaldpe h2").siblings().hide();
 
@@ -1175,7 +1328,7 @@ var oaldpeCfg = {
 
     /* Bug Fixed by Hazuki */
     function fnSimplifySthSb(itemValue) {
-        itemValue && $('.oaldpe .cf, .oaldpe .x, .oaldpe .def, .oaldpe .idm').each(function() {  
+        itemValue && $('.oaldpe .cf, .oaldpe .def, .oaldpe .idm').each(function() {  
             _newHtml = $(this).html().replace(/something/g, 'sth.').replace(/somebody/g,'sb.');
             $(this).html(_newHtml);  
         });        
@@ -1193,6 +1346,7 @@ var oaldpeCfg = {
         !itemValue && $('.oaldpe div.li_sense_before').addClass('colored');
     }
 
+    /* Modified by Hazuki */
     function fnShowNavbar(itemValue) {
         if (!itemValue)
             return;
@@ -1270,6 +1424,19 @@ var oaldpeCfg = {
                 conciseMeaning = !conciseMeaning;
             }
         });
+
+        let clickTimer;
+        $('.oaldpe-config-gear .oaldpe-config-gear__head__icon')
+            .on('click', function () {
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(function () {
+                    $('.oaldpe-nav .active').trigger('click');
+                }, 250);
+            })
+            .on('dblclick', function () {
+                clearTimeout(clickTimer);
+                $('.oaldpe-nav .active').trigger('dblclick');
+            });
     }
 
     function addNavigation() {
@@ -1301,6 +1468,10 @@ var oaldpeCfg = {
         container.append(_$spAll);
         
         showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
+
+        // 只有一个entry时隐藏
+        if (_$eles.length === 1)
+            container.hide();
 
         // 不能加在.oaldpe里
         // $(".oaldpe").prepend(container);
@@ -1335,8 +1506,8 @@ var oaldpeCfg = {
         (itemValue === 1) && $(".oaldpe chn").show();
         (itemValue === 2) && $(".oaldpe chn").show() && $(".oaldpe .exText chn").hide();
         (itemValue === 3) && $(".oaldpe chn").hide() && $(".oaldpe .exText chn").show();
-        (itemValue === 4) && $(".oaldpe chn").show() && $(".oaldpe .def+deft chn").hide();
-        (itemValue === 5) && $(".oaldpe chn").hide() && $(".oaldpe .def+deft chn").show();
+        (itemValue === 4) && $(".oaldpe chn").show() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").hide();
+        (itemValue === 5) && $(".oaldpe chn").hide() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").show();
 
         if (itemValue === 0) {
             fnImgTranslationOpt(0);
@@ -1467,7 +1638,275 @@ var oaldpeCfg = {
         return ua.indexOf("goldendict") > -1;
     }
 
+    /* Added by Hazuki */
+    function isMacosIpadSim() {
+        var ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
+    }
 
+    function copyToClipboard(text) {
+        const $temp = $('<textarea>').val(text).appendTo('body').select();
+        document.execCommand('copy');
+        $temp.remove();
+    }
+
+    function setupEudicConfigurations() {
+        if (!(isEudic() && isMacosIpadSim())) return;
+
+        const dictInfos = [
+            { name: 'oaldpe', rootSelector: '.oaldpe' },
+            { name: 'lm5pp', rootSelector: '.lm5ppbody' },
+        ];
+
+        function addClickEventToCopyText($element, textToCopy) {
+            $element.css('cursor', 'pointer');
+            $element.off('click');
+            $element.on('click', function (event) { // reattach click event
+                event.stopPropagation();
+                copyToClipboard(textToCopy);
+                $(this).css('cursor', 'default');
+                setTimeout(() => { $(this).css('cursor', 'pointer'); }, 2000);
+            });
+        }
+
+        function wrapWithClass(text, className) {
+            return `[${text}]{.${className}}`;
+        }
+
+        function wrapInnerWithClass($element, selector) {
+            const innerText = $element.find(selector).text();
+            return $element.text().replace(innerText, wrapWithClass(innerText, selector));
+        }
+
+        function wrapInnerSpanWithClass($element, classNames) {
+            let text = $element.text();
+            classNames.forEach(className => {
+                const $innerSpans = $element.find(`.${className}`);
+                $innerSpans.each(function () {
+                    const $this = $(this);
+                    const innerText = $this.text();
+                    text = text.replace(innerText, wrapWithClass(innerText, className));
+                });
+            });
+            return text;
+        }
+
+        function processElement($element) {
+            let textToCopy;
+            if ($element.is('.webtop .pos')) {
+                const $webtop = $element.closest('.webtop');
+                const $symbols = $webtop.find('.symbols a span');
+                const $headword = $webtop.find('.headword');
+
+                const textMap = {
+                    symbols: $symbols.length ? wrapWithClass('&nbsp;', $symbols.attr('class')) : '',
+                    headword: wrapWithClass($headword.text(), 'headword'),
+                    pos: wrapWithClass($element.text(), 'pos')
+                };
+
+                textToCopy = wrapWithClass(Object.values(textMap).filter(Boolean).join(' '), 'webtop');
+            } else if ($element.is('h2.shcut shcut, .pv, .idm')) {
+                if ($element.is('h2.shcut shcut')) {
+                    textToCopy = wrapWithClass(wrapInnerWithClass($element.parent(), 'chn'), 'shcut');
+                } else if ($element.is('.pv')) {
+                    let html = $element.prop('outerHTML');
+                    const $pvarr = $element.find('.pvarr');
+                    if ($pvarr.length) {
+                        html = html.replace($pvarr.prop('outerHTML'), wrapWithClass('', 'pvarr'));
+                    }
+                    textToCopy = wrapWithClass($(html).text(), 'pv');
+                } else if ($element.is('.idm')) {
+                    const textMap = {
+                        idiom: wrapWithClass(wrapInnerSpanWithClass($element, ['idmsep']), 'idiom'),
+                        pos: wrapWithClass('idiom', 'pos')
+                    };
+                    textToCopy = wrapWithClass(Object.values(textMap).join(' '), 'idm');
+                }
+            } else if ($element.is('deft')) {
+                const $sense = $element.closest('.sense');
+                const $symbols = $sense.find('.symbols a span');
+                const $pos = $sense.find('.pos');
+                const $subj = $sense.find('.subj');
+                const $cf = $sense.find('.sensetop .cf, > .cf');
+                const $dis_g = $sense.find('.dis-g');
+                const $def = $sense.find('.def');
+                const $deft = $element;
+
+                const $allCf = $sense.find('.cf');
+                const $otherCf = $allCf.not($cf);
+                $otherCf.each(function () {
+                    const $this = $(this);
+                    addClickEventToCopyText($this, wrapWithClass($this.text(), 'cf'));
+                });
+
+                const textMap = {
+                    symbols: $symbols.length ? wrapWithClass('&nbsp;', $symbols.attr('class')) : '',
+                    pos: $pos.length ? wrapWithClass($pos.text(), 'pos') : '',
+                    subj: $subj.length ? wrapWithClass($subj.text() + wrapInnerWithClass($subj.next(), 'chn'), 'subj') : '',
+                    cf: $cf.length ? wrapWithClass($cf.text(), 'cf') : '',
+                    dis_g: $dis_g.length ? wrapWithClass(wrapInnerWithClass($dis_g, 'chn'), 'dis_g') : '',
+                    def: wrapWithClass(wrapInnerSpanWithClass($def, ['ndv', 'ei', 'eb']), 'def'),
+                    deft: wrapWithClass($deft.text(), 'chn')
+                };
+
+                textToCopy = wrapWithClass(Object.values(textMap).filter(Boolean).join(' '), 'sense');
+            }
+            $element.attr('text-to-copy', textToCopy);
+        }
+
+        function applyConfigurations({ name, rootSelector }) {
+            const $rootElements = $(rootSelector);
+
+            $rootElements.each(function () {
+                const $rootElement = $(this).addClass('macos_ipad_sim');
+
+                if (name === 'oaldpe') {
+                    const $elements = $rootElement.find('.webtop .pos, h2.shcut shcut, .pv, .idm, deft');
+                    $elements.each(function () {
+                        processElement($(this));
+                    });
+
+                    $elements.each(function () {
+                        const $this = $(this);
+
+                        let textToCopy = $this.attr('text-to-copy');
+                        if ($this.is('h2.shcut shcut, .pv, .idm')) {
+                            const $entry = $this.closest('.entry');
+                            const $pos = $entry.find('.webtop .pos');
+
+                            const textMap = {
+                                pos: $pos.attr('text-to-copy'),
+                                ancestor: textToCopy
+                            };
+
+                            textToCopy = Object.values(textMap).join(' ');
+                        } else if ($this.is('deft')) {
+                            const $entry = $this.closest('.entry');
+                            const $pos = $entry.find('.webtop .pos');
+                            const $ancestor = $this.closest('.shcut-g, .pv-g, .idm-g');
+
+                            const textMap = {
+                                pos: $pos.attr('text-to-copy'),
+                                ancestor: $ancestor.length ? ' ' + $ancestor.find('h2.shcut shcut, .pv, .idm').attr('text-to-copy') : '',
+                                sense: '\n\n' + textToCopy
+                            };
+
+                            textToCopy = Object.values(textMap).filter(Boolean).join('');
+                        }
+                        addClickEventToCopyText($this, textToCopy);
+                    });
+
+                    const $xrefs = $rootElement.find('.xrefs');
+                    $xrefs.each(function () {
+                        const $this = $(this);
+                        const $prefix = $this.find('.prefix');
+                        let text = wrapInnerSpanWithClass($this, ['prefix', 'Ref']);
+                        text = text.replace(/,/g, '');
+                        addClickEventToCopyText($prefix, wrapWithClass(text, 'xrefs'));
+                    });
+                } else if (name === 'lm5pp') {
+                    const $chn = $rootElement.find('.Sense .DEF .cn_txt');
+                    $chn.each(function () {
+                        const $this = $(this);
+
+                        const $sense = $this.closest('.Sense');
+                        const $signpost = $sense.find('.SIGNPOST');
+                        const $refhwd = $sense.find('.REFHWD');
+                        const $activ = $sense.find('.ACTIV');
+                        const $def = $this.parent().prev();
+
+                        let textToCopy = '';
+                        let senseText = '';
+
+                        if ($signpost.length) {
+                            const $cn_txt = $signpost.find('.cn_txt');
+                            let text = $signpost.text().replace($cn_txt.text(), wrapWithClass($cn_txt.text().trim(), 'chn'));
+                            textToCopy += wrapWithClass(text, 'shcut') + ' ';
+                        }
+
+                        if ($refhwd.length) {
+                            let text = $refhwd.text();
+                            senseText += wrapWithClass(text, 'cf') + ' ';
+                        }
+
+                        if ($activ.length) {
+                            let activText = $activ.text().toLowerCase().split('/').map(part => wrapWithClass(part, 'activ')).join(' ');
+                            senseText += activText + ' ';
+                        }
+
+                        senseText += `${wrapWithClass($def.text().trim(), 'def')} ${wrapWithClass($this.text().trim(), 'chn')}`;
+                        textToCopy += wrapWithClass(senseText, 'sense');
+
+                        addClickEventToCopyText($this, textToCopy);
+                    });
+                }
+            });
+        }
+
+        setTimeout(() => { dictInfos.forEach(applyConfigurations); });
+    }
+
+    function observeCustomNoteAdded() {
+        if (!isEudic()) return;
+
+        function modifyCustomNote() {
+            const $expCustomNote = $('#expCustomNote');
+
+            // Extract the JSON data from the custom note
+            const $customeNoteText = $expCustomNote.find('#customeNoteText');
+
+            try {
+                window.noteDataArray = JSON.parse($customeNoteText.html().replace(/\\\\n/g, "\\n").replace(/&gt;/g, ">"));
+            } catch (error) {
+                console.error("Error parsing JSON data:", error);
+                return;
+            }
+
+            $customeNoteText.empty();
+            $('<div>', { class: 'Hazuki-note' }).appendTo($customeNoteText);
+            constructNotes();
+
+            async function constructNotes() {
+                await $.getScript('https://cdn.jsdelivr.net/gh/Hazuki-295/EudicNotes@latest/EudicNotes/Resources/dist/bundle.js');
+
+                // Move the image container to the inside of the flex container
+                var $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
+                if ($elementToMove.length) {
+                    var $newParent = $('.Hazuki-note .single-note').first();
+                    $newParent.prepend($elementToMove);
+                }
+            }
+
+            // Create a copy button to get the 'noteDataArray'
+            const $eudicNoteHead = $expCustomNote.find('.eudic_note_head');
+            var $copyButton = $('<button>', {
+                text: '复制',
+                class: 'editNote',
+                css: { marginLeft: '10px' },
+                click: function () {
+                    copyToClipboard(JSON.stringify(noteDataArray));
+                }
+            });
+            $eudicNoteHead.append($copyButton);
+
+            // Remove Eudic '查看公开笔记'
+            $expCustomNote.find('.eudicNoteMore').remove();
+        }
+
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                $(mutation.addedNodes).each(function () {
+                    var $node = $(this);
+                    if ($node.attr('id') === 'customeNoteText') {
+                        modifyCustomNote();
+                        observer.disconnect();
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+    /* End of Addtion */
 
     function getOnlineImageUrl(src) {
         var _parts = src.split('/');
