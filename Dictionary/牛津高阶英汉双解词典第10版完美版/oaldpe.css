@@ -64,6 +64,7 @@ html {
     --color-oald-red: #de002d;
     --color-oald-green: #007a6c;
     --color-oald-blue: #0072cf;
+    --color-oald-orange: #db8c39;
 }
 
 /* Mimic `html {}` */
@@ -173,7 +174,7 @@ h1.headword .st {
     font-family: Bookerly;
     font-size: 0.9em !important;
     font-weight: normal;
-    color: #db8c39;
+    color: var(--color-oald-orange);
     background: none;
     margin-left: 0;
     padding: 0 2px;
@@ -1575,6 +1576,7 @@ div.collapse {
 .collapse .unbox[unbox="snippet"] .body,
 .collapse .unbox[unbox="verbforms"] .body,
 .collapse .unbox[unbox="wordorigin"] .body,
+.collapse .unbox[unbox="wordfamily"] .body,
 .collapse .unbox[unbox="extra_examples"] ul.examples {
     padding: 4px 8px !important;
 }
@@ -1711,6 +1713,20 @@ tr.verb_form[form="short"] td.verb_form::before {
 .collapse .unbox[unbox="wordorigin"] .body .p ubx {
     display: block;
     margin-left: 0;
+}
+
+/* Word Family 词族 */
+.collapse .unbox[unbox="wordfamily"] .body .wfw {
+    color: var(--color-oald-blue);
+    font-weight: normal;
+}
+
+.collapse .unbox[unbox="wordfamily"] .body .wfp {
+    color: var(--color-oald-orange);
+}
+
+.collapse .unbox[unbox="wordfamily"] .body .wfo {
+    font-weight: normal;
 }
 
 /* Culture 文化 */

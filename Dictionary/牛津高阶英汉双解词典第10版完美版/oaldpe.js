@@ -1726,8 +1726,9 @@ var oaldpeCfg = {
                 const $sense = $element.closest('.sense');
                 const $symbols = $sense.find('.symbols a span');
                 const $pos = $sense.find('.pos');
-                const $subj = $sense.find('.subj');
                 const $cf = $sense.find('.sensetop .cf, > .cf');
+                const $subj = $sense.find('.subj');
+                const $grammar = $sense.find('.grammar');
                 const $dis_g = $sense.find('.dis-g');
                 const $def = $sense.find('.def');
                 const $deft = $element;
@@ -1742,8 +1743,9 @@ var oaldpeCfg = {
                 const textMap = {
                     symbols: $symbols.length ? wrapWithClass('&nbsp;', $symbols.attr('class')) : '',
                     pos: $pos.length ? wrapWithClass($pos.text(), 'pos') : '',
-                    subj: $subj.length ? wrapWithClass($subj.text() + wrapInnerWithClass($subj.next(), 'chn'), 'subj') : '',
                     cf: $cf.length ? wrapWithClass($cf.text(), 'cf') : '',
+                    subj: $subj.length ? wrapWithClass($subj.text() + wrapInnerWithClass($subj.next(), 'chn'), 'subj') : '',
+                    grammar: $grammar.length ? wrapWithClass($grammar.text(), 'grammar') : '',
                     dis_g: $dis_g.length ? wrapWithClass(wrapInnerWithClass($dis_g, 'chn'), 'dis_g') : '',
                     def: wrapWithClass(wrapInnerSpanWithClass($def, ['ndv', 'ei', 'eb']), 'def'),
                     deft: wrapWithClass($deft.text(), 'chn')
@@ -1811,7 +1813,7 @@ var oaldpeCfg = {
 
                         const $sense = $this.closest('.Sense');
                         const $signpost = $sense.find('.SIGNPOST');
-                        const $refhwd = $sense.find('.REFHWD');
+                        const $refhwd = $sense.find('> .REFHWD');
                         const $activ = $sense.find('.ACTIV');
                         const $def = $this.parent().prev();
 
