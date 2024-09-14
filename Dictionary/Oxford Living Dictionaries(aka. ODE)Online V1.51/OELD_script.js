@@ -1,3 +1,21 @@
+var oeldConfig = {
+    // 【配置项1：是否开启简明释义】
+    // 选项（默认为false）：false=展开全部释义，true=折叠全部释义
+    conciseMeaning: false,
+
+    // 【配置项2：是否在手机欧路词典里使用更大的屏宽】
+    // 选项（默认为true）：false=否，true=是
+    widerScreenEudic: true,
+
+    // 【配置项3：是否移除Eudic单词界面词头】（词典内置发音、分级等）
+    // 选项（默认为true）：true=移除，false=不移除
+    removeEudicHeader: true,
+
+    // 【配置项4：是否自动跟随系统深色模式】
+    // 选项（默认为true）：false=否，true=是
+    autoDarkMode: true,
+};
+
 (function () {
     var _userAgent = navigator.userAgent.toLowerCase();
     if ((/windows\snt/.test(_userAgent)
@@ -37,6 +55,8 @@
 
         readIni();
 
+        initialize();
+
         setupPlatform($('.OELDBody'));
 
         setupMoreExampleAndSyn();
@@ -64,6 +84,197 @@
         setupSpeechSynthesis();
 
         setupWikiImage();
+
+        /* Added by Hazuki */
+        function initialize() {
+            detectDarkModeEnabled();
+
+            widerScreenEudic();
+
+            removeEudicHeader();
+
+            setupCollapse();
+
+            addjustFrequency();
+        }
+
+        function detectDarkModeEnabled() {
+            if (!oeldConfig.autoDarkMode) return;
+
+            const $oeld = $(".OELDBody");
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+            function handleThemeChange(event) {
+                $oeld.attr('data-theme', event.matches ? 'dark' : 'light');
+            }
+    
+            if (!isEudic()) {
+                handleThemeChange(darkModeMediaQuery); // Initial check
+                darkModeMediaQuery.addEventListener('change', handleThemeChange); // Listen for changes
+                return;
+            }
+    
+            // Delete the Eudic fixed style to prevent conflicts
+            $oeld.parent().find('.eudic_custom_night').remove(); // Initial check
+            new MutationObserver((mutationsList) => {
+                mutationsList.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.classList?.contains('eudic_custom_night')) node.remove();
+                    });
+                });
+            }).observe($oeld.parent()[0], { childList: true });
+    
+            // Set the theme based on the body's class
+            function setTheme() {
+                if (document.body.classList.contains('black') || document.body.classList.contains('night')) {
+                    $oeld.attr('data-theme', 'dark');
+                } else {
+                    $oeld.attr('data-theme', 'light');
+                }
+            }
+            setTheme(); // Initial check
+            new MutationObserver((mutationsList) => {
+                mutationsList.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        setTheme();
+                    }
+                });
+            }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        function widerScreenEudic() {
+            if (oeldConfig.widerScreenEudic && isEudicAPP()) {
+                $('.OELDBody').parent().css({
+                    "margin": "5px 8px 5px 5px",
+                    "padding": "0"
+                });
+            }
+        }
+
+        function removeEudicHeader() {
+            if (oeldConfig.removeEudicHeader && isEudic())
+                $('#wordInfoHead').remove();
+        }
+
+        function setupCollapse() {
+            $('.OELDBody .iteration').each(function () {
+                const $this = $(this);
+                if ($this.text().trim() === '') {
+                    $this.addClass('sense_single');
+                } else {
+                    $this.addClass('senses_multiple');
+                }
+            });
+
+            termNumberClickEvent();
+
+            addCollapseAllButton();
+
+            if (oeldConfig.conciseMeaning) {
+                $('.OELDBody .entryWrapper.world .collapseAllButton').trigger('click');
+            }
+        }
+
+        function termNumberClickEvent() {
+            function toggleCollapse($collapsibleElements) {
+                const isExpanded = $collapsibleElements.is(':visible');
+                if (isExpanded) {
+                    $collapsibleElements.slideUp("fast");
+                } else {
+                    $collapsibleElements.slideDown("fast");
+                }
+            }
+
+            $('.OELDBody .iteration').on('click', function () {
+                const $this = $(this);
+                const $target = $this.closest('.trg');
+                const $ancestor = $this.closest('section');
+                const $collapsibleElements = $ancestor.hasClass('gramb') || $ancestor.hasClass('derivative')
+                    ? $target.children('.exg, .examples, .synonyms')
+                    : $target.next('.trg').children('.exg, .examples, .synonyms');
+                toggleCollapse($collapsibleElements);
+                this.classList.toggle('collapsed');
+            });
+
+            $('.OELDBody .subsenseIteration').on('click', function () {
+                const $this = $(this);
+                const $target = $this.closest('.subSense');
+                const $ancestor = $this.closest('section');
+                const $collapsibleElements = $ancestor.hasClass('gramb') || $ancestor.hasClass('derivative')
+                    ? $target.children('.trg')
+                    : $target.children('.exg, .examples, .synonyms');
+                toggleCollapse($collapsibleElements);
+                this.classList.toggle('collapsed');
+            });
+
+            $('.OELDBody section.phrase .phrase, .OELDBody section.phrasalverb .phrase').on('click', function () {
+                const $this = $(this);
+                const $ancestor = $this.closest('section');
+                const $target = $ancestor.hasClass('phrase') ? $this.closest('li').next('.semb') : $this.closest('.phrase_sense').next('.semb');
+                const $collapsed = $target.find('.iteration.collapsed, .subsenseIteration.collapsed');
+                if ($collapsed.length > 0) {
+                    $collapsed.trigger('click');
+                } else {
+                    $target.find('.iteration, .subsenseIteration').trigger('click');
+                }
+            });
+        }
+
+        function addCollapseAllButton() {
+            const $entryWord = $('.OELDBody .entryWrapper:not(.anchor) .entryHead .entryWord');
+
+            const $collapseAllButton = $('<span>', { class: 'collapseAllButton', text: 'Concise' });
+            $collapseAllButton.on('click', function () {
+                const $this = $(this);
+                const $entry = $this.closest('.entryWrapper');
+
+                const $collapsed = $entry.find('.iteration.collapsed, .subsenseIteration.collapsed');
+                if ($collapsed.length > 0) {
+                    $collapsed.trigger('click');
+                } else {
+                    $entry.find('.iteration, .subsenseIteration').trigger('click');
+                }
+            });
+            $entryWord.append($collapseAllButton);
+        }
+
+        function addjustFrequency() {
+            const $grambhead = $('.OELDBody .entryWrapper.world .gramb .grambhead');
+            $grambhead.each(function () {
+                const $this = $(this);
+                const $frequency = $this.children('.frequency');
+                const $pron = $this.children('.pron');
+
+                if (!($frequency.length && $pron.length)) return;
+
+                const grambheadRect = $this[0].getBoundingClientRect();
+                const pronRect = $pron[0].getBoundingClientRect();
+                const frequencyRect = $frequency[0].getBoundingClientRect();
+
+                // Calculate available space
+                let availableSpace = grambheadRect.right - pronRect.right;
+
+                const $pos_inflections = $this.find('.pos-inflections');
+                if ($pos_inflections.length) {
+                    const posInflectionsRect = $pos_inflections[0].getBoundingClientRect();
+                    availableSpace = Math.min(availableSpace, grambheadRect.right - posInflectionsRect.right);
+                }
+
+                if (availableSpace < frequencyRect.width) {
+                    $frequency.css('transform', `translateY(100%)`);
+                }
+            });
+        }
+
+        function isEudic() {
+            var ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf("eudic") > -1;
+        }
+
+        function isEudicAPP() {
+            var ua = navigator.userAgent.toLowerCase();
+            return (ua.indexOf("eudic") > -1) && (ua.indexOf("android") > -1 || ua.indexOf("iphone") > -1);
+        }
 
         function setupQt4Resize() {
             if ($('.qt4.OELDBody').length == 0) {
@@ -118,7 +329,16 @@
             // });
         }
 
+        /* Modified by Hazuki */
         function setupMoreExampleAndSyn() {
+            $('.OELDBody .entryWrapper.world .synonyms .exg .exs').each(function () {
+                $(this).contents().filter(function () {
+                    return this.nodeType === Node.TEXT_NODE;
+                }).each(function () {
+                    this.nodeValue = this.nodeValue.replace(/, /g, '').replace(/,/g, '');
+                });
+            });
+
             $('.OELDBody .moreInfo .button').off('click.moreInfoButton')
                 .on('click.moreInfoButton', function () {
                     $(this).toggleClass("active")
@@ -134,6 +354,7 @@
 
                         })
                         .slideToggle(300);
+                        $(this).parent().parent().toggleClass("active");
                 });
             $('.OELDBody .moreInfo + .exg').off('click.moreInfoExg')
                 .on('click.moreInfoExg', function (event) {
@@ -352,9 +573,10 @@
                         .toggleClass("switch active");
                 }).css('cursor', 'pointer');
 
-            $('.entryWrapper > section > .senseInnerWrapper', '.OELDBody')
+            /* Modified by Hazuki */
+            /* $('.entryWrapper > section > .senseInnerWrapper', '.OELDBody')
                 .off('click.senseInnerWrapper')
-                /* .on('click.senseInnerWrapper', function (event) {
+                .on('click.senseInnerWrapper', function (event) {
                     if (($(event.target).css("display") == "block")
                         || $(event.target).is('.editorial_note')) {
                         $(this).parents('section').find('.sectionswitch').trigger('click.sectionswitch');
@@ -709,9 +931,9 @@
         }
 
         function setupDictSwitch() {
-            if ($('.qt5.OELDBody').length != 0) {
-                return;
-            }
+            // if ($('.qt5.OELDBody').length != 0) {
+            //     return;
+            // }
 
             $('.OELDBody .animContainer').each(function () {
                 $(this).find('.entryLogo').off('.entryLogo')
@@ -759,6 +981,13 @@
                             });
                     })
             })
+
+            /* Added by Hazuki */
+            $('.OELDBody .world .entryLogo').one('click', function () {
+                if (oeldConfig.conciseMeaning) {
+                    $('.OELDBody .entryWrapper.us .collapseAllButton').trigger('click');
+                }
+            });
         }
 
         function ripple(element, event) {

@@ -2590,11 +2590,12 @@ span.neutral + span > .LDOCEVERSIONLOGO_5 {
     right: 10px;
 }
 
-/* Override for MacOS running iPad app */
+/* Added by Hazuki */
 .macos_ipad_sim .lm5pp_popup {
-    bottom: -1em !important;
-    right: -1em !important;
+    bottom: 0 !important;
+    right: 0 !important;
 }
+/* End of Addition */
 
 .active.lm5pp_popup {
     cursor: pointer;

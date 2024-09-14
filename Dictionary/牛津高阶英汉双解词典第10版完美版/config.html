@@ -1,0 +1,325 @@
+<link href=oaldpe.css rel=stylesheet type=text/css>
+<script src=oaldpe-jquery-3.6.0.min.js></script>
+<script src=oaldpe.js></script>
+
+<body>
+    <div id=oaldpe-config>
+        <div class=head-title>OALDPE-用户自定义配置</div>
+        <div class=config-item id=showTranslation>
+            <div class=config-title>配置项1：中文翻译选项</div>
+            <div class=config-subtitle>（点击"词性导航"白色块，或点击"O10"小图标，可显示/隐藏中文翻译）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-全部隐藏</div>
+                <div class=option value=1>1-全部显示（默认）</div>
+                <div class=option value=2>2-仅隐藏例句中文</div>
+                <div class=option value=3>3-仅显示例句中文</div>
+                <div class=option value=4>4-仅隐藏义项中文</div>
+                <div class=option value=5>5-仅显示义项中文</div>
+            </div>
+        </div>
+        <div class=config-item id=showTraditional>
+            <div class=config-title>配置项2：是否使用台湾繁体中文翻译</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不使用（默认）</div>
+                <div class=option value=1>1-使用</div>
+            </div>
+        </div>
+        <div class=config-item id=showNavbar>
+            <div class=config-title>配置项3：是否显示词性导航栏</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不显示</div>
+                <div class=option value=1>1-显示（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=selectNavbarAll>
+            <div class=config-title>配置项4：是否选中词性导航all</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不选中（默认）</div>
+                <div class=option value=1>1-选中</div>
+            </div>
+        </div>
+        <div class=config-item id=touchToTranslate>
+            <div class=config-title>配置项5：是否启用英文点译功能</div>
+            <div class=config-subtitle>（单句显示/隐藏中文）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不启用（默认）</div>
+                <div class=option value=1>1-启用</div>
+            </div>
+        </div>
+        <div class=config-item id=officialExPronOpt>
+            <div class=config-title>配置项6：官方例句发音选项</div>
+            <div class=config-subtitle>（如果为0或1，则可删除oaldpe.3.mdd文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项。）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不启用官方例句发音</div>
+                <div class=option value=1>1-启用官方在线例句发音（默认）</div>
+                <div class=option value=2>2-启用官方离线例句发音.ogg</div>
+                <div class=option value=3>3-启用官方离线例句发音.mp3</div>
+            </div>
+        </div>
+        <div class=config-item id=enableOnlineTTS>
+            <div class=config-title>配置项7：无官方例句发音时，是否启用在线TTS发音</div>
+            <div class=config-subtitle>（需要高版本浏览器内核。发音图标带下划线。Mdict暂不支持。）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不启用</div>
+                <div class=option value=1>1-启用（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=onlineWordPron>
+            <div class=config-title>配置项8：是否启用在线单词发音</div>
+            <div class=config-subtitle>（如果为true，则可删除oaldpe.1.mdd）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不启用（默认）</div>
+                <div class=option value=1>1-启用</div>
+            </div>
+        </div>
+        <div class=config-item id=onlineImage>
+            <div class=config-title>配置项9：是否启用在线图片</div>
+            <div class=config-subtitle>（如果为true，则可删除oaldpe.2.mdd。注：在线图片无中文翻译）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不启用（默认）</div>
+                <div class=option value=1>1-启用</div>
+            </div>
+        </div>
+        <div class=config-item id=imgTranslationOpt>
+            <div class=config-title>配置项10：离线图片翻译选项</div>
+            <div class=config-subtitle>（当【是否启用在线图片】启用时，图片翻译无效）</div>
+            <div class=select cfg-selected=3>
+                <div class=option value=0>0-不使用翻译</div>
+                <div class=option value=1>1-简体中文翻译</div>
+                <div class=option value=2>2-港版繁体翻译</div>
+                <div class=option value=3>3-自动选择（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=showSyllable>
+            <div class=config-title>配置项11：是否显示音节划分</div>
+            <div class=config-subtitle>（点击单词可切换音节划分）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不显示（默认）</div>
+                <div class=option value=1>1-显示</div>
+            </div>
+        </div>
+        <div class=config-item id=simplifyPos>
+            <div class=config-title>配置项12：是否简化词性</div>
+            <div class=config-subtitle>（如verb简化为v.）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不简化（默认）</div>
+                <div class=option value=1>1-简化</div>
+            </div>
+        </div>
+        <div class=config-item id=simplifyGrammar>
+            <div class=config-title>配置项13：是否简化语法</div>
+            <div class=config-subtitle>（如[transitive]简化为[t]）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不简化（默认）</div>
+                <div class=option value=1>1-简化</div>
+            </div>
+        </div>
+        <div class=config-item id=simplifySthSb>
+            <div class=config-title>配置项14：是否简化非例句中的something、somebody为sth、sb</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不简化</div>
+                <div class=option value=1>1-简化（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=unfoldBox1>
+            <div class=config-title>配置项15：是否展开折叠块1</div>
+            <div class=config-subtitle>（浅蓝色荧光笔，释义分组，如 take - carry/lead 携带；带领）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不展开</div>
+                <div class=option value=1>1-展开（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=unfoldBox2>
+            <div class=config-title>配置项16：是否展开折叠块2</div>
+            <div class=config-subtitle>（浅蓝色折叠区，如 Extra Examples 更多例句）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不展开（默认）</div>
+                <div class=option value=1>1-展开</div>
+            </div>
+        </div>
+        <div class=config-item id=unfoldBox3>
+            <div class=config-title>配置项17：是否展开折叠块3</div>
+            <div class=config-subtitle>（Idiom、Phrasal verbs）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不展开</div>
+                <div class=option value=1>1-展开（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=unfoldBox2Subtitle>
+            <div class=config-title>配置项18：是否展开折叠块2的子标题栏下的内容</div>
+            <div class=config-subtitle>（浅蓝色折叠区的子标题栏）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不展开</div>
+                <div class=option value=1>1-展开（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=unfoldSense>
+            <div class=config-title>配置项19：是否展开义项</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不展开</div>
+                <div class=option value=1>1-展开（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=jumpsBox3Unfold>
+            <div class=config-title>配置项20：点击Idioms、Phrasal verbs跳转后，自动展开内容</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不展开（默认）</div>
+                <div class=option value=1>1-展开</div>
+            </div>
+        </div>
+        <div class=config-item id=leavesBox3Fold>
+            <div class=config-title>配置项21：点击小火箭返回后，自动折叠内容</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不折叠（默认）</div>
+                <div class=option value=1>1-折叠</div>
+            </div>
+        </div>
+        <div class=config-item id=phrasesAddUnderline>
+            <div class=config-title>配置项22：给粗体固定句式添加荧光笔下划线</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不添加（默认）</div>
+                <div class=option value=1>1-添加</div>
+            </div>
+        </div>
+        <div class=config-item id=normalSenseNumber>
+            <div class=config-title>配置项23：是否使用普通样式的义项序号</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不使用</div>
+                <div class=option value=1>1-使用（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=normalEnglishFont>
+            <div class=config-title>配置项24：是否全局使用普通英文字体</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不使用（默认）</div>
+                <div class=option value=1>1-使用</div>
+            </div>
+        </div>
+        <div class=config-item id=widerScreenEudic>
+            <div class=config-title>配置项25：是否在手机欧路词典里使用更大的屏宽</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不使用</div>
+                <div class=option value=1>1-使用（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=applyPresetTheme>
+            <div class=config-title>配置项26：预设主题选项</div>
+            <div class=config-subtitle>（此设置可能会覆盖某些配置项）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-默认主题（默认）</div>
+                <div class=option value=1>1-官网主题</div>
+            </div>
+        </div>
+        <div class=config-item id=britishTTS>
+            <div class=config-title>配置项27：TTS英音发音配置</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-英音男1（默认）</div>
+                <div class=option value=1>1-英音男2</div>
+                <div class=option value=2>2-英音女1</div>
+                <div class=option value=3>3-英音女2</div>
+                <div class=option value=4>4-英音女3</div>
+            </div>
+        </div>
+        <div class=config-item id=americanTTS>
+            <div class=config-title>配置项28：TTS美音发音配置</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=8>
+                <div class=option value=0>0-美音男1</div>
+                <div class=option value=1>1-美音男2</div>
+                <div class=option value=2>2-美音男3</div>
+                <div class=option value=3>3-美音男4</div>
+                <div class=option value=4>4-美音男5</div>
+                <div class=option value=5>5-美音女1</div>
+                <div class=option value=6>6-美音女2</div>
+                <div class=option value=7>7-美音女3</div>
+                <div class=option value=8>8-美音女4（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=hideEudicAPPHr>
+            <div class=config-title>配置项29：是否隐藏手机欧路自带的hr标签</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不隐藏</div>
+                <div class=option value=1>1-隐藏（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=NavbarMargin>
+            <div class=config-title>配置项30：是否在导航栏每个选项首尾加宽留白</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不加宽</div>
+                <div class=option value=1>1-加宽（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=usePlaceholder>
+            <div class=config-title>配置项31：例句前的固定搭配使用代字号</div>
+            <div class=config-subtitle>（如把take sth with you替换为~ sth with you）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-不使用（默认）</div>
+                <div class=option value=1>1-使用</div>
+            </div>
+        </div>
+        <div class=config-item id=examplesChineseBeAlone>
+            <div class=config-title>配置项32：是否例句中文独占一行</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不独占一行</div>
+                <div class=option value=1>1-独占一行（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=replaceFullWidthChars>
+            <div class=config-title>配置项33：是否替换中文中的全角符号</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不替换</div>
+                <div class=option value=1>1-替换（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=defaultBritishExPron>
+            <div class=config-title>配置项34：是否默认英音例句发音</div>
+            <div class=config-subtitle>（点击"O10"小图标中的词典铭牌进行切换）</div>
+            <div class=select cfg-selected=0>
+                <div class=option value=0>0-美音（默认）</div>
+                <div class=option value=1>1-英音</div>
+            </div>
+        </div>
+        <div class=config-item id=enableErudaConsole>
+            <div class=config-title>配置项35：是否启用Eruda Console</div>
+            <div class=config-subtitle>（用于词典应用调试）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不启用</div>
+                <div class=option value=1>1-启用（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=removeEudicHeader>
+            <div class=config-title>配置项36：是否移除Eudic单词界面词头</div>
+            <div class=config-subtitle>（词典自带发音、生词等级等）</div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不移除</div>
+                <div class=option value=1>1-移除（默认）</div>
+            </div>
+        </div>
+        <div class=config-item id=autoDarkMode>
+            <div class=config-title>配置项37：是否自动跟随系统深色模式</div>
+            <div class=config-subtitle></div>
+            <div class=select cfg-selected=1>
+                <div class=option value=0>0-不自动跟随</div>
+                <div class=option value=1>1-自动跟随（默认）</div>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-around;"><button type=submit>保存配置</button><button
+                type=reset>重置配置</button></div>
+    </div>
+</body>
