@@ -436,11 +436,11 @@ var oaldpeCfg = {
 
     fnSimplifyPos(oaldpeCfg.simplifyPos);
     
-    fnShowNavbar(oaldpeCfg.showNavbar);
+    fnShowNavbar();
 
     fnShowTraditional(oaldpeCfg.showTraditional);
 
-    fnUnfoldBox1(oaldpeCfg.unfoldBox1);
+    fnUnfoldBox1();
 
     fnUnfoldBox2(oaldpeCfg.unfoldBox2);
 
@@ -1832,12 +1832,21 @@ var oaldpeCfg = {
             });
     }
 
-    function fnUnfoldBox1(itemValue) {
-        !itemValue && $(".oaldpe h2").siblings().hide();
+    /* Modified by Hazuki */
+    function fnUnfoldBox1() {
+        const $oaldpeH2 = $(".oaldpe h2");
 
-        $(".oaldpe h2").click(function(e) {
-            e.stopPropagation();
-            $(this).siblings().slideToggle("fast");
+        if (!oaldpeCfg.unfoldBox1) {
+            $oaldpeH2.siblings().hide();
+        } else {
+            $oaldpeH2.parent().addClass("is-active");
+        }
+
+        $oaldpeH2.click(function (event) {
+            event.stopPropagation();
+            const $this = $(this);
+            $this.siblings().slideToggle("fast");
+            $this.parent().toggleClass("is-active");
         });
     }
 
@@ -1862,9 +1871,8 @@ var oaldpeCfg = {
     }
 
     /* Modified by Hazuki */
-    function fnShowNavbar(itemValue) {
-        if (!itemValue)
-            return;
+    function fnShowNavbar() {
+        if (!oaldpeCfg.showNavbar) return;
 
         addNavigation();
 
@@ -1925,6 +1933,7 @@ var oaldpeCfg = {
                     // 全部折叠
                     $(_selectors.allExpand.join(", ")).slideUp("fast");
                     $(_selectors.h2).siblings().slideDown("fast");
+                    $(_selectors.h2).parent().addClass("is-active");
 
                     // 折叠块2>折叠
                     $(_selectors.box2).parent().removeClass("is-active");

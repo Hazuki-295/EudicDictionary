@@ -3098,6 +3098,12 @@ h1.headword .hm, .xhm {
     margin-top: .5em;
 }
 
+.shcut-g:not(.is-active) {
+    padding-bottom: 1px;
+    border-bottom: .5px dashed rgba(0, 114, 207, .6);
+    margin-bottom: .625em;
+}
+
 h2.shcut {
     display: inline;
     font-family: Optima;
@@ -3106,6 +3112,10 @@ h2.shcut {
     color: var(--color-oald-blue);
     background: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, .15) 55%, rgba(0, 114, 207, .15) 100%);
     border: unset;
+}
+
+.shcut-g:not(.is-active) h2.shcut {
+    background: unset;
 }
 
 h2.shcut shcut chn {
@@ -4049,6 +4059,12 @@ tr.verb_form td.verb_phons {
 
 tr.verb_form td.verb_phons .phonetics {
     display: inline;
+}
+
+tr.verb_form td.verb_phons .phonetics .phons_br,
+tr.verb_form td.verb_phons .phonetics .phons_n_am {
+    margin: unset;
+    margin-left: 4px;
 }
 
 tr.verb_form td.verb_form {
