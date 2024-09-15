@@ -426,7 +426,6 @@ var oaldpeCfg = {
     }
 
     var globalAudio = new Audio();
-    var conciseMeaning = !oaldpeCfg.unfoldSense;
 
     var oaldpeCfgDuplicate = Object.assign({}, oaldpeCfg);
 
@@ -1323,9 +1322,6 @@ var oaldpeCfg = {
                 oaldpeCfg[_oaldpeCfgKey] = configDataConvertToCfg(_oaldpeCfgKey, _key);
             }
         }
-
-        // 需要重新更新以下变量
-        conciseMeaning = !oaldpeCfg.unfoldSense;
     }
 
     function updateConfigToUI() {
@@ -1798,8 +1794,12 @@ var oaldpeCfg = {
         });
     }
 
-    function fnUnfoldSense(itemValue) {
-        !itemValue && $(".oaldpe .li_sense_before").next().children(".examples, .collapse, .un, .xrefs, .topic-g").hide();
+    /* Modified by Hazuki */
+    function fnUnfoldSense() {
+        if (!oaldpeCfg.unfoldSense) {
+            $(".oaldpe .sense").children(".examples, .collapse, .un, .xrefs, .topic-g").hide();
+            $(".oaldpe").attr("concise", "true");
+        }
     }
 
     function fnUnfoldBox3(itemValue) {
@@ -1834,7 +1834,7 @@ var oaldpeCfg = {
 
     /* Modified by Hazuki */
     function fnUnfoldBox1() {
-        const $oaldpeH2 = $(".oaldpe h2");
+        const $oaldpeH2 = $(".oaldpe h2.shcut");
 
         if (!oaldpeCfg.unfoldBox1) {
             $oaldpeH2.siblings().hide();
@@ -1876,91 +1876,95 @@ var oaldpeCfg = {
 
         addNavigation();
 
-        var doubleClickTimer;
-        $(OALDPE_NAVBAR_SELECTOR).find("span")
-        .on("click", function() {
-            if ($(this).hasClass("active")) {
-                clearTimeout(doubleClickTimer);
-                _$thisObj = $(this);
-                doubleClickTimer = setTimeout(function() {
-                    console.log("navbar: chinese_toggle");
-                    chineseToggle();
-                }, 250);
+        const selectors = {
+            allExpand: [
+                ".oaldpe .sense > .examples",
+                ".oaldpe .sense > .collapse",
+                ".oaldpe .sense > .un",
+                ".oaldpe .sense > .xrefs",
+                ".oaldpe .sense > .topic-g",
+            ],
+            box1: ".oaldpe h2.shcut",
+            box2: ".oaldpe .box_title",
+            box3: [
+                ".oaldpe .idioms",
+                ".oaldpe .phrasal_verb_links"
+            ],
+            enlargeImage: ".oaldpe div#ox-enlarge",
+        };
+
+        function singleClickHandler() {
+            chineseToggle();
+        }
+
+        function doubleClickHandler() {
+            const concise = $(".oaldpe").attr("concise") === "true";
+            if (concise) {
+                // 全部展开
+                $(selectors.allExpand.join(", ")).slideDown("fast");
+                $(".oaldpe").attr("concise", "false");
+
+                // 折叠块2>展开
+                $(selectors.box2).parent().addClass("is-active");
+                $(selectors.box2).next().slideDown("fast");
+
+                // 折叠块3>展开
+                $(selectors.box3.join(", ")).addClass('expanded').css("height", "auto");
+
+                // 图片
+                $(selectors.enlargeImage).slideDown("fast");
             } else {
-                console.log("navbar: index is changed");
-                $(this).siblings().removeClass('active');
-                $(this).addClass('active');
-                showHideEntry($(this).text() === "All" ? -1 : $(this).index());
+                // 全部折叠
+                $(selectors.allExpand.join(", ")).slideUp("fast");
+                $(".oaldpe").attr("concise", "true");
+
+                // 折叠块1>展开
+                $(selectors.box1).parent().addClass("is-active");
+                $(selectors.box1).siblings().slideDown("fast");
+
+                // 折叠块2>折叠
+                $(selectors.box2).parent().removeClass("is-active");
+                $(selectors.box2).next().slideUp("fast");
+
+                // 折叠块3>折叠
+                $(selectors.box3.join(", ")).css("height", "26px").removeClass('expanded');
+
+                // 图片
+                $(selectors.enlargeImage).slideUp("fast");
             }
-        })
-        .on("dblclick", function() {
-            if ($(this).hasClass("active")) {
-                clearTimeout(doubleClickTimer);
-                console.log("navbar: doubleClick");
+        }
 
-                const _selectors = {
-                    allExpand: [
-                        ".oaldpe .sense > .examples",
-                        ".oaldpe .sense > .collapse",
-                        ".oaldpe .sense > .un",
-                        ".oaldpe .sense > .xrefs",
-                        ".oaldpe .sense > .topic-g",
-                    ],
-                    h2: ".oaldpe h2",
-                    box2: ".oaldpe .box_title",
-                    box3: [
-                        ".oaldpe .idioms",
-                        ".oaldpe .phrasal_verb_links"
-                    ],
-                    box3Phrasal: "",
-                    enlargeImage: ".oaldpe div#ox-enlarge",
-                };
+        let clickTimer;
 
-                if (conciseMeaning) {
-                    // 全部展开
-                    $(_selectors.allExpand.join(", ")).slideDown("fast");
-
-                    // 折叠块2>折叠
-                    $(_selectors.box2).parent().addClass("is-active");
-                    $(_selectors.box2).next().slideDown("fast");
-
-                    // 折叠块3>展开
-                    $(_selectors.box3.join(", ")).addClass('expanded').css("height", "auto");
-
-                    // 图片
-                    $(_selectors.enlargeImage).slideDown("fast");
-                } else {
-                    // 全部折叠
-                    $(_selectors.allExpand.join(", ")).slideUp("fast");
-                    $(_selectors.h2).siblings().slideDown("fast");
-                    $(_selectors.h2).parent().addClass("is-active");
-
-                    // 折叠块2>折叠
-                    $(_selectors.box2).parent().removeClass("is-active");
-                    $(_selectors.box2).next().slideUp("fast");
-
-                    // 折叠块3>折叠
-                    $(_selectors.box3.join(", ")).css("height", "26px").removeClass('expanded'); 
-
-                    // 图片
-                    $(_selectors.enlargeImage).slideUp("fast");
-                }
-                conciseMeaning = !conciseMeaning;
+        const $navbar_span = $(".oaldpe-nav span");
+        $navbar_span.on("click", function () {
+            const $this = $(this);
+            clearTimeout(clickTimer);
+            if ($this.hasClass("active")) {
+                clickTimer = setTimeout(singleClickHandler, 250);
+            } else {
+                $this.siblings().removeClass('active');
+                $this.addClass('active');
+                showHideEntry($this.text() === "All" ? -1 : $this.index());
+            }
+        });
+        $navbar_span.on("dblclick", function () {
+            const $this = $(this);
+            clearTimeout(clickTimer);
+            if ($this.hasClass("active")) {
+                doubleClickHandler();
             }
         });
 
-        let clickTimer;
-        $('.oaldpe-config-gear .oaldpe-config-gear__head__icon')
-            .on('click', function () {
-                clearTimeout(clickTimer);
-                clickTimer = setTimeout(function () {
-                    $('.oaldpe-nav .active').trigger('click');
-                }, 250);
-            })
-            .on('dblclick', function () {
-                clearTimeout(clickTimer);
-                $('.oaldpe-nav .active').trigger('dblclick');
-            });
+        const $gear_icon = $(".oaldpe-config-gear .oaldpe-config-gear__head__icon");
+        $gear_icon.on('click', function () {
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(singleClickHandler, 250);
+        });
+        $gear_icon.on('dblclick', function () {
+            clearTimeout(clickTimer);
+            doubleClickHandler();
+        });
     }
 
     function addNavigation() {
