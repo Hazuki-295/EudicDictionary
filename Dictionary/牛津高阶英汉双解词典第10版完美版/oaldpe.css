@@ -3496,8 +3496,8 @@ ul.examples > li > example-audio-ai {
     height: calc(1em * var(--line-height-oald));
 }
 
-ul.examples > li > example-audio.audio_hide,
-ul.examples > li > example-audio-ai.audio_hide {
+ul.examples > li.audio_disabled > example-audio,
+ul.examples > li.audio_disabled > example-audio-ai {
     display: none;
 }
 
@@ -3780,8 +3780,8 @@ ul.examples > li > .exText undt chn {
     text-align: center;
 }
 
-.un .ei a.audio_hide {
-    display: none;
+.un .ei.audio_hide a {
+    display: none !important;
 }
 
 /* 第五层 */

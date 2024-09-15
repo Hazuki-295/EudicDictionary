@@ -23,9 +23,8 @@ var oaldpeCfg = {
     // 选项（默认为false）：false=否，true=是
     touchToTranslate: false,
 
-    // 【配置项6：官方例句发音选项】（如果为0或1，则可删除oaldpe.3.mdd文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项。）
-    // 选项（默认为1）：0-不启用官方例句发音，1-启用官方在线例句发音，2-启用官方离线例句发音.ogg 3-启用官方离线例句发音.mp3
-    // （电脑欧路、IOS等不支持选项2，可填选项3）
+    // 【配置项6：官方例句发音选项】（如果为1或2，则可删除oaldpe.3.mdd文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项。）
+    // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
     officialExPronOpt: 1,
 
     // 【配置项7：无官方例句发音时，是否启用在线TTS发音】（需要高版本浏览器内核。发音图标带下划线。Mdict暂不支持。）
@@ -445,7 +444,7 @@ var oaldpeCfg = {
 
     fnUnfoldBox3(oaldpeCfg.unfoldBox3);
 
-    fnUnfoldSense(oaldpeCfg.unfoldSense);
+    fnUnfoldSense();
 
     fnBox2ShowSwitch(oaldpeCfg.box2ShowSwitch);
 
@@ -485,7 +484,7 @@ var oaldpeCfg = {
 
     imageZoomEvent();
 
-    fnOfficialExPronOpt(oaldpeCfg.officialExPronOpt);
+    fnOfficialExPronOpt();
 
     fnApplyPresetTheme(oaldpeCfg.applyPresetTheme);
 
@@ -498,8 +497,6 @@ var oaldpeCfg = {
     fnUsePlaceholder(oaldpeCfg.usePlaceholder);    
 
     termNumberClickEvent();
-
-    extendTranslationAreaForExamples();
 
     fnUnfoldBox2Subtitle(oaldpeCfg.unfoldBox2Subtitle);
 
@@ -788,12 +785,14 @@ var oaldpeCfg = {
         const $configGearBody = $('<div>', { class: 'oaldpe-config-gear__body' });
         const configItems = [
             { label: 'Autofold Eudic Note', prefix: 'autoFoldEudicNote', options: ['on', 'off'] },
+            { label: 'Online Example Pron', prefix: 'officialExPronOpt', options: ['on', 'off'] },
             { label: 'Default Example Pron', prefix: 'defaultBritishExPron', options: ['BrE', 'NAmE'] },
             { label: 'Eruda Console', prefix: 'Eruda', options: ['show', 'input', 'hide'] },
         ];
 
         configItems.forEach(item => {
             if (item.prefix === 'autoFoldEudicNote' && !isEudic()) return;
+            if (item.prefix === 'officialExPronOpt' && oaldpeCfg.officialExPronOpt === 2) return;
             if (item.prefix === 'Eruda' && !oaldpeCfg.enableErudaConsole) return;
 
             const $configGroup = $('<div>', { class: 'config-group' });
@@ -821,13 +820,24 @@ var oaldpeCfg = {
             $elements.on('click', function () {
                 const $this = $(this);
 
-                $elements.removeClass('active');
                 $this.addClass('active');
+                $this.siblings().removeClass('active');
 
-                const value = $this.attr('id') === `${prefix}_${booleanTrueEquvalent}` ? "1" : "0";
-                localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + prefix, value);
+                const booleanValue = $this.attr('id') === `${prefix}_${booleanTrueEquvalent}`;
+                localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + prefix, booleanValue ? "1" : "0");
+
+                // Take effect immediately
+                if (prefix === 'officialExPronOpt') {
+                    $oaldpe.attr('online-example-pron', booleanValue ? "true" : "false");
+                }
             });
         }
+
+        // Autofold Eudic Note
+        handleConfig('autoFoldEudicNote', oaldpeCfg.autoFoldEudicNote ? 'on' : 'off', 'on');
+
+        // Online Example Pron
+        handleConfig('officialExPronOpt', oaldpeCfg.officialExPronOpt === 1 ? 'on' : 'off', 'on');
 
         // Default Example Pron
         $oaldpe.attr("pron", oaldpeCfg.defaultBritishExPron ? "uk" : "us");
@@ -837,9 +847,6 @@ var oaldpeCfg = {
         });
 
         handleConfig('defaultBritishExPron', oaldpeCfg.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
-
-        // Autofold Eudic Note
-        handleConfig('autoFoldEudicNote', oaldpeCfg.autoFoldEudicNote ? 'on' : 'off', 'on');
     }
 
     async function setupErudaConsole() {
@@ -871,7 +878,7 @@ var oaldpeCfg = {
     }
 
     function showExamplesLabel() {
-        if (oaldpeCfg.officialExPronOpt === 0) {
+        if (oaldpeCfg.officialExPronOpt === 2) {
             $('.oaldpe example-audio').each(function () {
                 $(this).parent().addClass('audio_disabled');
             });
@@ -1334,14 +1341,6 @@ var oaldpeCfg = {
         })
     }
 
-    function extendTranslationAreaForExamples() {
-        if (oaldpeCfg.officialExPronOpt === 0 || oaldpeCfg.enableOnlineTTS === false) {
-            $('.oaldpe example-audio, .oaldpe example-audio-ai').filter(function() {
-                return !$(this).is(":visible");
-            }).prev().addClass('inlineblock');
-        }
-    }
-
     function fnTouchToTranslate(itemValue) {
         if (!itemValue) 
             return;
@@ -1523,63 +1522,57 @@ var oaldpeCfg = {
     }
 
     /* Modified by Hazuki */
-    function fnOfficialExPronOpt(itemValue) {
-        if (itemValue === 0) {
-            $('.oaldpe example-audio, .oaldpe .ei a').addClass('audio_hide');  
-            return;
-        } 
+    function fnOfficialExPronOpt() {
+        const $oaldpe = $(".oaldpe");
+        const optionValue = oaldpeCfg.officialExPronOpt;
+        const $exampleAudio = $('.oaldpe example-audio > a, .oaldpe .ei > a');
+
+        // 不启用官方例句发音
+        if (optionValue === 2) return;
 
         // 启用官方例句在线发音
-        (itemValue === 1) && $(".oaldpe example-audio a, .oaldpe .ei a")
-        .each(function(){
-            var _thisHref = $(this).attr("href");
-            if (isGoldenDict())
-                _thisHref = _thisHref.replace(getLastSlashContent(_thisHref), "sound:/");
+        if (optionValue === 1) {
+            $oaldpe.attr("online-example-pron", "true");
+        }
 
-            var newHref = OALDPE_PREFIX_EXAMPLE + _thisHref.replace("sound://", "").replace(".ogg", ".wav");
-            if ($(this).parent().hasClass("ei"))
-                newHref = newHref.replace(".mp3", ".wav"); // Bug workaround
-            $(this).attr("href", newHref);
-        })
-        .click(function(e){
-            var _thisHref = $(this).attr("href");
-            if (_thisHref.startsWith("http") && (_thisHref.endsWith(".mp3")
-                || _thisHref.endsWith(".wav") || _thisHref.endsWith(".ogg"))) {
+        function getOnlineExamplePronUrl(url) {
+            const parts = url.split('/');
+            const name = parts[parts.length - 1];
+            return OALDPE_PREFIX_EXAMPLE + name.replace("#", "%23").replace('.ogg', '.wav');
+        }
 
-                console.log("---------- play online");
-                e.preventDefault();
-                e.stopPropagation();
-
-                !globalAudio.paused && globalAudio.pause();
-                globalAudio.src = _thisHref;
-                globalAudio.play();
-
-            }
+        $exampleAudio.each(function () {
+            const $this = $(this);
+            const href = $this.attr('href');
+            const onlineHref = getOnlineExamplePronUrl(href);
+            $this.attr('data-href', onlineHref);
+            $this.attr('href', href.replace('.ogg', '.mp3'));
         });
 
-        // 启用官方例句离线发音
-        (itemValue === 2 || itemValue === 3) 
-            && $(".oaldpe example-audio a, .oaldpe .ei a").click(function(e){
-            e.stopPropagation();
-            var _thisHref = $(this).attr("href");
+        $exampleAudio.click(function (event) {
+            event.stopPropagation();
 
-            if ((_thisHref.startsWith("sound://") || (_thisHref.startsWith("gdau://"))) && (_thisHref.endsWith(".mp3")
-                || _thisHref.endsWith(".wav") || _thisHref.endsWith(".ogg"))) {
+            const $this = $(this);
+            const href = $this.attr('href');
+            const onlineHref = $this.attr('data-href');
 
+            if (href.startsWith('sound://') || href.startsWith('gdau://') || href.startsWith('/api/static/')) {
+                const playOnline = $oaldpe.attr("online-example-pron") === "true";
 
-                if (itemValue === 3)
-                    _thisHref = _thisHref.replace("%23", "_").replace(".ogg", ".mp3").replace(".wav", ".mp3");
-
-                if (oaldpeCfg.enableOnlineTTS && !isEudicPC() && !isGoldenDict()) {
-                    !globalAudio.paused && globalAudio.pause();
-                    globalAudio.src = _thisHref.replace("sound://", "");
+                if (playOnline) {
+                    if (!globalAudio.paused) globalAudio.pause();
+                    globalAudio.src = onlineHref;
                     globalAudio.play();
-                    e.preventDefault();
+                    event.preventDefault();
+                    console.log('(online) official example audio: ' + onlineHref);
                 } else {
-                    // 不启用TTS时或特殊词典，使用系统默认发音
-                    $(this).attr("href", _thisHref);
+                    if (isGoldenDict()) console.log('Platfrom: GoldenDict');
+                    if (href.startsWith('/api/static/')) {
+                        console.log('Platfrom: Preview');
+                        event.preventDefault();
+                    }
+                    console.log('(offline) official example audio: ' + href);
                 }
-
             }
         });
     }
@@ -1604,13 +1597,6 @@ var oaldpeCfg = {
                 $(this).find("span.ox-enlarge-label").css({"position": "static", "margin": "0 5px 5px 0"});
             }
         });
-    }
-    function getLastSlashContent(str) {
-      const lastSlashIndex = str.lastIndexOf('/');
-      if (lastSlashIndex === -1) {
-        return str;
-      }
-      return str.substring(0, lastSlashIndex);
     }
 
     function fnImgTranslationOpt(itemValue) {
