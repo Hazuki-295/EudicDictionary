@@ -434,8 +434,6 @@ var oaldpeCfg = {
     initialize();
 
     fnSimplifyPos(oaldpeCfg.simplifyPos);
-    
-    fnShowNavbar();
 
     fnShowTraditional(oaldpeCfg.showTraditional);
 
@@ -726,6 +724,8 @@ var oaldpeCfg = {
         foldEudicNote();
 
         setupConfigGear();
+
+        setupNavigation();
 
         setupErudaConsole();
 
@@ -1871,9 +1871,7 @@ var oaldpeCfg = {
     }
 
     /* Modified by Hazuki */
-    function fnShowNavbar() {
-        if (!oaldpeCfg.showNavbar) return;
-
+    function setupNavigation() {
         addNavigation();
 
         const selectors = {
@@ -1968,56 +1966,49 @@ var oaldpeCfg = {
     }
 
     function addNavigation() {
-        // 已添加不添加
-        if ($(".oaldpe-nav").length)
-            return;
+        const $oaldpe = $(".oaldpe");
+        const $entries = $(".oaldpe .oald");
 
-        var _$eles = $(".oaldpe .oald");
-        // 没有entry不添加
-        if (_$eles.length < 1)
-            return;
+        // 没有 entry 不添加
+        if ($entries.length < 1) return;
 
-        var container = $("<div></div>").addClass(OALDPE_NAVBAR_CLASS);
-        for (var i = 0; i < _$eles.length; i++) {
-            var _$sp = $("<span></span>");
-            var _$pos = _$eles.eq(i).find(".pos").eq(0);
-            _$pos = _$pos.length && _$pos.text();
-            _$pos = !_$pos ? _$eles.eq(i).find(".headword").text() : _$pos;
-            _$sp.text(OALDPE_POS[_$pos] ? OALDPE_POS[_$pos] : _$pos);
-            if (!oaldpeCfg.selectNavbarAll && i === 0) {
-                _$sp.addClass("active");
-            }
-            container.append(_$sp);
-        }
-
-        // 添加All
-        var _$spAll = $("<span>All</span>");
-        oaldpeCfg.selectNavbarAll && _$spAll.addClass('active');
-        container.append(_$spAll);
-        
-        showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
+        const $navbar = $("<div></div>").addClass(OALDPE_NAVBAR_CLASS);
 
         // 只有一个entry时隐藏
-        if (_$eles.length === 1)
-            container.hide();
+        if (!oaldpeCfg.showNavbar || $entries.length === 1) {
+            $navbar.hide();
+        }
 
-        // 不能加在.oaldpe里
-        // $(".oaldpe").prepend(container);
-        container.insertBefore($(".oaldpe").eq(0));
+        $entries.each(function () {
+            const $entry = $(this);
+            const posText = $entry.find(".webtop .pos").text() || $entry.find(".webtop .headword").text();
+            const $span = $("<span></span>").text(OALDPE_POS[posText] || posText);
+            $navbar.append($span);
+        });
 
-        if (oaldpeCfg.NavbarMargin)
-            $(".oaldpe-nav span").css({"padding": ".2rem 1.2rem"})
+        // 添加 All
+        const $spanAll = $("<span></span>").text("All");
+        $navbar.append($spanAll);
+
+        const $navbar_span = $navbar.children("span");
+        if (oaldpeCfg.selectNavbarAll) {
+            $spanAll.addClass('active');
+        } else {
+            $navbar_span.first().addClass("active");
+        }
+        showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
+
+        if (oaldpeCfg.NavbarMargin) {
+            $navbar_span.css({ "padding": ".2rem 1.2rem" })
+        }
+
+        $oaldpe.first().prepend($navbar);
     }
 
     function showHideEntry(index) {
-        var _$eles = $(".oaldpe .oald");
-        for (var i = 0; i < _$eles.length; i++) {
-            if (index === i || index < 0) {
-                _$eles.eq(i).show();
-            } else {
-                _$eles.eq(i).hide();
-            }
-        }
+        $(".oaldpe .oald").each(function (i) {
+            $(this).toggle(index === i || index < 0);
+        });
     }
 
     function fnSelectNavbarAll(itemValue) {
