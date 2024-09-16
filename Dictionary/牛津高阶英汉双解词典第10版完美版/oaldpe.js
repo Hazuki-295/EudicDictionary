@@ -3,7 +3,8 @@
 // “oaldpeconfig”、“oaldpecfg”、“oaldcfg”、“opcfg”、“oaldconfig”、“opconfig”和“opc”
 
 var oaldpeCfg = {
-    // 【配置项1：中文翻译选项】（点击"词性导航"白色块，或点击"O10"小图标，可显示/隐藏中文翻译）
+    /******** 中文翻译相关 ********/
+    // 【配置项1：中文翻译选项】（点击 “词性导航” 白色块，或点击 “O10” 小图标，可显示/隐藏中文翻译）
     // 选项（默认为1）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏义项中文，5-仅显示义项中文
     showTranslation: 1,
 
@@ -11,151 +12,142 @@ var oaldpeCfg = {
     // 选项（默认为false）：false=否，true=是
     showTraditional: false,
 
-    // 【配置项3：是否显示词性导航栏】
-    // 选项（默认为true）：false=不显示，true=显示
-    showNavbar: true,
-
-    // 【配置项4：是否选中词性导航all】
-    // 选项（默认为false）：false=否，true=是
-    selectNavbarAll: false,
-
-    // 【配置项5：是否启用英文点译功能】（单句显示/隐藏中文）
+    // 【配置项3：是否启用英文点译功能】（单句显示/隐藏中文）
     // 选项（默认为false）：false=否，true=是
     touchToTranslate: false,
 
-    // 【配置项6：官方例句发音选项】（如果为1或2，则可删除oaldpe.3.mdd文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项。）
-    // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
-    officialExPronOpt: 1,
-
-    // 【配置项7：无官方例句发音时，是否启用在线TTS发音】（需要高版本浏览器内核。发音图标带下划线。Mdict暂不支持。）
-    // 选项（默认为true）：false=否，true=是
-    enableOnlineTTS: true,
-
-    // 【配置项8：是否启用在线单词发音】（如果为true，则可删除oaldpe.1.mdd）
-    // 选项（默认为false）：true=是，false=否
-    onlineWordPron: false,
-
-    // 【配置项9：是否启用在线图片】（如果为true，则可删除oaldpe.2.mdd。注：在线图片无中文翻译）
-    // 选项（默认为false）：true=是，false=否
-    onlineImage: false,
-
-    // 【配置项10：离线图片翻译选项】（当【是否启用在线图片】设置为true时，图片翻译无效）
-    // 选项（默认为3）：0-不使用翻译，1-简体中文翻译，2-港版繁体翻译，3-根据配置项【是否显示中文翻译】和配置项【是否使用台湾繁体中文翻译】自动选择
-    imgTranslationOpt: 3,
-
-    // 【配置项11：是否显示音节划分】（点击单词可切换音节划分）
-    // 选项（默认为false）：false=不显示，true=显示
-    showSyllable: false,
-
-    // 【配置项12：是否简化词性】（如verb简化为v.）
-    // 选项（默认为false）：false=不简化，true=简化
-    simplifyPos: false,
-
-    // 【配置项13：是否简化语法】（如[transitive]简化为[t]）
-    // 选项（默认为false）：false=不简化，true=简化
-    simplifyGrammar: false,
-
-    // 【配置项14：是否简化非例句中的something、somebody为sth、sb】
-    // 选项（默认为true）：false=不简化，true=简化
-    simplifySthSb: true,
-
-    // 【配置项15：是否展开折叠块1】（浅蓝色荧光笔，释义分组，如 take - carry/lead 携带；带领）
-    // 选项（默认为true）：false=不展开，true=展开
-    unfoldBox1: true,
-
-    // 【配置项16：是否展开折叠块2】（浅蓝色折叠区，如 Extra Examples 更多例句）
-    // 选项（默认为false）：false=不展开，true=展开
-    unfoldBox2: false,
-
-    // 【配置项17：是否展开折叠块3】（Idiom、Phrasal verbs）
-    // 选项（默认为true）：false=不展开，true=展开
-    unfoldBox3: true,
-
-    // 【配置项18：是否展开折叠块2的子标题栏下的内容】（浅蓝色折叠区的子标题栏）
-    // 选项（默认为true）：false=不展开，true=展开
-    unfoldBox2Subtitle: true,
-
-    // 【配置项19：是否展开义项】
-    // 选项（默认为true）：false=否，true=是
-    unfoldSense: true,
-
-    // 【配置项20：点击Idioms、Phrasal verbs跳转后，自动展开内容】
-    // 选项（默认为false）：false=不展开，true=展开
-    jumpsBox3Unfold: false,
-
-    // 【配置项21：点击小火箭返回后，自动折叠内容】
-    // 选项（默认为false）：false=不折叠，true=折叠
-    leavesBox3Fold: false,
-
-    // 【配置项22：给粗体固定句式添加荧光笔下划线】
-    // 选项（默认为false）：false=不添加，true=添加
-    phrasesAddUnderline: false,
-
-    // 【配置项23：是否使用普通样式的义项序号】
-    // 选项（默认为true）：false=否，true=是
-    normalSenseNumber: true,
-
-    // 【配置项24：是否全局使用普通英文字体】
-    // 选项（默认为false）：false=否，true=是
-    normalEnglishFont: false,
-
-    // 【配置项25：是否在手机欧路词典里使用更大的屏宽】
-    // 选项（默认为true）：false=否，true=是
-    widerScreenEudic: true,
-
-    // 【配置项26：预设主题选项】（此设置可能会覆盖某些配置项）
-    // 选项（默认为0）：0-默认主题（不做任何修改），1-官网主题，2-欢迎大家分享自己的主题，后续更新可以加上。
-    applyPresetTheme: 0,
-
-    // 【配置项27：TTS英音发音配置】
-    // 选项（默认为英音男1）：英音男1，英音男2，英音女1，英音女2，英音女3
-    britishTTS: "英音男1",
-
-    // 【配置项28：TTS美音发音配置】
-    // 选项（默认为美音女4）：美音男1，美音男2，美音男3，美音男4，美音男5，美音女1，美音女2，美音女3，美音女4
-    americanTTS: "美音女4",
-
-    // 【配置项29：是否隐藏手机欧路自带的hr标签】
-    // 选项（默认为true）：true=是，false=否
-    hideEudicAPPHr: true,
-
-    // 【配置项30：是否在导航栏每个选项首尾加宽留白】（方便双击或单击时不会点到文字而触发查词功能）
-    // 选项（默认为true）：true=是，false=否
-    NavbarMargin: true,
-
-    // 【配置项31：例句前的固定搭配使用代字号】（如把take sth with you替换为~ sth with you）
-    // 选项（默认为false）：false=不使用，true=使用
-    usePlaceholder: false,
-
-    // 【配置项32：是否例句中文独占一行】
+    // 【配置项4：是否例句中文独占一行】
     // 选项（默认为true）：false=否，true=是
     examplesChineseBeAlone: true,
 
-    // 【配置项33：是否替换中文中的全角符号】
-    // 选项（默认为true）：false=不替换，true=替换
-    replaceFullWidthChars: true,
+    /******** 词性导航栏 ********/
+    // 【配置项5：是否显示词性导航栏】
+    // 选项（默认为true）：false=不显示，true=显示
+    showNavbar: true,
 
-    // 【配置项34：是否默认英音例句发音】（点击"O10"小图标中的词典铭牌进行切换）
+    // 【配置项6：是否选中词性导航 all】
+    // 选项（默认为false）：false=否，true=是
+    selectNavbarAll: false,
+
+    // 【配置项7：是否在导航栏每个选项首尾加宽留白】（方便双击或单击时不会点到文字而触发查词功能）
+    // 选项（默认为true）：false=否，true=是
+    NavbarMargin: true,
+
+    /******** 单词、例句发音，图片显示 ********/
+    // 【配置项8：是否显示音节划分】（点击单词可切换音节划分）
+    // 选项（默认为false）：false=不显示，true=显示
+    showSyllable: false,
+
+    // 【配置项9：是否启用在线单词发音】（如果为 true，则可删除 oaldpe.1.mdd 文件）
+    // 选项（默认为false）：false=否，true=是
+    onlineWordPron: false,
+
+    // 【配置项10：是否启用在线图片】（如果为 true，则可删除 oaldpe.2.mdd 文件。注：在线图片无中文翻译）
+    // 选项（默认为false）：false=否，true=是
+    onlineImage: false,
+
+    // 【配置项11：离线图片翻译选项】（当【是否启用在线图片】设置为 true 时，图片翻译无效）
+    // 选项（默认为3）：0-不使用翻译，1-简体中文翻译，2-港版繁体翻译，3-根据配置项【是否显示中文翻译】和配置项【是否使用台湾繁体中文翻译】自动选择
+    imgTranslationOpt: 3,
+
+    // 【配置项12：是否默认英音例句发音】（点击 “O10” 小图标中的词典铭牌进行切换）
     // 选项（默认为false）：false=美音，true=英音
     defaultBritishExPron: false,
 
-    // 【配置项35：是否启用Eruda Console】（用于词典应用调试）
-    // 选项（默认为true）：false=否，true=是
-    enableErudaConsole: true,
+    // 【配置项13：官方例句发音选项】（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项）
+    // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
+    officialExPronOpt: 1,
 
-    // 【配置项36：是否移除Eudic单词界面词头】（词典自带发音、生词等级等）
+    // 【配置项14：无官方例句发音时，是否启用在线 TTS 发音】（需要高版本浏览器内核。发音图标带下划线）
+    // 选项（默认为true）：false=否，true=是
+    enableOnlineTTS: true,
+
+    // 【配置项15：TTS 英音发音配置】
+    // 选项（默认为英音男1）：英音男1，英音男2，英音女1，英音女2，英音女3
+    britishTTS: "英音男1",
+
+    // 【配置项16：TTS 美音发音配置】
+    // 选项（默认为美音女4）：美音男1，美音男2，美音男3，美音男4，美音男5，美音女1，美音女2，美音女3，美音女4
+    americanTTS: "美音女4",
+
+    /******** 内容精简，显示控制 ********/
+    // 【配置项17：是否简化词性】（如 verb 简化为 v.）
+    // 选项（默认为false）：false=不简化，true=简化
+    simplifyPos: false,
+
+    // 【配置项18：是否简化语法】（如 [transitive] 简化为 [t]）
+    // 选项（默认为false）：false=不简化，true=简化
+    simplifyGrammar: false,
+
+    // 【配置项19：是否简化非例句中的 something/somebody 为 sth./sb.】
+    // 选项（默认为true）：false=不简化，true=简化
+    simplifySthSb: true,
+
+    // 【配置项20：例句前的固定搭配使用代字号】（如把 take sth with you 替换为 ~ sth with you）
+    // 选项（默认为false）：false=不使用，true=使用
+    usePlaceholder: false,
+
+    // 【配置项21：给固定搭配添加荧光笔下划线】
+    // 选项（默认为false）：false=不添加，true=添加
+    phrasesAddUnderline: false,
+
+    // 【配置项22：是否使用普通样式的义项序号】
+    // 选项（默认为true）：false=否，true=是
+    normalSenseNumber: true,
+
+    /******** 折叠控制 ********/
+    // 【配置项23：是否展开义项】
+    // 选项（默认为true）：false=否，true=是
+    unfoldSense: true,
+
+    // 【配置项24：是否展开折叠块1】（浅蓝色荧光笔，释义分组，如 take - carry/lead 携带；带领）
+    // 选项（默认为true）：false=不展开，true=展开
+    unfoldBox1: true,
+
+    // 【配置项25：是否展开折叠块2】（浅蓝色折叠区，如 Extra Examples 更多例句）
+    // 选项（默认为false）：false=不展开，true=展开
+    unfoldBox2: false,
+
+    // 【配置项26：是否展开折叠块3】（习语 Idioms、词组 Phrasal verbs）
+    // 选项（默认为true）：false=不展开，true=展开
+    unfoldBox3: true,
+
+    // 【配置项27：是否展开折叠块2的子标题栏下的内容】（浅蓝色折叠区的子标题栏）
+    // 选项（默认为true）：false=不展开，true=展开
+    unfoldBox2Subtitle: true,
+
+    // 【配置项28：点击 Idioms、Phrasal verbs 跳转后，自动展开内容】
+    // 选项（默认为false）：false=不展开，true=展开
+    jumpsBox3Unfold: false,
+
+    // 【配置项29：点击小火箭返回后，自动折叠内容】
+    // 选项（默认为false）：false=不折叠，true=折叠
+    leavesBox3Fold: false,
+
+    /******** 欧路词典相关 ********/
+    // 【配置项30：是否在手机 Eudic 里使用更大的屏宽】
+    // 选项（默认为true）：false=否，true=是
+    widerScreenEudic: true,
+
+    // 【配置项31：是否移除 Eudic 单词界面词头】（词典自带发音、生词等级等）
     // 选项（默认为true）：false=不移除，true=移除
     removeEudicHeader: true,
 
-    // 【配置项37：是否自动折叠Eudic学习笔记】
-    // 选项（默认为false）：false=不折叠，true=折叠
+    // 【配置项32：是否自动折叠 Eudic 学习笔记】
+    // 选项（默认为false）：false=不自动折叠，true=自动折叠
     autoFoldEudicNote: false,
 
-    // 【配置项38：是否自动跟随系统深色模式】
+    /******** 其他功能 ********/
+    // 【配置项32：是否自动跟随系统深色模式】
     // 选项（默认为true）：false=否，true=是
     autoDarkMode: true,
 
-    // 【配置项39：自定义折叠块2开关】（浅蓝色折叠区）
+    // 【配置项34：是否启用 Eruda Console】（用于词典应用调试）
+    // 选项（默认为true）：false=否，true=是
+    enableErudaConsole: true,
+
+    /******** 其他自定义配置（仅支持通过此js文件修改） ********/
+    // 【配置项35：自定义折叠块2开关】（浅蓝色折叠区）
     // 选项（默认都为true）：false=不显示，true=显示
     box2ShowSwitch: {
         "verbforms": true, // 动词形式
@@ -179,7 +171,7 @@ var oaldpeCfg = {
         "more_about": true, // 补充说明
     },
 
-    // 【配置项40：自动展开折叠块2开关】（浅蓝色折叠区）
+    // 【配置项36：自动展开折叠块2开关】（浅蓝色折叠区）
     // 选项（默认仅展开词源）：false=不展开，true=展开
     autoUnfoldBox2: {
         "verbforms": false, // 动词形式
@@ -203,14 +195,14 @@ var oaldpeCfg = {
         "more_about": false, // 补充说明
     },
 
-    // 【配置项41：自定义折叠块3开关】（Idioms、Phrasal verbs）
+    // 【配置项37：自定义折叠块3开关】（Idioms、Phrasal verbs）
     // 选项（默认都为true）：false=不显示，true=显示
     box3ShowSwitch: {
         "idioms": true, // 习语
         "phrasal_verb_links": true, // 短语动词
     },
 
-    // 【配置项42：其他显示开关】
+    // 【配置项38：其他显示开关】
     // 选项（默认都为true）：false=不显示，true=显示
     othersShowSwitch: {
         "h2.shcut": true, // 整个box1标题(包含英文和翻译)
@@ -237,7 +229,7 @@ var oaldpeCfg = {
         "div#ox-enlarge": true, // 图片
     },
 
-    // 【配置项43：自定义CSS样式】
+    // 【配置项39：自定义CSS样式】
     // 选项（默认都为空）：不为空=使用自定义，为空=不使用自定义
     // 示例1：{"color": "red"}
     // 示例2：{"color": "#BE002F", "font-size": "20px"}
@@ -261,7 +253,7 @@ var oaldpeCfg = {
         ".sense > .variants > .v-g": {}, // 义项前的变体内容，如：east第一个义项的the east
     },
 
-    // 【配置项44：是否禁用配置词头】（深蓝词典用户需要禁用，因为不兼容）
+    // 【配置项40：是否禁用配置词头】（深蓝词典用户需要禁用，因为不兼容）
     // 选项（默认为false）：false=否，true=是
     disableConfigWord: false,
 };
@@ -454,15 +446,11 @@ var oaldpeCfg = {
 
     fnNormalSenseNumber(oaldpeCfg.normalSenseNumber);
 
-    fnHideEudicAPPHr(oaldpeCfg.hideEudicAPPHr);
-
     fnSelectNavbarAll(oaldpeCfg.selectNavbarAll);
 
     fnOnlineImage(oaldpeCfg.onlineImage);
     
     fnSimplifyGrammar(oaldpeCfg.simplifyGrammar);
-
-    fnNormalEnglishFont(oaldpeCfg.normalEnglishFont);
 
     fnShowSyllable(oaldpeCfg.showSyllable);
 
@@ -485,8 +473,6 @@ var oaldpeCfg = {
     imageZoomEvent();
 
     fnOfficialExPronOpt();
-
-    fnApplyPresetTheme(oaldpeCfg.applyPresetTheme);
 
     addBox2Toggle();
 
@@ -895,8 +881,6 @@ var oaldpeCfg = {
     }
 
     function replaceFullWidthCharsInChn() {
-        if (!oaldpeCfg.replaceFullWidthChars) return;
-
         var replacements = {
             '／': '/',
             // Add more replacements if needed
@@ -1334,12 +1318,13 @@ var oaldpeCfg = {
         }
     }
 
+    /* Modified by Hazuki */
     function updateConfigToUI() {
         if (oaldpeCfg.disableConfigWord)
             return
         // 更新配置到配置词头
         Object.keys(oaldpeCfg).forEach(function(key) {
-            $("#oaldpe-config > #" + key + " .select")
+            $("#oaldpe-config .oaldpe-config-group > #" + key + " .select")
                 .attr("cfg-selected", configDataConvertToUI(key));            
         })
     }
@@ -1508,20 +1493,6 @@ var oaldpeCfg = {
             $(this).next().slideToggle("fast").parent().toggleClass("is-active");
             box3RefreshHeight();
         });
-    }
-
-    function fnApplyPresetTheme(itemValue) {
-        if (itemValue === 1) {
-            fnNormalEnglishFont(true);
-            fnPhrasesAddUnderline(false);
-            fnNormalSenseNumber(true);
-            fnSimplifyPos(false);
-            fnSimplifyGrammar(false);
-            $(".oaldpe ul.examples > li > .exText > .x").css("color", "black");
-            $(".oaldpe h1.headword").css("color", "#1A3561");
-            $(".oaldpe .pos").css({"font-style": "italic", "color": "#333333", "border-color": "transparent", "background-color": "transparent", "font-weight": "normal"});
-            $(".oaldpe div.li_sense_before").css({"font-family": "unset", "font-style": "unset"});
-        }
     }
 
     /* Rewrited by Hazuki */
@@ -2049,13 +2020,6 @@ var oaldpeCfg = {
         });        
     }
 
-    function fnNormalEnglishFont(itemValue) {
-        if (itemValue) {
-            $(".oaldpe h1.headword, h2.h, h1.headword .st ,.pos ,.symbols a span.opal_symbol,.cf,div.li_sense_before,ul.examples > li > .x ,jumplink,.jumplink ,span.unx ,.oaldpe-nav ,.examples li span.labels, .examples li div.exText span.x").addClass('normal_eglFont');
-            $(".oaldpe").find('.oaldpe-nav').addClass('normal_eglFont');
-        }
-    }
-
     function fnSimplifyGrammar(itemValue) {
         itemValue && $(".oaldpe .grammar").each(function() {
             $(this).text(OALDPE_GRAMMAR[$(this).text()]);
@@ -2085,10 +2049,6 @@ var oaldpeCfg = {
             globalAudio.src = $(this).attr("href");
             globalAudio.play();
         });        
-    }
-
-    function fnHideEudicAPPHr(itemValue) {
-        itemValue && isEudicAPP() && $(".oaldpe").parent().find("hr").not('.oaldpe hr').hide();
     }
 
     /* Rewrited by Hazuki */
