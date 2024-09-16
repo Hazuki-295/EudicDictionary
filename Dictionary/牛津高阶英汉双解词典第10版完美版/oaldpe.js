@@ -1519,13 +1519,16 @@ var oaldpeCfg = {
             const $this = $(this);
             const href = $this.attr('href');
             const onlineHref = getOnlineExamplePronUrl(href);
+            var offlineHref = href.replace('.ogg', '.mp3');
+            if (!isEudicPC()) {
+                offlineHref = offlineHref.replace('sound://', '');
+            }
             $this.attr('data-href', onlineHref);
-            $this.attr('href', href.replace('sound://', '').replace('.ogg', '.mp3'));
+            $this.attr('href', offlineHref);
         });
 
         $exampleAudio.click(function (event) {
             event.stopPropagation();
-            event.preventDefault();
 
             const $this = $(this);
             const offlineHref = $this.attr('href');
@@ -1535,22 +1538,39 @@ var oaldpeCfg = {
             const playType = playOnline ? 'online' : 'offline';
             const fallbackType = playOnline ? 'offline' : 'online';
 
+            const logAudioSrc = (type) => console.log(`(${type}) audio: ${globalAudio.src}`);
+            const logFailedToPlay = (type, fallback) => console.log(`Failed to play ${type} audio, fallback to ${fallback} audio.`);
+
+            const handleError = (type, fallback) => {
+                logAudioSrc(type);
+                logFailedToPlay(type, fallback);
+                globalAudio.src = fallback === 'online' ? onlineHref : offlineHref;
+                globalAudio.play().then(() => logAudioSrc(fallback)).catch((error) => {
+                    logAudioSrc(fallback);
+                    console.log(`Failed to play ${fallback} audio.`);
+                    console.error(error);
+                });
+            };
+
+            if (!playOnline && isEudicPC()) { // offline, default playing
+                console.log(`(offline) audio: ${offlineHref}`);
+                window.location.href = offlineHref;
+                return;
+            }
+
             if (!globalAudio.paused) globalAudio.pause();
             globalAudio.src = playOnline ? onlineHref : offlineHref;
-            globalAudio.play()
-                .then(() => { console.log(`(${playType}) audio: ` + globalAudio.src); })
-                .catch((error) => {
-                    console.log(`(${playType}) audio: ` + globalAudio.src);
-                    console.log(`Failed to play ${playType} audio, fallback to ${fallbackType} audio.`);
-                    globalAudio.src = fallbackType === 'online' ? onlineHref : offlineHref;
-                    globalAudio.play()
-                        .then(() => { console.log(`(${fallbackType}) audio: ` + globalAudio.src); })
-                        .catch((error) => {
-                            console.log(`(${fallbackType}) audio: ` + globalAudio.src);
-                            console.log(`Failed to play ${fallbackType} audio.`);
-                            console.error(error);
-                        });
-                });
+            globalAudio.play().then(() => logAudioSrc(playType)).catch(() => {
+                if (playOnline && isEudicPC()) { // online failed, fallback to offline
+                    logFailedToPlay(playType, fallbackType);
+                    console.log(`(offline) audio: ${offlineHref}`);
+                    window.location.href = offlineHref;
+                    return;
+                }
+                handleError(playType, fallbackType);
+            });
+
+            event.preventDefault();
         });
     }
 
