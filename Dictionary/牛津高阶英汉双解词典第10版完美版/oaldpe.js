@@ -1549,34 +1549,37 @@ var oaldpeCfg = {
             const href = $this.attr('href');
             const onlineHref = getOnlineExamplePronUrl(href);
             $this.attr('data-href', onlineHref);
-            $this.attr('href', href.replace('.ogg', '.mp3'));
+            $this.attr('href', href.replace('sound://', '').replace('.ogg', '.mp3'));
         });
 
         $exampleAudio.click(function (event) {
             event.stopPropagation();
+            event.preventDefault();
 
             const $this = $(this);
-            const href = $this.attr('href');
+            const offlineHref = $this.attr('href');
             const onlineHref = $this.attr('data-href');
 
-            if (href.startsWith('sound://') || href.startsWith('gdau://') || href.startsWith('/api/static/')) {
-                const playOnline = $oaldpe.attr("online-example-pron") === "true";
+            const playOnline = $oaldpe.attr("online-example-pron") === "true";
+            const playType = playOnline ? 'online' : 'offline';
+            const fallbackType = playOnline ? 'offline' : 'online';
 
-                if (playOnline) {
-                    if (!globalAudio.paused) globalAudio.pause();
-                    globalAudio.src = onlineHref;
-                    globalAudio.play();
-                    event.preventDefault();
-                    console.log('(online) official example audio: ' + onlineHref);
-                } else {
-                    if (isGoldenDict()) console.log('Platfrom: GoldenDict');
-                    if (href.startsWith('/api/static/')) {
-                        console.log('Platfrom: Preview');
-                        event.preventDefault();
-                    }
-                    console.log('(offline) official example audio: ' + href);
-                }
-            }
+            if (!globalAudio.paused) globalAudio.pause();
+            globalAudio.src = playOnline ? onlineHref : offlineHref;
+            globalAudio.play()
+                .then(() => { console.log(`(${playType}) audio: ` + globalAudio.src); })
+                .catch((error) => {
+                    console.log(`(${playType}) audio: ` + globalAudio.src);
+                    console.log(`Failed to play ${playType} audio, fallback to ${fallbackType} audio.`);
+                    globalAudio.src = fallbackType === 'online' ? onlineHref : offlineHref;
+                    globalAudio.play()
+                        .then(() => { console.log(`(${fallbackType}) audio: ` + globalAudio.src); })
+                        .catch((error) => {
+                            console.log(`(${fallbackType}) audio: ` + globalAudio.src);
+                            console.log(`Failed to play ${fallbackType} audio.`);
+                            console.error(error);
+                        });
+                });
         });
     }
 
