@@ -434,7 +434,7 @@ var oaldpeCfg = {
 
     fnSimplifyPos(oaldpeCfg.simplifyPos);
 
-    fnShowTraditional(oaldpeCfg.showTraditional);
+    fnShowTraditional();
 
     fnUnfoldBox1();
 
@@ -448,7 +448,7 @@ var oaldpeCfg = {
 
     fnBox2ShowSwitch(oaldpeCfg.box2ShowSwitch);
 
-    fnSimplifySthSb(oaldpeCfg.simplifySthSb);
+    fnSimplifySthSb();
 
     fnPhrasesAddUnderline(oaldpeCfg.phrasesAddUnderline);
 
@@ -677,10 +677,13 @@ var oaldpeCfg = {
         $obj.toggleClass("unfolded");
     }
 
-    /* Modified by Hazuki */
-    function fnExamplesChineseBeAlone(itemValue) {
-        if (!itemValue)
-            $(".oaldpe .exText chn").css("display", "inline").parent().css("margin-left", "4px");
+    /* Rewrited by Hazuki */
+    function fnExamplesChineseBeAlone() {
+        if (!oaldpeCfg.examplesChineseBeAlone) {
+            const $exampleChn = $(".oaldpe .exText chn");
+            $exampleChn.css("display", "inline");
+            $exampleChn.parent().css("margin-left", "4px");
+        }
     }
 
     function fnUsePlaceholder(itemValue) {
@@ -737,7 +740,7 @@ var oaldpeCfg = {
         setupEudicConfigurations();
         /* End of addition */
 
-        fnExamplesChineseBeAlone(oaldpeCfg.examplesChineseBeAlone);
+        fnExamplesChineseBeAlone();
     }
 
     function removeEudicHeader() {
@@ -1521,7 +1524,7 @@ var oaldpeCfg = {
         }
     }
 
-    /* Modified by Hazuki */
+    /* Rewrited by Hazuki */
     function fnOfficialExPronOpt() {
         const $oaldpe = $(".oaldpe");
         const optionValue = oaldpeCfg.officialExPronOpt;
@@ -1780,7 +1783,7 @@ var oaldpeCfg = {
         });
     }
 
-    /* Modified by Hazuki */
+    /* Rewrited by Hazuki */
     function fnUnfoldSense() {
         if (!oaldpeCfg.unfoldSense) {
             $(".oaldpe .sense").children(".examples, .collapse, .un, .xrefs, .topic-g").hide();
@@ -1818,7 +1821,7 @@ var oaldpeCfg = {
             });
     }
 
-    /* Modified by Hazuki */
+    /* Rewrited by Hazuki */
     function fnUnfoldBox1() {
         const $oaldpeH2 = $(".oaldpe h2.shcut");
 
@@ -1836,12 +1839,16 @@ var oaldpeCfg = {
         });
     }
 
-    /* Bug Fixed by Hazuki */
-    function fnSimplifySthSb(itemValue) {
-        itemValue && $('.oaldpe .cf, .oaldpe .def, .oaldpe .idm').each(function() {  
-            _newHtml = $(this).html().replace(/something/g, 'sth.').replace(/somebody/g,'sb.');
-            $(this).html(_newHtml);  
-        });        
+    /* Rewrited by Hazuki */
+    function fnSimplifySthSb() {
+        if (oaldpeCfg.simplifySthSb) {
+            $('.oaldpe .cf, .oaldpe .idm').each(function () {
+                const $this = $(this);
+                const html = $this.html();
+                const newHtml = html.replace(/something/g, 'sth.').replace(/somebody/g, 'sb.');
+                $this.html(newHtml);
+            });
+        }
     }
 
     function fnPhrasesAddUnderline(itemValue) {
@@ -1856,7 +1863,7 @@ var oaldpeCfg = {
         !itemValue && $('.oaldpe div.li_sense_before').addClass('colored');
     }
 
-    /* Modified by Hazuki */
+    /* Rewrited by Hazuki */
     function setupNavigation() {
         addNavigation();
 
@@ -2081,9 +2088,9 @@ var oaldpeCfg = {
         itemValue && isEudicAPP() && $(".oaldpe").parent().find("hr").not('.oaldpe hr').hide();
     }
 
-    /* Modified by Hazuki */
-    function fnShowTraditional(itemValue) {
-        if (itemValue) {
+    /* Rewrited by Hazuki */
+    function fnShowTraditional() {
+        if (oaldpeCfg.showTraditional) {
             $(".oaldpe chn.simple").remove();
             $(".oaldpe").attr("trans", "traditional");
         } else {
