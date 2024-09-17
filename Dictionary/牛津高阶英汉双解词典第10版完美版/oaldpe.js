@@ -961,7 +961,7 @@ var oaldpeCfg = {
         $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
 
         async function constructNotes() {
-            await $.getScript(`${prefix}/Hazuki-note/dist/bundle.js`);
+            await $.getScript(`${prefix}/Hazuki-note/dist/notes.bundle.js`);
 
             // Move the image container to the inside of the flex container
             const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
@@ -991,7 +991,7 @@ var oaldpeCfg = {
     }
 
     async function enableClickToCopy() {
-        await $.getScript(`${prefix}/Hazuki-note/src/clickToCopy.js`);
+        await $.getScript(`${prefix}/Hazuki-note/dist/clickToCopy.bundle.js`);
     }
 
     function setupEudicConfigurations() {
@@ -1004,7 +1004,7 @@ var oaldpeCfg = {
         const $script = $ancestor.children('script').first();
 
         const src = $script.attr('src');
-        window.prefix = src.slice(0, src.lastIndexOf('/'));
+        window.prefix = src ? src.slice(0, src.lastIndexOf('/')) : '/api/static';
 
         observeCustomNoteAdded(modifyCustomNote);
 

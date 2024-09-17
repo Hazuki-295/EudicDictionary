@@ -1,9 +1,12 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/notes.js',
+    entry: {
+        notes: './src/notes.js',
+        clickToCopy: './src/clickToCopy.js',
+    },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
     mode: 'development',
