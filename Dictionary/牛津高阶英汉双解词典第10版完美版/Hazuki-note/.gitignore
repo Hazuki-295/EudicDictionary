@@ -1,0 +1,11 @@
+!/package.json
+!/package-lock.json
+!/webpack.config.js
+
+!/src/notes.js
+!/src/notes.css
+
+dist/
+node_modules/
+
+!.gitignore
