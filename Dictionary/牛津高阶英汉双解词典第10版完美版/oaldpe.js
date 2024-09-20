@@ -286,9 +286,6 @@ var oaldpeCfg = {
     }
 
     // variable declaration area
-    const OALDPE_NAVBAR_CLASS = "oaldpe-nav";
-    const OALDPE_NAVBAR_SELECTOR = "." + OALDPE_NAVBAR_CLASS;
-
     const OALDPE_PREFIX_FULL_IMAGE =  "https://www.oxfordlearnersdictionaries.com/media/english/fullsize/";
     const OALDPE_PREFIX_THUMB_IMAGE = "https://www.oxfordlearnersdictionaries.com/media/english/thumb/";
     const OALDPE_PREFIX_WORD_UK = "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/";
@@ -420,340 +417,161 @@ var oaldpeCfg = {
 
     var oaldpeCfgDuplicate = Object.assign({}, oaldpeCfg);
 
-    // main
-
-    initialize();
-
-    fnSimplifyPos(oaldpeCfg.simplifyPos);
-
-    fnShowTraditional();
-
-    fnUnfoldBox1();
-
-    fnUnfoldBox2(oaldpeCfg.unfoldBox2);
-
-    fnAutoUnfoldBox2(oaldpeCfg.autoUnfoldBox2);
-
-    fnUnfoldBox3(oaldpeCfg.unfoldBox3);
-
-    fnUnfoldSense();
-
-    fnBox2ShowSwitch(oaldpeCfg.box2ShowSwitch);
-
-    fnSimplifySthSb();
-
-    fnPhrasesAddUnderline(oaldpeCfg.phrasesAddUnderline);
-
-    fnNormalSenseNumber(oaldpeCfg.normalSenseNumber);
-
-    fnSelectNavbarAll(oaldpeCfg.selectNavbarAll);
-
-    fnOnlineImage(oaldpeCfg.onlineImage);
-    
-    fnSimplifyGrammar(oaldpeCfg.simplifyGrammar);
-
-    fnShowSyllable(oaldpeCfg.showSyllable);
-
-    fnShowTranslation(oaldpeCfg.showTranslation);
-
-    fnBox3ShowSwitch(oaldpeCfg.box3ShowSwitch);
-
-    fnEnableOnlineTTS(oaldpeCfg.enableOnlineTTS);
-
-    fnOthersShowSwitch(oaldpeCfg.othersShowSwitch);
-
-    addRocketAndReturn();
-
-    fnWiderScreenEudic(oaldpeCfg.widerScreenEudic);
-
-    scrollingAndJumping();
-
-    fnImgTranslationOpt(oaldpeCfg.imgTranslationOpt);
-
-    imageZoomEvent();
-
-    fnOfficialExPronOpt();
-
-    addBox2Toggle();
-
-    fnCustomizeCSS(oaldpeCfg.customizeCSS);
-    
-    fnOnlineWordPron(oaldpeCfg.onlineWordPron);
-
-    fnUsePlaceholder(oaldpeCfg.usePlaceholder);    
-
-    termNumberClickEvent();
-
-    fnUnfoldBox2Subtitle(oaldpeCfg.unfoldBox2Subtitle);
-
-    fnTouchToTranslate(oaldpeCfg.touchToTranslate);
+    // region 初始化
+    updateConfigFromLocalStorage();
 
     oaldpeConfigEvent();
 
-    fnDisableConfigWord(oaldpeCfg.disableConfigWord);
+    fnDisableConfigWord();
 
-    // main end
+    setupConfigGear();
 
-    // alert(navigator.userAgent.toLowerCase());
+    setupErudaConsole();
 
-    // function declaration area
-    function fnDisableConfigWord(itemValue) {
-        if (itemValue) {
-            $("#oaldpe-config .config-item, #oaldpe-config button").remove();
-            $("#oaldpe-config .head-title").text("配置词头已被禁用");
-        }
+    detectDarkModeEnabled();
+
+    function updateConfigFromLocalStorage() {
+        if (oaldpeCfg.disableConfigWord) return;
+
+        Object.keys(localStorage).forEach(key => {
+            if (!key.startsWith(OALDPE_PREFIX_LOCALSTORAGE)) return;
+
+            const localStorageValue = localStorage.getItem(key);
+            const oaldpeCfgKey = key.replace(OALDPE_PREFIX_LOCALSTORAGE, "");
+
+            /* convert from localStorage string to oaldpeCfg type */
+            if (oaldpeCfgKey === "britishTTS") {
+                oaldpeCfg[oaldpeCfgKey] = OALDPE_BRITISH_TTS_OPTION[parseInt(localStorageValue)];
+            } else if (oaldpeCfgKey === "americanTTS") {
+                oaldpeCfg[oaldpeCfgKey] = OALDPE_AMERICAN_TTS_OPTION[parseInt(localStorageValue)];
+            }
+
+            const oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
+            if (typeof oaldpeCfgValue === "number") {
+                oaldpeCfg[oaldpeCfgKey] = parseInt(localStorageValue);
+            } else if (typeof oaldpeCfgValue === "boolean") {
+                oaldpeCfg[oaldpeCfgKey] = localStorageValue === "1";
+            }
+        });
     }
 
-    function configDataConvertToCfg(oaldpeCfgKey, localStorageKey) {
-        _localStorageValue = localStorage.getItem(localStorageKey);
-        _oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
-        if (oaldpeCfgKey === "britishTTS") {
-            return OALDPE_BRITISH_TTS_OPTION[parseInt(_localStorageValue)]
-        } else if (oaldpeCfgKey === "americanTTS") {
-            return OALDPE_AMERICAN_TTS_OPTION[parseInt(_localStorageValue)]
-        }
+    function updateConfigToUI() {
+        if (oaldpeCfg.disableConfigWord) return;
 
-        if (typeof _oaldpeCfgValue === "number") {
-            return parseInt(_localStorageValue);
-        } else if (typeof _oaldpeCfgValue === "boolean") {
-            return _localStorageValue === "1";
-        } else {
-            return _localStorageValue;
-        }
+        Object.keys(oaldpeCfg).forEach(oaldpeCfgKey => {
+            const oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
+
+            let index;
+
+            /* convert from oaldpeCfg type to index number */
+            if (oaldpeCfgKey === "britishTTS") {
+                index = OALDPE_BRITISH_TTS_OPTION.indexOf(oaldpeCfgValue);
+            } else if (oaldpeCfgKey === "americanTTS") {
+                index = OALDPE_AMERICAN_TTS_OPTION.indexOf(oaldpeCfgValue);
+            }
+
+            if (typeof oaldpeCfgValue === "number") {
+                index = oaldpeCfgValue;
+            } else if (typeof oaldpeCfgValue === "boolean") {
+                index = oaldpeCfgValue ? 1 : 0;
+            }
+
+            $(`#oaldpe-config .config-item[id=${oaldpeCfgKey}] .select`).attr("cfg-selected", index); // convert to string automatically
+        });
     }
 
-    function configDataConvertToUI(oaldpeCfgKey) {
-        _oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
-        if (oaldpeCfgKey === "britishTTS") {
-            return OALDPE_BRITISH_TTS_OPTION.indexOf(_oaldpeCfgValue);
-        } else if (oaldpeCfgKey === "americanTTS") {
-            return OALDPE_AMERICAN_TTS_OPTION.indexOf(_oaldpeCfgValue);
-        }
+    function addClickEventToConfigOption() {
+        $("#oaldpe-config .config-item .select").each(function () {
+            const $select = $(this);
+            const $options = $select.find(".option");
+            const selectedIndex = $select.attr("cfg-selected");
 
-        if (typeof _oaldpeCfgValue === "number") {
-            return _oaldpeCfgValue.toString();
-        } else if (typeof _oaldpeCfgValue === "boolean") {
-            return _oaldpeCfgValue ? "1" : "0";
-        } else {
-            return _oaldpeCfgValue;
-        }
+            const fullHeight = $select.height();
+            const selectedHeight = $options.eq(selectedIndex).outerHeight();
+
+            $select.click(function (event) {
+                event.stopPropagation();
+                if ($select.hasClass("unfolded")) {
+                    if ($(event.target).hasClass("option")) {
+                        $select.attr("cfg-selected", $(event.target).index());
+                    }
+                    $select.animate({ height: selectedHeight }, {
+                        duration: 300,
+                        complete: function () {
+                            $options.each(function (index) {
+                                $(this).toggle(index.toString() === $select.attr("cfg-selected"));
+                            });
+                        }
+                    });
+                } else {
+                    $options.show();
+                    $select.animate({ height: fullHeight }, { duration: 300 });
+                }
+                $select.toggleClass("unfolded");
+            });
+
+            // 初始化选项
+            $select.addClass("unfolded").click();
+
+            // 点击其他地方收起
+            $(document).click(function (event) {
+                if (!$(event.target).closest(".select").length) {
+                    $select.filter(".unfolded").click();
+                }
+            });
+
+            // 高亮选项
+            $options.hover(
+                function () { $(this).addClass('highlighted'); },
+                function () { $(this).removeClass('highlighted'); }
+            );
+        });
     }
 
     function oaldpeConfigEvent() {
-        if (oaldpeCfg.disableConfigWord)
-            return
-        // 默认收起选项
-        foldConfigOption();
+        if (oaldpeCfg.disableConfigWord || !$("#oaldpe-config").length) return;
 
-        // 选项展开或选中事件
-        $("#oaldpe-config .config-item .select").click(function(e) {
-            e.stopPropagation();
-            if (!$(this).hasClass("unfolded") && $(e.target).is(".option")) {
-                // console.log("ddddddd");
-                $(this).attr("cfg-selected", $(e.target).index().toString());
-            }
-            cfgSelectToggleFold($(this));
-        });
+        updateConfigToUI(); // 初始化配置
 
-        // 高亮选项
-        $('#oaldpe-config .config-item .select .option').mouseover(function(){
-            if (!$(this).parent().hasClass("unfolded"))
-                $(this).addClass('highlighted');
-        }).mouseout(function(){
-            $(this).removeClass('highlighted');
-        });
+        addClickEventToConfigOption();
 
-        // 保存配置
-        $('#oaldpe-config button[type="submit"]').click(function() {
+        const $select = $("#oaldpe-config .config-item .select");
+        const foldConfigOption = () => $select.addClass("unfolded").click();
+
+        $('#oaldpe-config button[type="submit"]').click(function () { // 保存配置
             foldConfigOption();
 
-
-            $("#oaldpe-config .config-item").each(function() {
-                _id = $(this).attr("id");
-                _value = $(this).find(".select").attr("cfg-selected");
-                localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + _id, _value);
+            $("#oaldpe-config .config-item").each(function () {
+                const $this = $(this);
+                const id = $this.attr("id");
+                const value = $this.find(".select").attr("cfg-selected");
+                localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + id, value);
             })
 
-            $(this).text("保存配置完毕！");
-
-            _$this = $(this)
-            $('#oaldpe-config button[type="reset"]').text("重置配置")
-            setTimeout(function() {
-                _$this.text("保存配置");
-            }, 1000);
+            const $this = $(this);
+            $this.text("保存配置完毕！");
+            setTimeout(function () { $this.text("保存配置"); }, 1000);
         });
 
-        // 重置配置
-        $('#oaldpe-config button[type="reset"]').click(function() {
-
-            removeKeysStartingWith(OALDPE_PREFIX_LOCALSTORAGE);
-            oaldpeCfg = oaldpeCfgDuplicate;
-            updateConfigToUI();
+        $('#oaldpe-config button[type="reset"]').click(function () { // 重置配置
             foldConfigOption();
 
-            $(this).text("重置配置完毕！");
-            _$this = $(this)
+            Object.keys(localStorage)
+                .filter(key => key.startsWith(OALDPE_PREFIX_LOCALSTORAGE))
+                .forEach(key => localStorage.removeItem(key));
 
-            $('#oaldpe-config button[type="submit"]').text("保存配置")
-            setTimeout(function() {
-                _$this.text("重置配置");
-            }, 1000);
+            oaldpeCfg = oaldpeCfgDuplicate;
+            updateConfigToUI();
+
+            const $this = $(this);
+            $this.text("重置配置完毕！");
+            setTimeout(function () { $this.text("重置配置"); }, 1000);
         });
     }
 
-    function removeKeysStartingWith(prefix) {
-        for (var i = localStorage.length - 1; i >= 0; i--) {
-            var key = localStorage.key(i);
-            if (key.startsWith(prefix)) {
-                localStorage.removeItem(key);
-            }
-        }
-    }
-
-    function foldConfigOption() {
-        $("#oaldpe-config .config-item .select").each(function() {
-            $(this).removeClass("unfolded");
-            cfgSelectToggleFold($(this));
-        })
-    }
-
-    function refreshOptions($obj) {
-        // 刷新选项
-        _selectedIndex = $obj.attr("cfg-selected");
-        $obj.find(".option").each(function() {
-            if ($(this).index().toString() !== _selectedIndex) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    }
-
-    function cfgSelectToggleFold($obj) {
-        var _foldHeight = 0;
-        var _objectHeight = $obj.find(".option").eq(0).outerHeight();
-        $obj.find(".option").each(function() {
-            _foldHeight = _foldHeight + $(this).outerHeight();
-            if ($obj.attr("cfg-selected") === $(this).index().toString())
-                _objectHeight = $(this).outerHeight();
-
-        })
-
-        _objectHeight = _objectHeight.toString() + "px"
-        if ($obj.hasClass("unfolded")) {
-                $obj.find(".option").show();
-                $obj.animate({height: _foldHeight.toString() + "px"
-            }, {
-                duration: 300,
-                complete: function() {  
-                    // 完全展开时
-                }
-            });
-
-        } else {
-            $obj.animate({height: _objectHeight
-                }, {
-                duration: 300,
-                complete: function() {  
-                    // 完全收起时
-                    refreshOptions($obj);
-                }
-            });
-        }
-        $obj.toggleClass("unfolded");
-    }
-
-    /* Rewrited by Hazuki */
-    function fnExamplesChineseBeAlone() {
-        if (!oaldpeCfg.examplesChineseBeAlone) {
-            const $exampleChn = $(".oaldpe .exText chn");
-            $exampleChn.css("display", "inline");
-            $exampleChn.parent().css("margin-left", "4px");
-        }
-    }
-
-    function fnUsePlaceholder(itemValue) {
-        itemValue && $(".oaldpe .cf").each(function() {
-            _$headword = $(this).parents(".senses_multiple, .sense_single").prev().find(".headword");
-            _headword = _$headword.text().replace("·", "");
-            if (_headword !== "") {
-                $(this).text($(this).text().replace(_headword, "~"))
-                console.log("ok");
-            } else {
-                console.log("no");
-            }
-        });
-    }
-
-    function fnUnfoldBox2Subtitle(itemValue) {
-        if (!itemValue)
-            $(".collapse > .unbox > .body > .unbox+.bullet").hide();
-
-        $(".collapse > .unbox > .body > .unbox").click(function(e) {
-            if ($(this).next().hasClass("bullet") && ($(e.target).is($(this)))) {
-                e.stopPropagation();
-                $(this).next().slideToggle("fast");
-            }
-        })
-    }
-
-    function initialize() {
-        $(".oaldpe").show();
-
-        updateConfigFromLocalStorage();
-
-        updateConfigToUI();
-
-        /* Added by Hazuki */
-        removeEudicHeader();
-
-        foldEudicNote();
-
-        setupConfigGear();
-
-        setupNavigation();
-
-        setupErudaConsole();
-
-        setupWordPron();
-
-        showExamplesLabel();
-
-        replaceFullWidthCharsInChn();
-
-        detectDarkModeEnabled();
-
-        setupEudicConfigurations();
-        /* End of addition */
-
-        fnExamplesChineseBeAlone();
-    }
-
-    function removeEudicHeader() {
-        if (oaldpeCfg.removeEudicHeader && isEudic())
-            $('#wordInfoHead').remove();
-    }
-
-    function observeCustomNoteAdded(callback) {
-        if (!isEudic()) return;
-
-        var observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                $(mutation.addedNodes).each(function () {
-                    var $node = $(this);
-                    if ($node.attr('id') === 'customeNoteText') {
-                        callback();
-                        observer.disconnect();
-                    }
-                });
-            });
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
-
-    function foldEudicNote() {
-        if (oaldpeCfg.autoFoldEudicNote && isEudic())
-            observeCustomNoteAdded(() => $('#expCustomNote .expHead').click());
+    function fnDisableConfigWord() {
+        if (oaldpeCfg.disableConfigWord)
+            $("#oaldpe-config .head-title").css("color", "red").text("配置词头已被禁用");
     }
 
     function setupConfigGear() {
@@ -858,50 +676,6 @@ var oaldpeCfg = {
         $('#eruda')[0].shadowRoot.querySelector('.eruda-entry-btn').style.display = 'none';
     }
 
-    function setupWordPron() {
-        const $oaldpe = $(".oaldpe");
-        const $phons = $oaldpe.find('.phons_br, .phons_n_am');
-        $phons.children('.phon').on('click', function () {
-            $(this).prev('a')[0].click();
-        });
-    }
-
-    function showExamplesLabel() {
-        if (oaldpeCfg.officialExPronOpt === 2) {
-            $('.oaldpe example-audio').each(function () {
-                $(this).parent().addClass('audio_disabled');
-            });
-        }
-
-        if (!oaldpeCfg.enableOnlineTTS) {
-            $('.oaldpe example-audio-ai').each(function () {
-                $(this).parent().addClass('audio_disabled');
-            });
-        }
-    }
-
-    function replaceFullWidthCharsInChn() {
-        var replacements = {
-            '／': '/',
-            // Add more replacements if needed
-        };
-
-        $('.oaldpe chn').each(function () {
-            const $this = $(this);
-            $this.contents().each(function () {
-                if (this.nodeType === Node.TEXT_NODE) {
-                    var text = this.nodeValue;
-                    for (var fullWidthChar in replacements) {
-                        var normalChar = replacements[fullWidthChar];
-                        var regex = new RegExp(fullWidthChar, 'g');
-                        text = text.replace(regex, normalChar);
-                    }
-                    this.nodeValue = text;
-                }
-            });
-        });
-    }
-
     function detectDarkModeEnabled() {
         if (!oaldpeCfg.autoDarkMode) return;
 
@@ -948,93 +722,49 @@ var oaldpeCfg = {
         }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
-    function modifyCustomNote() {
-        const $expCustomNote = $('#expCustomNote');
-        const $customeNoteText = $expCustomNote.find('#customeNoteText');
-        try {
-            window.noteDataArray = JSON.parse($customeNoteText.text()).map(innerDict =>
-                Object.fromEntries(Object.entries(innerDict).map(([key, value]) =>
-                    [key, value.replace(/\\n/g, "\n").replace(/\\"/g, "\"")]
-                ))
-            );
-        } catch { return; }
-        $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
+    // region 中文翻译相关
+    fnExamplesChineseBeAlone();
 
-        async function constructNotes() {
-            await $.getScript(`${prefix}/Hazuki-note/dist/notes.bundle.js`);
+    fnShowTranslation(oaldpeCfg.showTranslation);
 
-            // Move the image container to the inside of the flex container
-            const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
-            if ($elementToMove.length) {
-                const $newParent = $('.Hazuki-note .single-note').first();
-                $newParent.prepend($elementToMove);
-            }
+    fnShowTraditional();
+
+    fnTouchToTranslate(oaldpeCfg.touchToTranslate);
+
+    replaceFullWidthCharsInChn();
+
+    function fnExamplesChineseBeAlone() {
+        if (!oaldpeCfg.examplesChineseBeAlone) {
+            const $exampleChn = $(".oaldpe .exText chn");
+            $exampleChn.css("display", "inline");
+            $exampleChn.parent().css("margin-left", "4px");
         }
-
-        constructNotes();
-
-        // Create a copy button to get the 'noteDataArray'
-        const $eudicNoteHead = $expCustomNote.find('.eudic_note_head');
-        var $copyButton = $('<button>', {
-            text: '复制',
-            class: 'editNote',
-            css: { marginLeft: '10px' },
-            click: function () {
-                copyToClipboard(JSON.stringify(noteDataArray));
-            }
-        });
-        $eudicNoteHead.append($copyButton);
-
-        // Remove Eudic '查看公开笔记'
-        $expCustomNote.find('.eudicNoteMore').remove();
-        $expCustomNote.find('.customeHorizonal').css('margin-bottom', 'unset');
     }
 
-    async function enableClickToCopy() {
-        await $.getScript(`${prefix}/Hazuki-note/dist/clickToCopy.bundle.js`);
+    function fnShowTranslation(itemValue) {
+        (itemValue === 0) && $(".oaldpe chn").hide();
+        (itemValue === 1) && $(".oaldpe chn").show();
+        (itemValue === 2) && $(".oaldpe chn").show() && $(".oaldpe .exText chn").hide();
+        (itemValue === 3) && $(".oaldpe chn").hide() && $(".oaldpe .exText chn").show();
+        (itemValue === 4) && $(".oaldpe chn").show() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").hide();
+        (itemValue === 5) && $(".oaldpe chn").hide() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").show();
+
+        if (itemValue === 0) {
+            fnImgTranslationOpt(0);
+        } else {
+            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
+        }
     }
 
-    function setupEudicConfigurations() {
-        if (!isEudic()) return;
-
+    function fnShowTraditional() {
         const $oaldpe = $(".oaldpe");
-        if (!$oaldpe.length) return;
-
-        const $ancestor = $oaldpe.parent();
-        const $script = $ancestor.children('script').first();
-
-        const src = $script.attr('src');
-        window.prefix = src ? src.slice(0, src.lastIndexOf('/')) : '/api/static';
-
-        observeCustomNoteAdded(modifyCustomNote);
-
-        if (!isMacosIpadSim()) return;
-
-        enableClickToCopy();
-    }
-
-    function updateConfigFromLocalStorage() {
-        if (oaldpeCfg.disableConfigWord)
-            return
-        // 从LocalStorage更新配置
-        for (var i = localStorage.length - 1; i >= 0; i--) {
-            var _key = localStorage.key(i);
-            if (_key.startsWith(OALDPE_PREFIX_LOCALSTORAGE)) {
-                var _oaldpeCfgKey = _key.replace(OALDPE_PREFIX_LOCALSTORAGE, "");
-                oaldpeCfg[_oaldpeCfgKey] = configDataConvertToCfg(_oaldpeCfgKey, _key);
-            }
+        if (oaldpeCfg.showTraditional) {
+            $oaldpe.find("chn.simple").remove();
+            $oaldpe.attr("trans", "traditional");
+        } else {
+            $oaldpe.find("chn.traditional").remove();
+            $oaldpe.attr("trans", "simple");
         }
-    }
-
-    /* Modified by Hazuki */
-    function updateConfigToUI() {
-        if (oaldpeCfg.disableConfigWord)
-            return
-        // 更新配置到配置词头
-        Object.keys(oaldpeCfg).forEach(function(key) {
-            $("#oaldpe-config .oaldpe-config-group > #" + key + " .select")
-                .attr("cfg-selected", configDataConvertToUI(key));            
-        })
     }
 
     function fnTouchToTranslate(itemValue) {
@@ -1162,48 +892,328 @@ var oaldpeCfg = {
 
     }
 
-    /* Modified by Hazuki */
-    function termNumberClickEvent() {
-        $(".oaldpe .li_sense_before, .oaldpe .idm, .oaldpe .pv").click(function (e) {
-            e.stopPropagation(); 
+    function replaceFullWidthCharsInChn() {
+        var replacements = {
+            '／': '/',
+        };
+
+        $('.oaldpe chn').each(function () {
             const $this = $(this);
-            if ($this.hasClass("li_sense_before")) {
-                var _$objEle = $this.next();
-            } else if ($this.hasClass("idm")) {
-                var _$objEle = $this.parents(".idm-g");
-            } else if ($this.hasClass("pv")) {
-                var _$objEle = $this.parents(".pv-g");
-            }
-            var _isVisible = _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g, div#ox-enlarge").is(":visible");
-
-            if (_isVisible) {
-                if ($this.hasClass("li_sense_before")) {
-                    _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideUp("fast");
-                    _$objEle.find("div#ox-enlarge").slideUp("fast");
-                } else {
-                    _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g").slideUp("fast");
+            $this.contents().each(function () {
+                if (this.nodeType === Node.TEXT_NODE) {
+                    var text = this.nodeValue;
+                    for (var fullWidthChar in replacements) {
+                        var normalChar = replacements[fullWidthChar];
+                        var regex = new RegExp(fullWidthChar, 'g');
+                        text = text.replace(regex, normalChar);
+                    }
+                    this.nodeValue = text;
                 }
+            });
+        });
+    }
+
+    function chineseToggle() {
+        if (oaldpeCfg.showTranslation === 1) {
+            $(".oaldpe chn").fadeOut("fast");
+        } else {
+            $(".oaldpe chn").fadeIn("fast");
+        }
+
+        oaldpeCfg.showTranslation = oaldpeCfg.showTranslation === 1 ? 0 : 1;
+        // console.log(oaldpeCfg.showTranslation);
+
+        if (oaldpeCfg.showTranslation === 0) {
+            fnImgTranslationOpt(0);
+        } else {
+            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
+        }
+
+        box3RefreshHeight();
+    }
+
+    // region 词性导航栏
+    setupNavigation();
+
+    fnSelectNavbarAll(oaldpeCfg.selectNavbarAll);
+
+    function setupNavigation() {
+        addNavigation();
+
+        const selectors = {
+            allExpand: [
+                ".oaldpe .sense > .examples",
+                ".oaldpe .sense > .collapse",
+                ".oaldpe .sense > .un",
+                ".oaldpe .sense > .xrefs",
+                ".oaldpe .sense > .topic-g",
+                ".oaldpe .sense div#ox-enlarge",
+            ],
+            box1: ".oaldpe h2.shcut",
+            box2: ".oaldpe .box_title",
+            box3: [
+                ".oaldpe .idioms",
+                ".oaldpe .phrasal_verb_links"
+            ],
+        };
+
+        function doubleClickHandler() {
+            const concise = $(".oaldpe").attr("concise") === "true";
+            if (concise) {
+                // 全部展开
+                $(selectors.allExpand.join(", ")).slideDown("fast");
+                $(".oaldpe").attr("concise", "false");
+
+                // 折叠块2>展开
+                $(selectors.box2).parent().addClass("is-active");
+                $(selectors.box2).next().slideDown("fast");
+
+                // 折叠块3>展开
+                $(selectors.box3.join(", ")).addClass('expanded').css("height", "auto");
             } else {
-                if ($this.hasClass("li_sense_before")) {
-                    _$objEle.children(".examples, .collapse, .un, .xrefs, .topic-g").slideDown("fast");
-                    _$objEle.find("div#ox-enlarge").slideDown("fast");
-                } else {
-                    _$objEle.find(".examples, .collapse, .un, .xrefs, .topic-g").slideDown("fast");
-                    box3RefreshHeight();
-                }
+                // 全部折叠
+                $(selectors.allExpand.join(", ")).slideUp("fast");
+                $(".oaldpe").attr("concise", "true");
+
+                // 折叠块1>展开
+                $(selectors.box1).parent().addClass("is-active");
+                $(selectors.box1).siblings().slideDown("fast");
+
+                // 折叠块2>折叠
+                $(selectors.box2).parent().removeClass("is-active");
+                $(selectors.box2).next().slideUp("fast");
+
+                // 折叠块3>折叠
+                $(selectors.box3.join(", ")).css("height", "26px").removeClass('expanded');
+            }
+        }
+
+        let clickTimer;
+
+        const $navbar_span = $(".oaldpe-nav span");
+        $navbar_span.on("click", function () {
+            const $this = $(this);
+            clearTimeout(clickTimer);
+            if ($this.hasClass("active")) {
+                clickTimer = setTimeout(chineseToggle, 250);
+            } else {
+                $this.siblings().removeClass('active');
+                $this.addClass('active');
+                showHideEntry($this.text() === "All" ? -1 : $this.index());
+            }
+        });
+        $navbar_span.on("dblclick", function () {
+            const $this = $(this);
+            clearTimeout(clickTimer);
+            if ($this.hasClass("active")) {
+                doubleClickHandler();
+            }
+        });
+
+        const $gear_icon = $(".oaldpe-config-gear .oaldpe-config-gear__head__icon");
+        $gear_icon.on('click', function () {
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(chineseToggle, 250);
+        });
+        $gear_icon.on('dblclick', function () {
+            clearTimeout(clickTimer);
+            doubleClickHandler();
+        });
+    }
+
+    function addNavigation() {
+        const $oaldpe = $(".oaldpe");
+        const $entries = $oaldpe.find(".oald");
+
+        // 没有 entry 不添加
+        if ($entries.length < 1) return;
+
+        const $navbar = $("<div></div>").addClass("oaldpe-nav");
+
+        // 只有一个entry时隐藏
+        if (!oaldpeCfg.showNavbar || $entries.length === 1) $navbar.hide();
+
+        $entries.each(function () {
+            const $entry = $(this);
+            const posText = $entry.find(".webtop .pos").text() || $entry.find(".webtop .headword").text();
+            const $span = $("<span></span>").text(OALDPE_POS[posText] || posText);
+            $navbar.append($span);
+        });
+
+        // 添加 All
+        const $spanAll = $("<span></span>").text("All");
+        $navbar.append($spanAll);
+
+        const $navbar_span = $navbar.children("span");
+        if (oaldpeCfg.selectNavbarAll) {
+            $spanAll.addClass('active');
+        } else {
+            $navbar_span.first().addClass("active");
+        }
+        showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
+
+        if (oaldpeCfg.NavbarMargin) $navbar_span.css("padding", ".2rem 1.2rem");
+
+        $oaldpe.first().prepend($navbar);
+    }
+
+    function showHideEntry(index) {
+        $(".oaldpe .oald").each(function (i) {
+            $(this).toggle(index === i || index < 0);
+        });
+    }
+
+    function fnSelectNavbarAll(itemValue) {
+        // 词性导航滚动到最右边
+        if (itemValue && oaldpeCfg.showNavbar) {
+            var _$navbar = $(".oaldpe-nav");
+            // 由于手机欧路滚动失效，所以加10000个像素
+            _$navbar.scrollLeft(_$navbar.scrollLeft() + _$navbar.width() + 10000);
+        }
+    }
+
+    // region 发音，图片显示
+    setupWordPron();
+
+    fnShowSyllable(oaldpeCfg.showSyllable);
+
+    fnOnlineWordPron(oaldpeCfg.onlineWordPron);
+
+    fnOnlineImage(oaldpeCfg.onlineImage);
+
+    fnImgTranslationOpt(oaldpeCfg.imgTranslationOpt);
+
+    imageZoomEvent();
+
+    fnOfficialExPronOpt();
+
+    showExamplesLabel();
+
+    fnEnableOnlineTTS();
+
+    function setupWordPron() {
+        const $oaldpe = $(".oaldpe");
+        const $phons = $oaldpe.find('.phons_br, .phons_n_am');
+        $phons.children('.phon').on('click', function () {
+            $(this).prev('a')[0].click();
+        });
+    }
+
+    function fnShowSyllable(itemValue) {
+        $(".oaldpe .headword")
+        .click(function(e) {
+            e.stopPropagation();
+            var selection = window.getSelection();
+            if (selection.toString().length > 0 && this.contains(selection.anchorNode)) {
+                // $(this).trigger('textSelected', [selection]);
+                console.log("有文本被选中");
+            } else {
+                toggleSyllable($(this));
+            }
+        })
+        .each(function() {
+            if (!itemValue)
+                toggleSyllable($(this));
+        });        
+    }
+
+    function toggleSyllable($obj) {
+        if ($obj.attr("syllable")) {
+            $obj.text($obj.text().indexOf("·") > -1 ? $obj.text().replace(/·/g, "") : $obj.attr("syllable"));
+        }
+    }
+
+    function fnOnlineWordPron(itemValue) {
+        itemValue && $('.oaldpe .audio_play_button')
+        .each(function(){
+            $(this).attr("href", getOnlineWordPronUrl($(this).attr("href")));
+        })
+        .click(function(e){
+            e.preventDefault();
+            globalAudio.paused || globalAudio.pause();
+            globalAudio.src = $(this).attr("href");
+            globalAudio.play();
+        });        
+    }
+
+    function getOnlineWordPronUrl(src) {
+        var parts = src.split('/');
+        var name = parts[parts.length - 1];
+        return (name.indexOf("_gb_") > -1 ? OALDPE_PREFIX_WORD_UK : OALDPE_PREFIX_WORD_US) + name.substring(0, 1) + '/' + name.substring(0, 3) + '/' + name.substring(0, 5) + '/' + name;
+    }
+
+    function fnOnlineImage(itemValue) {
+        itemValue && $(".oaldpe div#ox-enlarge img").each(function(){
+            $(this).attr("src", getOnlineImageUrl($(this).attr("src")));
+        });
+    }
+
+    function getOnlineImageUrl(src) {
+        var _parts = src.split('/');
+        var _name = _parts[_parts.length - 1];
+        _parts = _name.split('_');
+        _name = _name.replace("fullsize_", "").replace("thumb_", "").replace(".jpg", ".png");
+        _imgSrc = _name.substring(0, 1) + '/' + replaceWithUnderscores(_name).substring(0, 3) + '/' + replaceWithUnderscores(_name).substring(0, 5) + '/' + _name;
+        return (_parts[0] === "fullsize" ? OALDPE_PREFIX_FULL_IMAGE : OALDPE_PREFIX_THUMB_IMAGE) + _imgSrc;
+    }
+
+    function replaceWithUnderscores(str) {
+        return str.replace(/\..+/, match => {
+            return '_'.repeat(match.length);
+        });
+    }
+
+    function fnImgTranslationOpt(itemValue) {
+        // 图片翻译：0-不使用翻译 1-简体中文翻译 2-台湾繁体翻译 3-自动选择
+        $(".oaldpe img.fullsize, .oaldpe img.thumb").each(function(){
+            var _newSrc = $(this).attr("src");
+            if (itemValue === 1) {
+                _newSrc = _newSrc.replace("/oa10simp/", "/oa10simp/")
+                    .replace("/oa10orth/", "/oa10simp/")
+                    .replace("/oa10src/", "/oa10simp/")
+                    .replace("\\oa10simp\\", "\\oa10simp\\")
+                    .replace("\\oa10orth\\", "\\oa10simp\\")
+                    .replace("\\oa10src\\", "\\oa10simp\\");
+            } else if (itemValue === 2) {
+                _newSrc = _newSrc.replace("/oa10simp/", "/oa10orth/")
+                .replace("/oa10orth/", "/oa10orth/")
+                .replace("/oa10src/", "/oa10orth/")
+                .replace("\\oa10simp\\", "\\oa10orth\\")
+                .replace("\\oa10orth\\", "\\oa10orth\\")
+                .replace("\\oa10src\\", "\\oa10orth\\");
+            } else if (itemValue === 0){
+                _newSrc = _newSrc.replace("/oa10simp/", "/oa10src/")
+                .replace("/oa10orth/", "/oa10src/")
+                .replace("/oa10src/", "/oa10src/")
+                .replace("\\oa10simp\\", "\\oa10src\\")
+                .replace("\\oa10orth\\", "\\oa10src\\")
+                .replace("\\oa10src\\", "\\oa10src\\");
+            }
+            $(this).attr("src", _newSrc);
+        });
+    }
+
+    function imageZoomEvent() {
+        $(".oaldpe #ox-enlarge").click(function (e) {
+            e.stopPropagation(); 
+
+            var _$fullsize = $(this).find("img.fullsize"),
+                _$thumb = $(this).find("img.thumb");
+
+            if (_$fullsize.css("display") === "block") {
+                console.log("zoom out");
+                _$fullsize.css("display", "none") && _$thumb.css("display", "block");
+                $(this).css({"width": "75px", "height": "75px", "left": "0"});
+                $(this).find("span.ox-enlarge-label").css({"position": "absolute", "margin": "0"});
+            } else {
+                console.log("zoom in");
+                _$fullsize.css("display", "block") && _$thumb.css("display", "none");
+                $(this).css({"width": "100%", "height": "auto", "left": "5px"});
+                $(this).find("span.ox-enlarge-label").css({"position": "static", "margin": "0 5px 5px 0"});
             }
         });
     }
 
-    function addBox2Toggle() {
-        $(".oaldpe .box_title").click(function(e) {  
-            e.stopPropagation(); 
-            $(this).next().slideToggle("fast").parent().toggleClass("is-active");
-            box3RefreshHeight();
-        });
-    }
-
-    /* Rewrited by Hazuki */
     function fnOfficialExPronOpt() {
         const $oaldpe = $(".oaldpe");
         const optionValue = oaldpeCfg.officialExPronOpt;
@@ -1282,85 +1292,252 @@ var oaldpeCfg = {
         });
     }
 
-    /* Modified by Hazuki */
-    function imageZoomEvent() {
-        $(".oaldpe #ox-enlarge").click(function (e) {
-            e.stopPropagation(); 
+    function showExamplesLabel() {
+        if (oaldpeCfg.officialExPronOpt === 2) {
+            $('.oaldpe example-audio').each(function () {
+                $(this).parent().addClass('audio_disabled');
+            });
+        }
 
-            var _$fullsize = $(this).find("img.fullsize"),
-                _$thumb = $(this).find("img.thumb");
-
-            if (_$fullsize.css("display") === "block") {
-                console.log("zoom out");
-                _$fullsize.css("display", "none") && _$thumb.css("display", "block");
-                $(this).css({"width": "75px", "height": "75px", "left": "0"});
-                $(this).find("span.ox-enlarge-label").css({"position": "absolute", "margin": "0"});
-            } else {
-                console.log("zoom in");
-                _$fullsize.css("display", "block") && _$thumb.css("display", "none");
-                $(this).css({"width": "100%", "height": "auto", "left": "5px"});
-                $(this).find("span.ox-enlarge-label").css({"position": "static", "margin": "0 5px 5px 0"});
-            }
-        });
+        if (!oaldpeCfg.enableOnlineTTS) {
+            $('.oaldpe example-audio-ai').each(function () {
+                $(this).parent().addClass('audio_disabled');
+            });
+        }
     }
 
-    function fnImgTranslationOpt(itemValue) {
-        // 图片翻译：0-不使用翻译 1-简体中文翻译 2-台湾繁体翻译 3-自动选择
-        $(".oaldpe img.fullsize, .oaldpe img.thumb").each(function(){
-            var _newSrc = $(this).attr("src");
-            if (itemValue === 1) {
-                _newSrc = _newSrc.replace("/oa10simp/", "/oa10simp/")
-                    .replace("/oa10orth/", "/oa10simp/")
-                    .replace("/oa10src/", "/oa10simp/")
-                    .replace("\\oa10simp\\", "\\oa10simp\\")
-                    .replace("\\oa10orth\\", "\\oa10simp\\")
-                    .replace("\\oa10src\\", "\\oa10simp\\");
-            } else if (itemValue === 2) {
-                _newSrc = _newSrc.replace("/oa10simp/", "/oa10orth/")
-                .replace("/oa10orth/", "/oa10orth/")
-                .replace("/oa10src/", "/oa10orth/")
-                .replace("\\oa10simp\\", "\\oa10orth\\")
-                .replace("\\oa10orth\\", "\\oa10orth\\")
-                .replace("\\oa10src\\", "\\oa10orth\\");
-            } else if (itemValue === 0){
-                _newSrc = _newSrc.replace("/oa10simp/", "/oa10src/")
-                .replace("/oa10orth/", "/oa10src/")
-                .replace("/oa10src/", "/oa10src/")
-                .replace("\\oa10simp\\", "\\oa10src\\")
-                .replace("\\oa10orth\\", "\\oa10src\\")
-                .replace("\\oa10src\\", "\\oa10src\\");
-            }
-            $(this).attr("src", _newSrc);
-        });
-    }
+    function fnEnableOnlineTTS() {
+        const $audioElements = $(".oaldpe example-audio-ai");
 
-    function scrollingAndJumping() {
-        // 实现idioms和prasal verbs的滚动跳转
-        $(".oaldpe .jumplinks a.Ref").click(function(e) {  
-            e.preventDefault();
-            e.stopPropagation();
-            var _objHref = $(this).attr("href");
-            var _heightSpace = 48; 
+        if (!oaldpeCfg.enableOnlineTTS) {
+            $audioElements.addClass('audio_hide');
+            return;
+        }
 
-            // 兼容DictTango
-            _objHref = _objHref.replace("entry://", "");
+        $audioElements.find("a.audio_uk, a.audio_us").click(function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+            globalAudio.src = ""; // 在ios上TTS要先把src设置为空，第一次播放才会发音
 
-            $('html, body').animate({   
-                scrollTop: $(_objHref).offset().top - _heightSpace
-            }, {
-                duration: 300,    
-                complete: function() {  
-                    if (oaldpeCfg.jumpsBox3Unfold && $(this).is("html")) 
-                        box3Unfold(_objHref);
+            const $this = $(this);
+            selectedTTS = $this.hasClass("audio_uk") ? oaldpeCfg.britishTTS : oaldpeCfg.americanTTS;
+            let exampleText = $this.parent().siblings("div.exText").clone();
+            exampleText.find(".cf, chn").remove();
+            let speakText = exampleText.text().replace(/\(.*?\)/g, "").replace(/somebody\/something/g, "somebody or something").replace(/\u200B/g, "");
+
+            if (speakText.includes("/")) {
+                const match = speakText.match(/\w+(?:\/\w+)+/);
+                if (match) {
+                    const slashWord = match[0];
+                    const splitWords = slashWord.split("/");
+                    const results = splitWords.map(word => speakText.replace(slashWord, word));
+                    speakText = results.join("\nor ");
                 }
+            }
+
+            speak(speakText);
+        });
+    }
+
+    // region 内容显示
+    fnSimplifyPos(oaldpeCfg.simplifyPos);
+
+    fnSimplifyGrammar(oaldpeCfg.simplifyGrammar);
+
+    fnSimplifySthSb();
+
+    fnUsePlaceholder(oaldpeCfg.usePlaceholder);
+
+    fnPhrasesAddUnderline(oaldpeCfg.phrasesAddUnderline);
+
+    fnNormalSenseNumber(oaldpeCfg.normalSenseNumber);
+
+    fnCustomizeCSS(oaldpeCfg.customizeCSS);
+
+    function fnSimplifyPos(itemValue) {
+        itemValue && $(".oaldpe .pos").each(function(){
+            $(this).text(OALDPE_POS[$(this).text()]);
+        });
+    }
+
+    function fnSimplifyGrammar(itemValue) {
+        itemValue && $(".oaldpe .grammar").each(function() {
+            $(this).text(OALDPE_GRAMMAR[$(this).text()]);
+        });
+    }
+
+    function fnSimplifySthSb() {
+        if (oaldpeCfg.simplifySthSb) {
+            $('.oaldpe .cf, .oaldpe .idm').each(function () {
+                const $this = $(this);
+                const html = $this.html();
+                const newHtml = html.replace(/something/g, 'sth.').replace(/somebody/g, 'sb.');
+                $this.html(newHtml);
+            });
+        }
+    }
+
+    function fnUsePlaceholder(itemValue) {
+        itemValue && $(".oaldpe .cf").each(function() {
+            _$headword = $(this).parents(".senses_multiple, .sense_single").prev().find(".headword");
+            _headword = _$headword.text().replace("·", "");
+            if (_headword !== "") {
+                $(this).text($(this).text().replace(_headword, "~"))
+                console.log("ok");
+            } else {
+                console.log("no");
+            }
+        });
+    }
+
+    function fnPhrasesAddUnderline(itemValue) {
+        if (itemValue) {
+            $('.oaldpe .cf').addClass('underline');
+        } else {
+            $('.oaldpe .cf').removeClass('underline');
+        }
+    }
+
+    function fnNormalSenseNumber(itemValue) {
+        !itemValue && $('.oaldpe div.li_sense_before').addClass('colored');
+    }
+
+    function fnCustomizeCSS(itemValues) {
+        var _keysWithFalseValue = Object.keys(itemValues)
+            .filter(key => Object.keys(itemValues[key]).length !== 0);
+        for (var i = 0; i < _keysWithFalseValue.length; i++) {
+            _css = itemValues[_keysWithFalseValue[i]];
+            _selector = ".oaldpe " + _keysWithFalseValue[i];
+            $(_selector).css(_css);
+        }
+    }
+
+    // region 折叠控制
+    setupCollapse();
+
+    fnUnfoldBox1();
+
+    addBox2Toggle();
+
+    fnUnfoldBox2(oaldpeCfg.unfoldBox2);
+
+    fnAutoUnfoldBox2(oaldpeCfg.autoUnfoldBox2);
+
+    fnUnfoldBox2Subtitle(oaldpeCfg.unfoldBox2Subtitle);
+
+    fnUnfoldBox3(oaldpeCfg.unfoldBox3);
+
+    addRocketAndReturn();
+
+    scrollingAndJumping();
+
+    fnBox2ShowSwitch(oaldpeCfg.box2ShowSwitch);
+
+    fnBox3ShowSwitch(oaldpeCfg.box3ShowSwitch);
+
+    fnOthersShowSwitch(oaldpeCfg.othersShowSwitch);
+
+    function setupCollapse() {
+        $(".oaldpe .li_sense_before").each(function () {
+            const $iteration = $(this);
+            const $sense = $iteration.next('.sense');
+            const $collapsibleElements = $sense.children(".examples, .collapse, .un, .xrefs, .topic-g").add($sense.find("#ox-enlarge"));
+
+            if (!oaldpeCfg.unfoldSense) {
+                $collapsibleElements.hide();
+                $iteration.addClass("collapsed"); // 默认折叠
+                $(".oaldpe").attr("concise", "true");
+            }
+
+            $iteration.on('click', function (event) {
+                event.stopPropagation();
+                $collapsibleElements.slideToggle("fast");
+                $iteration.toggleClass("collapsed");
+            });
+        });
+
+        $(".oaldpe .idm, .oaldpe .pv").each(function () {
+            const $this = $(this);
+            const $container = $this.closest('.idm-g, .pv-g');
+            $this.on('click', function () {
+                const $collapsed = $container.find(".li_sense_before.collapsed");
+                if ($collapsed.length) {
+                    $collapsed.trigger('click');
+                } else {
+                    $container.find(".li_sense_before").trigger('click');
+                }
+                box3RefreshHeight();
             });
         });
     }
 
-    function fnWiderScreenEudic(itemValue) {
-        itemValue && isEudicAPP() && $(".oaldpe").parent().css({
-            "margin": "5px 8px 5px 5px",
-            "padding": "0"
+    function fnUnfoldBox1() {
+        const $oaldpeH2 = $(".oaldpe h2.shcut");
+
+        if (!oaldpeCfg.unfoldBox1) {
+            $oaldpeH2.siblings().hide();
+        } else {
+            $oaldpeH2.parent().addClass("is-active");
+        }
+
+        $oaldpeH2.click(function (event) {
+            event.stopPropagation();
+            const $this = $(this);
+            $this.siblings().slideToggle("fast");
+            $this.parent().toggleClass("is-active");
+        });
+    }
+
+    function addBox2Toggle() {
+        $(".oaldpe .box_title").click(function(e) {  
+            e.stopPropagation(); 
+            $(this).next().slideToggle("fast").parent().toggleClass("is-active");
+            box3RefreshHeight();
+        });
+    }
+
+    function fnUnfoldBox2(itemValue) {
+        if (itemValue) {
+            $(".oaldpe .box_title").parent().addClass("is-active");
+            $(".oaldpe .box_title").next().show();
+
+        } else {
+            $(".oaldpe .box_title").parent().removeClass("is-active");
+            $(".oaldpe .box_title").next().hide();
+        }        
+    }
+
+    function fnAutoUnfoldBox2(itemValues) {
+        Object.keys(itemValues)
+            .filter(unboxTitle => itemValues[unboxTitle])
+            .forEach(unboxTitle => {
+                const $boxTitle = $(`.oaldpe .unbox[unbox="${unboxTitle}"] .box_title`);
+                $boxTitle.parent().addClass("is-active");
+                $boxTitle.next().show();
+            });
+    }
+
+    function fnUnfoldBox2Subtitle(itemValue) {
+        if (!itemValue)
+            $(".collapse > .unbox > .body > .unbox+.bullet").hide();
+
+        $(".collapse > .unbox > .body > .unbox").click(function(e) {
+            if ($(this).next().hasClass("bullet") && ($(e.target).is($(this)))) {
+                e.stopPropagation();
+                $(this).next().slideToggle("fast");
+            }
+        })
+    }
+
+    function box3Fold($obj) {
+        $obj.parent().parent().css({height: '26px'}).removeClass('expanded');
+    }
+
+    function box3Unfold(objEleId) {
+        var actualHeight = $(objEleId).prop('scrollHeight') - 19.2;
+        console.log("内容高度为：" + actualHeight);
+        $(objEleId).animate({height: actualHeight + "px"}, 180, function() {
+            $(objEleId).addClass('expanded');
         });
     }
 
@@ -1378,8 +1555,18 @@ var oaldpeCfg = {
         }
     }
 
-    function box3Fold($obj) {
-        $obj.parent().parent().css({height: '26px'}).removeClass('expanded');
+    function box3RefreshHeight() {
+        $(".oaldpe .idioms.expanded").css("height", "auto");
+        $(".oaldpe .phrasal_verb_links.expanded").css("height", "auto");
+    }
+
+    function fnUnfoldBox3(itemValue) {
+        if (itemValue) {
+            $(".oaldpe .idioms").addClass('expanded');
+            $(".oaldpe .idioms").css("height", "auto");
+            $(".oaldpe .phrasal_verb_links").addClass('expanded');
+            $(".oaldpe .phrasal_verb_links").css("height", "auto");
+        }
     }
 
     function addRocketAndReturn() {
@@ -1409,30 +1596,34 @@ var oaldpeCfg = {
         })        
     }
 
-    function box3Unfold(objEleId) {
-        var actualHeight = $(objEleId).prop('scrollHeight') - 19.2;
-        console.log("内容高度为：" + actualHeight);
-        $(objEleId).animate({height: actualHeight + "px"}, 180, function() {
-            $(objEleId).addClass('expanded');
+    function scrollingAndJumping() {
+        // 实现idioms和prasal verbs的滚动跳转
+        $(".oaldpe .jumplinks a.Ref").click(function(e) {  
+            e.preventDefault();
+            e.stopPropagation();
+            var _objHref = $(this).attr("href");
+            var _heightSpace = 48; 
+
+            // 兼容DictTango
+            _objHref = _objHref.replace("entry://", "");
+
+            $('html, body').animate({   
+                scrollTop: $(_objHref).offset().top - _heightSpace
+            }, {
+                duration: 300,    
+                complete: function() {  
+                    if (oaldpeCfg.jumpsBox3Unfold && $(this).is("html")) 
+                        box3Unfold(_objHref);
+                }
+            });
         });
     }
 
-    function fnCustomizeCSS(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues)
-            .filter(key => Object.keys(itemValues[key]).length !== 0);
-        for (var i = 0; i < _keysWithFalseValue.length; i++) {
-            _css = itemValues[_keysWithFalseValue[i]];
-            _selector = ".oaldpe " + _keysWithFalseValue[i];
-            $(_selector).css(_css);
-        }
-    }
-
-    function fnOthersShowSwitch(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues)
-            .filter(key => !itemValues[key]);
+    function fnBox2ShowSwitch(itemValues) {
+        var _keysWithFalseValue = Object.keys(itemValues).filter(key => !itemValues[key]);
         if (_keysWithFalseValue.length) {
-            var _selectors = _keysWithFalseValue.map(item => `.oaldpe ${item}`).join(' ,');
-            $(_selectors).hide();
+            var _selectors = _keysWithFalseValue.map(item => `.oaldpe .collapse .unbox[unbox=${item}]`).join(', ');
+            $(_selectors).closest('div.collapse').hide();
         }
     }
 
@@ -1452,371 +1643,127 @@ var oaldpeCfg = {
         }
     }
 
-    function fnBox2ShowSwitch(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues).filter(key => !itemValues[key]);
+    function fnOthersShowSwitch(itemValues) {
+        var _keysWithFalseValue = Object.keys(itemValues)
+            .filter(key => !itemValues[key]);
         if (_keysWithFalseValue.length) {
-            var _selectors = _keysWithFalseValue.map(item => `.oaldpe .collapse .unbox[unbox=${item}]`).join(', ');
-            $(_selectors).closest('div.collapse').hide();
+            var _selectors = _keysWithFalseValue.map(item => `.oaldpe ${item}`).join(' ,');
+            $(_selectors).hide();
         }
     }
 
-    function fnEnableOnlineTTS(itemValue) {
-        !itemValue && $('.oaldpe example-audio-ai').addClass('audio_hide');    
-        itemValue && $(".oaldpe example-audio-ai a.audio_uk,  .oaldpe example-audio-ai a.audio_us")
-        .click(function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            globalAudio.src = ""; // 在ios上TTS要先把src设置为空，第一次播放才会发音
+    // region 欧路词典相关
+    Eudic_widerScreen();
 
-            selectedTTS = $(this).hasClass("audio_uk") ? oaldpeCfg.britishTTS : oaldpeCfg.americanTTS;
-            eleExText = $(this).parent().siblings("div.exText").clone();
-            eleExText.find(".cf, chn").remove();
-            speak_text = eleExText.text().replace(/\(.*?\)/g, "");
-            if (speak_text.includes("/")) {
-                slash_word = speak_text.match(/\w+(?:\/\w+)+/)[0];
-                splited_word = slash_word.split("/");
-                list_result = [];
-                for (each of splited_word) {
-                    list_result.push(speak_text.replace(slash_word, each));
-                }
-                speak_text = list_result.join("\nor ");
-            }
-            speak(speak_text);
-        });
+    Eudic_removeHeader();
+
+    Eudic_autoFoldCustomNote();
+
+    setupEudicConfigurations();
+
+    function Eudic_widerScreen() {
+        if (oaldpeCfg.widerScreenEudic && isEudicAPP())
+            $(".oaldpe").parent().css({ margin: "5px 8px 5px 5px", padding: "unset" });
     }
 
-    /* Rewrited by Hazuki */
-    function fnUnfoldSense() {
-        if (!oaldpeCfg.unfoldSense) {
-            $(".oaldpe .sense").children(".examples, .collapse, .un, .xrefs, .topic-g").hide();
-            $(".oaldpe").attr("concise", "true");
-        }
+    function Eudic_removeHeader() {
+        if (oaldpeCfg.removeEudicHeader && isEudic())
+            $('#wordInfoHead').remove();
     }
 
-    function fnUnfoldBox3(itemValue) {
-        if (itemValue) {
-            $(".oaldpe .idioms").addClass('expanded');
-            $(".oaldpe .idioms").css("height", "auto");
-            $(".oaldpe .phrasal_verb_links").addClass('expanded');
-            $(".oaldpe .phrasal_verb_links").css("height", "auto");
-        }
+    function Eudic_autoFoldCustomNote() {
+        if (oaldpeCfg.autoFoldEudicNote && isEudic())
+            observeCustomNoteAdded(() => $('#expCustomNote .expHead').click());
     }
 
-    function fnUnfoldBox2(itemValue) {
-        if (itemValue) {
-            $(".oaldpe .box_title").parent().addClass("is-active");
-            $(".oaldpe .box_title").next().show();
+    function observeCustomNoteAdded(callback) {
+        if (!isEudic()) return;
 
-        } else {
-            $(".oaldpe .box_title").parent().removeClass("is-active");
-            $(".oaldpe .box_title").next().hide();
-        }        
-    }
-
-    function fnAutoUnfoldBox2(itemValues) {
-        Object.keys(itemValues)
-            .filter(unboxTitle => itemValues[unboxTitle])
-            .forEach(unboxTitle => {
-                const $boxTitle = $(`.oaldpe .unbox[unbox="${unboxTitle}"] .box_title`);
-                $boxTitle.parent().addClass("is-active");
-                $boxTitle.next().show();
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                $(mutation.addedNodes).each(function () {
+                    var $node = $(this);
+                    if ($node.attr('id') === 'customeNoteText') {
+                        callback();
+                        observer.disconnect();
+                    }
+                });
             });
-    }
-
-    /* Rewrited by Hazuki */
-    function fnUnfoldBox1() {
-        const $oaldpeH2 = $(".oaldpe h2.shcut");
-
-        if (!oaldpeCfg.unfoldBox1) {
-            $oaldpeH2.siblings().hide();
-        } else {
-            $oaldpeH2.parent().addClass("is-active");
-        }
-
-        $oaldpeH2.click(function (event) {
-            event.stopPropagation();
-            const $this = $(this);
-            $this.siblings().slideToggle("fast");
-            $this.parent().toggleClass("is-active");
         });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
 
-    /* Rewrited by Hazuki */
-    function fnSimplifySthSb() {
-        if (oaldpeCfg.simplifySthSb) {
-            $('.oaldpe .cf, .oaldpe .idm').each(function () {
-                const $this = $(this);
-                const html = $this.html();
-                const newHtml = html.replace(/something/g, 'sth.').replace(/somebody/g, 'sb.');
-                $this.html(newHtml);
-            });
-        }
-    }
+    function modifyCustomNote() {
+        const $expCustomNote = $('#expCustomNote');
+        const $customeNoteText = $expCustomNote.find('#customeNoteText');
+        try {
+            window.noteDataArray = JSON.parse($customeNoteText.text()).map(innerDict =>
+                Object.fromEntries(Object.entries(innerDict).map(([key, value]) =>
+                    [key, value.replace(/\\n/g, "\n").replace(/\\"/g, "\"")]
+                ))
+            );
+        } catch { return; }
+        $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
 
-    function fnPhrasesAddUnderline(itemValue) {
-        if (itemValue) {
-            $('.oaldpe .cf').addClass('underline');
-        } else {
-            $('.oaldpe .cf').removeClass('underline');
-        }
-    }
+        async function constructNotes() {
+            await $.getScript(`${prefix}/Hazuki-note/dist/notes.bundle.js`);
 
-    function fnNormalSenseNumber(itemValue) {
-        !itemValue && $('.oaldpe div.li_sense_before').addClass('colored');
-    }
-
-    /* Rewrited by Hazuki */
-    function setupNavigation() {
-        addNavigation();
-
-        const selectors = {
-            allExpand: [
-                ".oaldpe .sense > .examples",
-                ".oaldpe .sense > .collapse",
-                ".oaldpe .sense > .un",
-                ".oaldpe .sense > .xrefs",
-                ".oaldpe .sense > .topic-g",
-            ],
-            box1: ".oaldpe h2.shcut",
-            box2: ".oaldpe .box_title",
-            box3: [
-                ".oaldpe .idioms",
-                ".oaldpe .phrasal_verb_links"
-            ],
-            enlargeImage: ".oaldpe div#ox-enlarge",
-        };
-
-        function singleClickHandler() {
-            chineseToggle();
-        }
-
-        function doubleClickHandler() {
-            const concise = $(".oaldpe").attr("concise") === "true";
-            if (concise) {
-                // 全部展开
-                $(selectors.allExpand.join(", ")).slideDown("fast");
-                $(".oaldpe").attr("concise", "false");
-
-                // 折叠块2>展开
-                $(selectors.box2).parent().addClass("is-active");
-                $(selectors.box2).next().slideDown("fast");
-
-                // 折叠块3>展开
-                $(selectors.box3.join(", ")).addClass('expanded').css("height", "auto");
-
-                // 图片
-                $(selectors.enlargeImage).slideDown("fast");
-            } else {
-                // 全部折叠
-                $(selectors.allExpand.join(", ")).slideUp("fast");
-                $(".oaldpe").attr("concise", "true");
-
-                // 折叠块1>展开
-                $(selectors.box1).parent().addClass("is-active");
-                $(selectors.box1).siblings().slideDown("fast");
-
-                // 折叠块2>折叠
-                $(selectors.box2).parent().removeClass("is-active");
-                $(selectors.box2).next().slideUp("fast");
-
-                // 折叠块3>折叠
-                $(selectors.box3.join(", ")).css("height", "26px").removeClass('expanded');
-
-                // 图片
-                $(selectors.enlargeImage).slideUp("fast");
+            // Move the image container to the inside of the flex container
+            const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
+            if ($elementToMove.length) {
+                const $newParent = $('.Hazuki-note .single-note').first();
+                $newParent.prepend($elementToMove);
             }
         }
 
-        let clickTimer;
+        constructNotes();
 
-        const $navbar_span = $(".oaldpe-nav span");
-        $navbar_span.on("click", function () {
-            const $this = $(this);
-            clearTimeout(clickTimer);
-            if ($this.hasClass("active")) {
-                clickTimer = setTimeout(singleClickHandler, 250);
-            } else {
-                $this.siblings().removeClass('active');
-                $this.addClass('active');
-                showHideEntry($this.text() === "All" ? -1 : $this.index());
+        // Create a copy button to get the 'noteDataArray'
+        const $eudicNoteHead = $expCustomNote.find('.eudic_note_head');
+        var $copyButton = $('<button>', {
+            text: '复制',
+            class: 'editNote',
+            css: { marginLeft: '10px' },
+            click: function () {
+                copyToClipboard(JSON.stringify(noteDataArray));
             }
         });
-        $navbar_span.on("dblclick", function () {
-            const $this = $(this);
-            clearTimeout(clickTimer);
-            if ($this.hasClass("active")) {
-                doubleClickHandler();
-            }
-        });
+        $eudicNoteHead.append($copyButton);
 
-        const $gear_icon = $(".oaldpe-config-gear .oaldpe-config-gear__head__icon");
-        $gear_icon.on('click', function () {
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(singleClickHandler, 250);
-        });
-        $gear_icon.on('dblclick', function () {
-            clearTimeout(clickTimer);
-            doubleClickHandler();
-        });
+        // Remove Eudic '查看公开笔记'
+        $expCustomNote.find('.eudicNoteMore').remove();
+        $expCustomNote.find('.customeHorizonal').css('margin-bottom', 'unset');
     }
 
-    function addNavigation() {
+    async function setupEudicConfigurations() {
         const $oaldpe = $(".oaldpe");
-        const $entries = $(".oaldpe .oald");
+        if (!(isEudic() && $oaldpe.length)) return;
 
-        // 没有 entry 不添加
-        if ($entries.length < 1) return;
+        const $script = $oaldpe.parent().children('script').first();
+        window.prefix = $script.attr('src')?.slice(0, $script.attr('src').lastIndexOf('/')) ?? '/api/static';
 
-        const $navbar = $("<div></div>").addClass(OALDPE_NAVBAR_CLASS);
+        observeCustomNoteAdded(modifyCustomNote);
 
-        // 只有一个entry时隐藏
-        if (!oaldpeCfg.showNavbar || $entries.length === 1) {
-            $navbar.hide();
-        }
-
-        $entries.each(function () {
-            const $entry = $(this);
-            const posText = $entry.find(".webtop .pos").text() || $entry.find(".webtop .headword").text();
-            const $span = $("<span></span>").text(OALDPE_POS[posText] || posText);
-            $navbar.append($span);
-        });
-
-        // 添加 All
-        const $spanAll = $("<span></span>").text("All");
-        $navbar.append($spanAll);
-
-        const $navbar_span = $navbar.children("span");
-        if (oaldpeCfg.selectNavbarAll) {
-            $spanAll.addClass('active');
-        } else {
-            $navbar_span.first().addClass("active");
-        }
-        showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
-
-        if (oaldpeCfg.NavbarMargin) {
-            $navbar_span.css({ "padding": ".2rem 1.2rem" })
-        }
-
-        $oaldpe.first().prepend($navbar);
-    }
-
-    function showHideEntry(index) {
-        $(".oaldpe .oald").each(function (i) {
-            $(this).toggle(index === i || index < 0);
-        });
-    }
-
-    function fnSelectNavbarAll(itemValue) {
-        // 词性导航滚动到最右边
-        if (itemValue && oaldpeCfg.showNavbar) {
-            var _$navbar = $(".oaldpe-nav");
-            // 由于手机欧路滚动失效，所以加10000个像素
-            _$navbar.scrollLeft(_$navbar.scrollLeft() + _$navbar.width() + 10000);
+        if (isMacosIpadSim()) {
+            await $.getScript(`${prefix}/Hazuki-note/dist/clickToCopy.bundle.js`);
         }
     }
 
-    function fnShowTranslation(itemValue) {
-        (itemValue === 0) && $(".oaldpe chn").hide();
-        (itemValue === 1) && $(".oaldpe chn").show();
-        (itemValue === 2) && $(".oaldpe chn").show() && $(".oaldpe .exText chn").hide();
-        (itemValue === 3) && $(".oaldpe chn").hide() && $(".oaldpe .exText chn").show();
-        (itemValue === 4) && $(".oaldpe chn").show() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").hide();
-        (itemValue === 5) && $(".oaldpe chn").hide() && $(".oaldpe .def+deft chn, .oaldpe .sensetop chn").show();
-
-        if (itemValue === 0) {
-            fnImgTranslationOpt(0);
-        } else {
-            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
-        }
-    }
-
-    function fnShowSyllable(itemValue) {
-        $(".oaldpe .headword")
-        .click(function(e) {
-            e.stopPropagation();
-            var selection = window.getSelection();
-            if (selection.toString().length > 0 && this.contains(selection.anchorNode)) {
-                // $(this).trigger('textSelected', [selection]);
-                console.log("有文本被选中");
-            } else {
-                toggleSyllable($(this));
-            }
-        })
-        .each(function() {
-            if (!itemValue)
-                toggleSyllable($(this));
-        });        
-    }
-
-    function fnSimplifyGrammar(itemValue) {
-        itemValue && $(".oaldpe .grammar").each(function() {
-            $(this).text(OALDPE_GRAMMAR[$(this).text()]);
-        });
-    }
-
-    function fnSimplifyPos(itemValue) {
-        itemValue && $(".oaldpe .pos").each(function(){
-            $(this).text(OALDPE_POS[$(this).text()]);
-        });
-    }
-
-    function fnOnlineImage(itemValue) {
-        itemValue && $(".oaldpe div#ox-enlarge img").each(function(){
-            $(this).attr("src", getOnlineImageUrl($(this).attr("src")));
-        });
-    }
-
-    function fnOnlineWordPron(itemValue) {
-        itemValue && $('.oaldpe .audio_play_button')
-        .each(function(){
-            $(this).attr("href", getOnlineWordPronUrl($(this).attr("href")));
-        })
-        .click(function(e){
-            e.preventDefault();
-            globalAudio.paused || globalAudio.pause();
-            globalAudio.src = $(this).attr("href");
-            globalAudio.play();
-        });        
-    }
-
-    /* Rewrited by Hazuki */
-    function fnShowTraditional() {
-        if (oaldpeCfg.showTraditional) {
-            $(".oaldpe chn.simple").remove();
-            $(".oaldpe").attr("trans", "traditional");
-        } else {
-            $(".oaldpe chn.traditional").remove();
-            $(".oaldpe").attr("trans", "simple");
-        }
-    }
-
-    function box3RefreshHeight() {
-        $(".oaldpe .idioms.expanded").css("height", "auto");
-        $(".oaldpe .phrasal_verb_links.expanded").css("height", "auto");
-    }
-
-    function chineseToggle() {
-        if (oaldpeCfg.showTranslation === 1) {
-            $(".oaldpe chn").fadeOut("fast");
-        } else {
-            $(".oaldpe chn").fadeIn("fast");
-        }
-
-        oaldpeCfg.showTranslation = oaldpeCfg.showTranslation === 1 ? 0 : 1;
-        // console.log(oaldpeCfg.showTranslation);
-
-        if (oaldpeCfg.showTranslation === 0) {
-            fnImgTranslationOpt(0);
-        } else {
-            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
-        }
-
-        box3RefreshHeight();
-    }
+    // region Helper functions
+    window.copyToClipboard = function (text) {
+        const $temp = $('<textarea>').val(text).appendTo('body').select();
+        document.execCommand('copy');
+        $temp.remove();
+    };
 
     function isEudic() {
         var ua = navigator.userAgent.toLowerCase();
         return ua.indexOf("eudic") > -1;
+    }
+
+    function isEudicPC() {
+        var ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf("eudic") > -1 && ua.indexOf("windows") > -1;
     }
 
     function isEudicAPP() {
@@ -1834,11 +1781,6 @@ var oaldpeCfg = {
         return ua.indexOf("eudic") > -1 && ua.indexOf("android") > -1;
     }
 
-    function isEudicPC() {
-        var ua = navigator.userAgent.toLowerCase();
-        return ua.indexOf("eudic") > -1 && ua.indexOf("windows") > -1;
-    }
-
     function isGoldenDict() {
         var ua = navigator.userAgent.toLowerCase();
         return ua.indexOf("goldendict") > -1;
@@ -1849,42 +1791,7 @@ var oaldpeCfg = {
         return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
     }
 
-    window.copyToClipboard = function (text) {
-        const $temp = $('<textarea>').val(text).appendTo('body').select();
-        document.execCommand('copy');
-        $temp.remove();
-    };
-
-    function getOnlineImageUrl(src) {
-        var _parts = src.split('/');
-        var _name = _parts[_parts.length - 1];
-        _parts = _name.split('_');
-        _name = _name.replace("fullsize_", "").replace("thumb_", "").replace(".jpg", ".png");
-        _imgSrc = _name.substring(0, 1) + '/' + replaceWithUnderscores(_name).substring(0, 3) + '/' + replaceWithUnderscores(_name).substring(0, 5) + '/' + _name;
-        return (_parts[0] === "fullsize" ? OALDPE_PREFIX_FULL_IMAGE : OALDPE_PREFIX_THUMB_IMAGE) + _imgSrc;
-    }
-
-    function replaceWithUnderscores(str) {
-        return str.replace(/\..+/, match => {
-            return '_'.repeat(match.length);
-        });
-    }
-
-    function getOnlineWordPronUrl(src) {
-        var parts = src.split('/');
-        var name = parts[parts.length - 1];
-        return (name.indexOf("_gb_") > -1 ? OALDPE_PREFIX_WORD_UK : OALDPE_PREFIX_WORD_US) + name.substring(0, 1) + '/' + name.substring(0, 3) + '/' + name.substring(0, 5) + '/' + name;
-    }
-
-    function toggleSyllable($obj) {
-        if ($obj.attr("syllable")) {
-            $obj.text($obj.text().indexOf("·") > -1 ? $obj.text().replace(/·/g, "") : $obj.attr("syllable"));
-        }
-    }
-
-    // the end 
-
-    // region tts 功能
+    // region TTS 功能
     var ttsConfig = {
         "美音女1": {
             locale: "en-US",
