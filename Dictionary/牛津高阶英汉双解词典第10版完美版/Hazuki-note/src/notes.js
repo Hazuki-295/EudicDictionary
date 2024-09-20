@@ -35,8 +35,8 @@ const $ = require('jquery');
                 clickable: true,
             },
             navigation: {
-                nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
+                nextEl: '.swiper-button-next',
             }
         });
 
@@ -47,7 +47,7 @@ const $ = require('jquery');
 
         function replaceWithSpans(text) {
             const pattern = /\[([^\[\]]*)]\{([^\}]+)\}/g;
-            let previousText;
+            var previousText;
             do {
                 previousText = text;
                 text = text.replace(pattern, (match) => md.renderInline(match));
@@ -68,12 +68,12 @@ const $ = require('jquery');
             $temp.remove();
         }
 
-        function addCopyEvent(labelElement, textToCopy) {
-            labelElement.css('cursor', 'pointer');
-            labelElement.on('click', () => {
+        function addClickEventToCopyText($element, textToCopy) {
+            $element.css('cursor', 'pointer');
+            $element.on('click', () => {
                 copyToClipboard(textToCopy);
-                labelElement.css('cursor', 'default');
-                setTimeout(() => { labelElement.css('cursor', 'pointer'); }, 2000);
+                $element.css('cursor', 'default');
+                setTimeout(() => { $element.css('cursor', 'pointer'); }, 2000);
             });
         }
 
@@ -81,49 +81,42 @@ const $ = require('jquery');
             const $container = $('<div>', { class: 'single-note' });
 
             let { source, originalText, wordPhrase, notes, tags } = noteData;
-            let labelText;
 
-            /* source */
-            labelText = 'source';
-            const $sourceBlock = $('<div>', { class: 'note-block', 'label': labelText }).appendTo($container);
+            const createNoteBlock = (labelText, labelClass, iconClass, content) => {
+                const $block = $('<div>', { class: 'note-block', 'label': labelText }).appendTo($container);
+                const $label = $('<span>', { class: 'label', text: labelText }).addClass(labelClass).appendTo($block);
+                const $icon = $('<i class="ic"></i>').addClass(iconClass).appendTo($label);
+                addClickEventToCopyText($label, content);
+                return $block;
+            };
 
-            const $sourceLabel = $(`<span class="label info"><i class="ic i-home"></i>${labelText}</span>`).appendTo($sourceBlock);
-            addCopyEvent($sourceLabel, source);
+            /* 笔记来源 source */
+            const $sourceBlock = createNoteBlock('source', 'info', 'i-home', source);
 
             const sourceParts = source.split('>').map(part => `<span>${part.trim()}</span>`);
             const formattedSource = sourceParts.join('<i class="ic i-angle-right"></i>');
             const $source = $(md.render(formattedSource)).appendTo($sourceBlock);
             $source.find('span').last().addClass('current');
 
-            /* original text */
-            labelText = 'original text';
-            const $originalTextBlock = $('<div>', { class: 'note-block', 'label': labelText }).appendTo($container);
-
-            const $originalTextLabel = $(`<span class="label danger"><i class="ic i-feather"></i>${labelText}</span>`).appendTo($originalTextBlock);
-            addCopyEvent($originalTextLabel, originalText);
+            /* 笔记原文 original text */
+            const $originalTextBlock = createNoteBlock('original text', 'danger', 'i-feather', originalText);
 
             if (wordPhrase) {
                 const regex = new RegExp(`\\b${wordPhrase}\\b`, 'gi');
-                originalText = originalText.replace(regex, match => `**${match}**{.blue}`);
+                originalText = originalText.replace(regex, match => `[${match}]{.bold .blue}`);
             }
             const $content = $('<div>', { class: 'md content', html: md.render(replaceWithSpans(originalText)) }).appendTo($originalTextBlock);
 
-            /* notes */
+            /* 笔记 notes */
             if (notes) {
-                labelText = 'notes';
-                const $notesBlock = $('<div>', { class: 'note-block', 'label': labelText }).appendTo($container);
-
-                const $notesLabel = $(`<span class="label primary"><i class="ic i-sakura"></i>${labelText}</span>`).appendTo($notesBlock);
-                addCopyEvent($notesLabel, notes);
+                const $notesBlock = createNoteBlock('notes', 'primary', 'i-sakura', notes);
 
                 const $notes = $('<div>', { class: 'md notes', html: md.render(replaceWithSpans(notes)) }).appendTo($notesBlock);
                 const $firstP = $notes.find('p').first();
-                if ($firstP.find('.webtop, .shcut, .pv, .idm').length > 0) {
-                    $firstP.css('display', 'inline');
-                }
+                $firstP.find('.webtop, h2.shcut, .idm, .pv').length && $firstP.css('display', 'inline');
             }
 
-            /* tags */
+            /* 笔记标签 tags */
             if (tags) {
                 const $tagContainer = $('<div>', { class: 'tags' }).appendTo($container);
                 const classes = ['primary', 'info', 'success', 'warning', 'danger'];
@@ -136,21 +129,51 @@ const $ = require('jquery');
                             class: `note-tag ${randomClass}`,
                             text: tagText,
                         }).appendTo($tagContainer);
-                        $('<span><i class="ic i-tag"></i></span>').prependTo(tag);
+                        $('<i class="ic i-tag"></i>').prependTo(tag);
                     }
                 });
             }
 
-            // post-processing
-            $container.find('.quiz > ul.options li').each(function () {
+            // Replace elements that have 'htag' attribute
+            $container.find('.md span').each(function () {
+                if (!$(this).attr('htag')) return;
+
                 const $this = $(this);
-                $this.on("click", function () {
-                    if ($this.hasClass("correct")) {
-                        $this.toggleClass("right");
-                    } else {
-                        $this.toggleClass("wrong");
+                const htag = $this.attr('htag');
+                const $newElement = $(`<${htag}></${htag}>`).append($this.contents());
+                $.each(this.attributes, function () {
+                    if (this.name !== 'htag') {
+                        $newElement.attr(this.name, this.value);
                     }
                 });
+                $this.replaceWith($newElement);
+            });
+
+            // Quiz
+            const quizTypes = { choice: "选择题", multiple: "多选题", fill_blank: "填空题", true_false: "判断题" };
+            $container.find('.quiz > ul.options > li').each(function () {
+                const $this = $(this);
+                $this.on("click", () => {
+                    $this.toggleClass($this.hasClass("correct") ? "right" : "wrong");
+                    $this.closest(".quiz").addClass("show-answer");
+                });
+            });
+            $container.find('.quiz > p').each(function () {
+                const $this = $(this);
+                $this.on("click", () => {
+                    $this.parent().toggleClass("show-answer");
+                });
+            });
+            $container.find('.quiz > p:first-child').each(function () {
+                const $this = $(this);
+                const $parent = $this.parent();
+
+                var quizType = "choice";
+                if ($parent.hasClass("multi")) quizType = "multiple";
+                if ($parent.hasClass("fill")) quizType = "fill_blank";
+                if ($parent.hasClass("true") || $parent.hasClass("false")) quizType = "true_false";
+
+                $this.attr("data-type", quizTypes[quizType]);
             });
 
             return $container;
