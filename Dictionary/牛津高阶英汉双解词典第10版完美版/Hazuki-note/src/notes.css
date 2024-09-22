@@ -26,6 +26,11 @@
     margin: 0;
 }
 
+.Hazuki-note a {
+    font-size: inherit; /* Eudic Bug Fix */
+    line-height: inherit; /* Eudic Bug Fix */
+}
+
 /* 笔记框架 */
 .Hazuki-note .single-note {
     width: 95%;
@@ -224,9 +229,6 @@
 .Hazuki-note h2.shcut chn {
     font-family: 'Source Han Serif CN';
     font-weight: normal;
-    color: inherit;
-    background: unset;
-    padding: unset;
     margin-left: 4px;
 }
 
@@ -259,8 +261,8 @@
 }
 
 .Hazuki-note .note-cards,
-.Hazuki-note :not(.note-cards) .note-card {
-    margin-top: 1em;
+.Hazuki-note :not(.note-cards) > .note-card {
+    margin-top: .8rem;
 }
 
 .Hazuki-note .note-card {
@@ -306,6 +308,10 @@
     font-family: 'Bookerly';
 }
 
+.Hazuki-note .optima {
+    font-family: 'Optima';
+}
+
 .Hazuki-note .bold {
     font-weight: bold;
 }
@@ -334,35 +340,33 @@
 }
 
 .Hazuki-note :is(.variants, .grammar),
-.Hazuki-note :is(.variantGroup, .wordFormGroup, .transivityStatement, .reg, .languageGroup) {
+.Hazuki-note :is(.variantGroup, .transivityStatement, .reg, .languageGroup) {
     font-size: .9em;
     line-height: calc(1em / 0.9 * var(--line-height-oald));
 }
 
 /* 变体 */
-.Hazuki-note .variants::before {
+.Hazuki-note .variants {
+    display: inline;
+}
+
+.Hazuki-note .variants[type="alt"]::before {
     content: "[";
 }
 
-.Hazuki-note .variants::after {
+.Hazuki-note .variants[type="alt"]::after {
     content: "]";
 }
 
-.Hazuki-note .wordFormGroup::before {
-    content: "(";
-}
-
-.Hazuki-note .wordFormGroup::after {
-    content: ")";
-}
-
 .Hazuki-note :is(.variants .v-g),
-.Hazuki-note :is(.variantGroup .variant, .wordFormGroup .wordForm) {
+.Hazuki-note :is(.variantGroup .variant, .wordForm) {
+    font-weight: normal;
     color: var(--color-oald-blue);
 }
 
 /* 语法 */
 .Hazuki-note :is(.grammar, .transivityStatement) {
+    font-style: normal;
     color: seagreen;
 }
 
@@ -423,6 +427,16 @@
     background: rgba(0, 122, 108, .2);
     border-radius: 3px;
     padding: 0 2px;
+}
+
+.Hazuki-note h2.shcut chn {
+    color: inherit;
+    background: unset;
+    padding: unset;
+}
+
+.Hazuki-note .dis-g chn {
+    margin-left: 4px;
 }
 
 /* 第四层 */
@@ -566,7 +580,7 @@
 
 /* ordered list (ol), unordered list (ul) */
 .Hazuki-note .md ol, .Hazuki-note .md ul {
-    padding-left: 2em;
+    padding: .1em .2em .1em 1.4em;
     margin: .5em 0;
 }
 
@@ -576,7 +590,22 @@
 
 /* list item (li) */
 .Hazuki-note .md li {
+    font-size: inherit; /* Eudic Bug Fix */
+    list-style: none;
     margin: .25em 0;
+    position: relative;
+}
+
+.Hazuki-note .md ul > li::before {
+    content: "";
+    position: absolute;
+    width: .4em;
+    height: .4em;
+    background: var(--primary-color);
+    border-radius: 50%;
+    top: 50%;
+    left: -1em;
+    transform: translateY(-50%);
 }
 
 /* quiz */

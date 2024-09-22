@@ -99,7 +99,7 @@ const $ = require('jquery');
             const $this = $(this);
             const $sense = $this.closest('.sense');
 
-            jsonify($sense, '.examples, .collapse, .un', { mode: 'remove', direct: true }).then(() => {
+            jsonify($sense, '.examples, .collapse, .un, div#ox-enlarge, .labels', { mode: 'remove', deep: true }).then(() => {
                 const $webtop = $this.closest('.entry').find('.webtop');
                 if (!$webtop.length) {
                     addClickEventToCopyText($this, $sense.attr('text-to-copy'));

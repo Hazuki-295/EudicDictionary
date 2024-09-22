@@ -4406,6 +4406,8 @@ tr.verb_form[form="short"] td.verb_form::before { /* short form */
 /* 图片 */
 div#ox-enlarge {
     z-index: unset;
+    margin-left: 4px;
+    margin-bottom: 4px;
 }
 
 div#ox-enlarge, div#ox-enlarge img.thumb {

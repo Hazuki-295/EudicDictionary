@@ -85,7 +85,7 @@ const $ = require('jquery');
             const createNoteBlock = (labelText, labelClass, iconClass, content) => {
                 const $block = $('<div>', { class: 'note-block', 'label': labelText }).appendTo($container);
                 const $label = $('<span>', { class: 'label', text: labelText }).addClass(labelClass).appendTo($block);
-                const $icon = $('<i class="ic"></i>').addClass(iconClass).appendTo($label);
+                const $icon = $('<i class="ic"></i>').addClass(iconClass).prependTo($label);
                 addClickEventToCopyText($label, content);
                 return $block;
             };
