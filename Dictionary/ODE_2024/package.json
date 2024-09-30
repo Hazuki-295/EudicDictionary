@@ -1,0 +1,23 @@
+{
+  "name": "ode_2024",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "make build-with-cleanup",
+    "build-without-cleanup": "make build-without-cleanup",
+    "clean": "make clean"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "async": "^3.2.6",
+    "cheerio": "^1.0.0",
+    "fs": "^0.0.1-security",
+    "jquery": "^3.7.1",
+    "jsdom": "^25.0.1",
+    "minimist": "^1.2.8",
+    "sqlite3": "^5.1.7"
+  }
+}
