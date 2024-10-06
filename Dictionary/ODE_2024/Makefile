@@ -25,7 +25,7 @@ convert_to_txt: $(DB_CLEANED)
 # Create the MDX file
 create_mdx: $(DB_TXT)
 	@echo "Creating the MDX file..."
-	mdict --title title.txt --description description.html -a $(DB_TXT) $(MDX_FILE)
+	mdict --title title.txt --description description.min.html -a $(DB_TXT) $(MDX_FILE)
 
 # Clean up intermediate files (default behavior)
 clean:

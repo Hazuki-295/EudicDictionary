@@ -19,12 +19,18 @@ var odeConfig = {
     // 【配置项：是否展开其他折叠块】
     // 选项（默认为true）：false=否，true=是
     unfoldOtherSection: true,
+
+    /******** 欧路词典相关 ********/
+    // 【配置项：是否在手机 Eudic 里使用更大的屏宽】
+    // 选项（默认为true）：false=否，true=是
+    widerScreenEudic: true,
+
+    // 【配置项：是否移除 Eudic 单词界面词头】（词典自带发音、生词等级等）
+    // 选项（默认为true）：false=不移除，true=移除
+    removeEudicHeader: true,
 };
 
-(function () {
-    const $ = window.jQuery;
-
-    // avoid repeated execution
+$(function () {
     $(".ode-2024").each(function () {
         const $ode = $(this);
         if ($ode.attr("script-loaded") === "true") return;
@@ -189,6 +195,10 @@ var odeConfig = {
                 const $sense = $entryContainer.find('.msDict.sense, .msDict.subsense');
                 let $iterations = $();
 
+                const adjustMargins = () => $logoarea.siblings().css('margin-right', $logoarea.outerWidth(true));
+                $(adjustMargins); // Initial call
+                $(window).on('resize', adjustMargins); // Listen for window resizing
+
                 const dictname = $entryContainer.closest(".entryContent").data("dictname")
                 if (!dictname.startsWith("ENG")) return;
 
@@ -218,6 +228,8 @@ var odeConfig = {
                     const $isExpanded = $iterations.filter('.expanded');
                     ($isExpanded.length ? $isExpanded : $iterations).trigger('click');
                 });
+
+                $navigationItem.on('click', adjustMargins);
             });
         }
 
@@ -302,37 +314,35 @@ var odeConfig = {
         setupOnlinePronunciation();
 
         function setupOnlinePronunciation() {
-            const $audio = $ode.find('a.sound');
-            $audio.click(function (event) {
+            $ode.find('a.sound').click(function (event) {
                 event.stopPropagation();
+                event.preventDefault();
 
-                const $this = $(this);
-                const offlineHref = $this.attr('href');
-                const onlineHref = $this.attr('data-href');
+                let offlineHref = $(this).attr('href');
+                let onlineHref = $(this).attr('data-href');
+
+                if (!isEudicPC()) offlineHref = offlineHref.replace('sound://', '');
 
                 if (!globalAudio.paused) globalAudio.pause();
+
                 globalAudio.src = offlineHref;
-                globalAudio.play().then(() => {
-                    console.log(`(offline) audio: ${globalAudio.src}`);
-                }).catch(() => {
-                    console.log(`(offline) audio: ${globalAudio.src}`);
-                    console.log(`Failed to play offline audio, fallback to online audio.`);
-                    globalAudio.src = onlineHref;
-                    globalAudio.play().then(() => {
-                        console.log(`(online) audio: ${globalAudio.src}`);
-                    }).catch((error) => {
-                        console.log(`(online) audio: ${globalAudio.src}`);
-                        console.log(`Failed to play online audio.`);
+                globalAudio.play()
+                    .catch(() => {
+                        console.log(`Failed to play offline audio: ${offlineHref}, trying online audio: ${onlineHref}`);
+                        globalAudio.src = onlineHref;
+                        return globalAudio.play();
+                    })
+                    .catch((error) => {
+                        console.log('Failed to play online audio.');
                         console.error(error);
                     });
-                });
-
-                event.preventDefault();
             });
         }
 
         // region 样式调整
         setupSubsense();
+
+        setupIllustration();
 
         function setupSubsense() {
             const $subsense = $ode.find('.senseGroup .subsense');
@@ -352,5 +362,42 @@ var odeConfig = {
                 });
             });
         }
+
+        function setupIllustration() {
+            $ode.find(".msDict.sense > img").on("click", function () {
+                $(this).toggleClass("enlarged");
+            });
+        }
+
+        // region 欧路词典相关
+        Eudic_widerScreen();
+
+        Eudic_removeHeader();
+
+        function Eudic_widerScreen() {
+            if (odeConfig.widerScreenEudic && isEudicAPP())
+                $ode.parent().css({ margin: "5px 8px 5px 5px", padding: "unset" });
+        }
+
+        function Eudic_removeHeader() {
+            if (odeConfig.removeEudicHeader && isEudic())
+                $('#wordInfoHead').remove();
+        }
+
+        // region Helper functions
+        function isEudic() {
+            var ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf("eudic") > -1;
+        }
+
+        function isEudicPC() {
+            var ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf("eudic") > -1 && ua.indexOf("windows") > -1;
+        }
+
+        function isEudicAPP() {
+            var ua = navigator.userAgent.toLowerCase();
+            return (ua.indexOf("eudic") > -1) && (ua.indexOf("android") > -1 || ua.indexOf("iphone") > -1);
+        }
     });
-})();
+});

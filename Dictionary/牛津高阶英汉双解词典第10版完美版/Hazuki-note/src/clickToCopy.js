@@ -127,14 +127,12 @@ const $ = require('jquery');
         });
 
         /******** dictionary 2: ode ********/
-        const $ode = $('folderglance');
+        const $ode = $('.ode-2024');
 
         const $definitions = $ode.find('.definition.capital-letter');
         $definitions.on('click', function () {
             const $this = $(this);
             const $sense = $this.closest('.senseInnerWrapper');
-
-            $this.find('.cn_def, w').remove(); // clean up
 
             jsonify($sense, '.transivityStatement, .definition, variantGroup, .wordForm, .reg, .languageGroup', { direct: true }).then(() => {
                 const senseText = createNoteCard($sense.attr('text-to-copy'), 'ODE');

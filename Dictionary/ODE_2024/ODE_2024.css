@@ -132,11 +132,11 @@ li {
     display: block;
 }
 
-.responsive_row + .responsive_row {
+.responsive_row:not(:first-child) {
     margin-top: 2em;
 }
 
-.responsive_row:not(:first-of-type)::before {
+.responsive_row:not(:first-child)::before {
     content: "";
     display: block;
     background-color: var(--color-cream);
@@ -162,34 +162,13 @@ header.entryHeader * {
 
 header.entryHeader > .pageTitle,
 header.entryHeader > .pageTitle ~ * {
-    padding: 0 var(--font-size);
-    max-width: calc(100% - 200px);
-}
-
-.entryContent[data-dictname="EC(英中)"] header.entryHeader > .pageTitle,
-.entryContent[data-dictname="EC(英中)"] header.entryHeader > .pageTitle ~ * {
-    max-width: calc(100% - 150px);
-}
-
-@media (min-width: 768px) {
-    header.entryHeader > .pageTitle,
-    header.entryHeader > .pageTitle ~ * {
-        max-width: calc(100% - 250px);
-    }
-
-    .entryContent[data-dictname="EC(英中)"] header.entryHeader > .pageTitle,
-    .entryContent[data-dictname="EC(英中)"] header.entryHeader > .pageTitle ~ * {
-        max-width: calc(100% - 200px);
-    }
+    padding-left: var(--font-size);
+    box-sizing: border-box;
 }
 
 header.entryHeader > .pageTitle {
     display: block;
     padding-top: calc(var(--font-size) * 0.5);
-}
-
-header.entryHeader .jumplinks {
-    margin-top: .5em;
 }
 
 header.entryHeader .senses {
@@ -205,6 +184,9 @@ header.entryHeader .logoarea {
     top: 50%;
     transform: translateY(-50%);
     height: 30px;
+    box-sizing: border-box;
+    padding-left: unset;
+    padding-right: var(--font-size);
 }
 
 header.entryHeader .logoarea::after {
@@ -215,6 +197,12 @@ header.entryHeader .logoarea::after {
     background-repeat: no-repeat;
     background-position: center;
     transition: width 1s;
+}
+
+@media (min-width: 768px) {
+    header.entryHeader .logoarea::after {
+        width: 150px;
+    }
 }
 
 header.entryHeader .logoarea .conciseButton {
@@ -234,12 +222,6 @@ header.entryHeader .logoarea .conciseButton:hover {
     border-color: #999;
 }
 
-@media (min-width: 768px) {
-    header.entryHeader .logoarea::after {
-        width: 150px;
-    }
-}
-
 .realTitle {
     font-family: var(--font-family-serif);
     font-size: calc(var(--font-size) * 1.5) !important;
@@ -248,6 +230,7 @@ header.entryHeader .logoarea .conciseButton:hover {
     background-clip: text;
     -webkit-background-clip: text;
     background-image: linear-gradient(90deg, rgb(0, 100, 128), rgb(123, 66, 4));
+    margin-right: .5em;
 }
 
 .realTitle .homograph {
@@ -275,7 +258,8 @@ header.entryHeader .logoarea .conciseButton:hover {
 }
 
 /* Definition / Synonyms of {w} in English */
-.entryContent:not(.entryContent[data-dictname="EC(英中)"], .entryContent[data-dictname="CE(中英)"]) h1.definitionOf {
+.entryContent[data-dictname^="ENG"] h1.definitionOf,
+.entryContent[data-dictname^="SYN"] h1.definitionOf {
     display: none;
 }
 
@@ -312,21 +296,14 @@ h2.partOfSpeechTitle + .headpron {
     display: none;
 }
 
-.entryHeader .headpron .pronunciation {
-    margin-left: .5em;
-}
-
 /* 音标 */
-.infpronLbl {
-    display: none;
+.phonetics {
+    display: inline-block;
 }
 
-.pronunciation {
+.pron {
+    display: inline-block;
     color: var(--color-blue);
-}
-
-.pronunciation + .infpronLbl + .pronunciation {
-    margin-left: .2em;
 }
 
 /* 发音喇叭 */
@@ -407,6 +384,7 @@ h2.partOfSpeechTitle {
 /* 释义排版 */
 .se1, .senseGroup {
     padding-top: .5em;
+    margin-top: .5em;
     margin-bottom: 1em;
     border-top: 1px dashed var(--color-cream);
 }
@@ -461,6 +439,7 @@ h2.partOfSpeechTitle {
 
 .senseInnerWrapper.weird .iteration {
     font-style: normal;
+    font-weight: normal;
 }
 
 /* back to top */
@@ -499,15 +478,15 @@ h2.partOfSpeechTitle {
 .entryContent:not([data-dictname^="SYN"]) .exampleGroup::before, li.sentence::before {
     position: absolute;
     display: inline-block;
-    font-family: "Lucida Sans Unicode", "Lucida Grande";
-    font-size: .8em;
+    font-family: "Source Han Serif CN";
+    font-size: .5em;
     content: "◆";
-    width: calc(1em / 0.8 * 1.2);
+    width: calc(1em / 0.5 * 1.2);
     text-align: center;
     color: var(--text-grey-color);
     opacity: .7;
     left: 0;
-    top: 2px;
+    top: .8em;
 }
 
 li.sentence::before {
@@ -591,7 +570,7 @@ li.sentence::before {
 }
 
 .moreInformation .entrySynList strong,
-.entryContent[data-dictname^="SYN"] .senseInnerWrapper > div strong {
+.entryContent[data-dictname^="SYN"] .exampleGroup ~ div:not(.antList) strong {
     font-family: var(--font-family-serif);
     font-weight: normal;
     color: var(--primary-color);
@@ -600,14 +579,14 @@ li.sentence::before {
 .sense .moreInformation .entrySynList,
 section.phrases .subsense .moreInformation .entrySynList,
 section.phrasalVerbs .subsense .moreInformation .entrySynList,
-.entryContent[data-dictname^="SYN"] .senseInnerWrapper > div:not(.h4SubSense, .antList) {
+.entryContent[data-dictname^="SYN"] .exampleGroup ~ div:not(.antList) {
     border: 1px dashed var(--border-color);
     border-radius: 1em;
     padding: 1em;
 }
 
 .subsense .moreInformation .entrySynList,
-.entryContent[data-dictname^="SYN"] section.phrases .senseInnerWrapper > div:not(.h4SubSense, .antList) {
+.entryContent[data-dictname^="SYN"] section.phrases .exampleGroup ~ div:not(.antList) {
     border: unset;
     border-radius: unset;
     border-left: 2px solid var(--border-color);
@@ -615,7 +594,7 @@ section.phrasalVerbs .subsense .moreInformation .entrySynList,
 }
 
 .moreInformation .entrySynList div:not(:last-child),
-.entryContent[data-dictname^="SYN"] .senseInnerWrapper > div:not(.h4SubSense, .antList) > div:not(:last-child) {
+.entryContent[data-dictname^="SYN"] .exampleGroup ~ div:not(.antList) > div:not(:last-child) {
     margin-bottom: .75em;
 }
 
@@ -672,7 +651,7 @@ section.phrasalVerbs .subsense .moreInformation .entrySynList,
     margin: .5em 0;
 }
 
-.entryContent[data-dictname^="SYN"] .senseInnerWrapper > div.antList em {
+.entryContent[data-dictname^="SYN"] .exampleGroup ~ div.antList em {
     font-family: var(--font-family-serif);
     font-style: normal;
     color: var(--color-red);
@@ -691,10 +670,13 @@ strong {
 
 /* 变体 */
 .variantGroup {
-    display: block;
     font-family: var(--font-family-serif);
     font-size: .9em;
-    margin-bottom: .5em;
+}
+
+.subEntry .variantGroup {
+    display: inline-block;
+    margin: .25em 0;
 }
 
 header.entryHeader > .variantGroup {
@@ -763,6 +745,24 @@ a.crossRef:hover {
     content: " ";
 }
 
+/* 插图 */
+.msDict.sense > img {
+    position: relative;
+    float: right;
+    width: 75px;
+    height: auto;
+    border: 1px solid var(--color-cream);
+    margin-left: 4px;
+    margin-bottom: 4px;
+    z-index: 1;
+}
+
+.msDict.sense > img.enlarged {
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 1em;
+}
+
 /* 第三层 */
 /* 词组 phrases, 动词词组 phrasal verbs */
 section.phrases, section.phrasalVerbs {
@@ -815,7 +815,6 @@ section.phrases h2 + dl, section.phrasalVerbs h2 + dl {
 }
 
 section.phrases dd, section.phrasalVerbs dd {
-    margin-top: .3em;
     margin-bottom: 1em;
 }
 
@@ -826,25 +825,25 @@ section.phrasalVerbs dd .senseInnerWrapper + .senseInnerWrapper {
 
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .posPhrasalVerbs {
     display: block;
-    margin-bottom: .3em;
+    margin: .25em 0;
 }
 
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .pgr {
     display: block;
     font-family: var(--font-family-serif);
     color: var(--color-blue);
-    margin-bottom: .3em;
+    margin: .25em 0;
 }
 
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .subsense,
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .subsinglesense {
     display: block;
     margin-bottom: .5em;
-    position: relative;
 }
 
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .subsense {
     padding-left: 18px;
+    position: relative;
 }
 
 .entryContent[data-dictname="EC(英中)"] section.phrasalVerbs .subsense .iteration {
@@ -881,18 +880,16 @@ section.phrasalVerbs, .jumplink[data-title="Phrasal verbs"] {
 }
 
 .jumplink {
+    display: inline-block;
     font-family: Georgia;
     font-style: italic;
     color: var(--title-color);
     border: 1px solid var(--title-color);
     border-radius: 1rem;
-    padding: .1rem .7rem;
+    padding: 0 .7rem;
+    margin: .5em .5em 0 0;
     transition: background-color .1s linear, color .1s linear;
     cursor: pointer;
-}
-
-.jumplink + .jumplink {
-    margin-left: .25em;
 }
 
 .jumplink:hover {
@@ -913,13 +910,13 @@ section.phrasalVerbs, .jumplink[data-title="Phrasal verbs"] {
 }
 
 /* 其他折叠块 subEntryBlock、词源 etymology */
-section.subEntryBlock:not(.phrases, .phrasalVerbs), section.etymology {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs), section.etymology {
     font-size: .9em;
     border-left: 2px solid var(--border-color);
     margin: 1em 0;
 }
 
-section.subEntryBlock:not(.phrases, .phrasalVerbs) h2, section.etymology h2 {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs) h2, section.etymology h2 {
     font-family: 'Optima';
     font-size: 14px;
     color: var(--color-blue);
@@ -927,7 +924,7 @@ section.subEntryBlock:not(.phrases, .phrasalVerbs) h2, section.etymology h2 {
     cursor: pointer;
 }
 
-section.subEntryBlock:not(.phrases, .phrasalVerbs) h2::before, section.etymology h2::before {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs) h2::before, section.etymology h2::before {
     font-family: "Apple Symbols", "Segoe UI Symbol";
     font-weight: normal;
     content: "⊕";
@@ -935,16 +932,16 @@ section.subEntryBlock:not(.phrases, .phrasalVerbs) h2::before, section.etymology
     vertical-align: .5px;
 }
 
-section.subEntryBlock:not(.phrases, .phrasalVerbs).expanded h2::before, section.etymology.expanded h2::before {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs).expanded h2::before, section.etymology.expanded h2::before {
     content: "⊖";
 }
 
-section.subEntryBlock:not(.phrases, .phrasalVerbs).expanded h2, section.etymology.expanded h2,
-section.subEntryBlock:not(.phrases, .phrasalVerbs) h2:hover, section.etymology h2:hover {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs).expanded h2, section.etymology.expanded h2,
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs) h2:hover, section.etymology h2:hover {
     background-color: var(--background-color);
 }
 
-section.subEntryBlock:not(.phrases, .phrasalVerbs) h2 ~ * {
+section.subEntryBlock:not(.phrases):not(.phrasalVerbs) h2 ~ * {
     padding: 1em;
 }
 
@@ -963,7 +960,7 @@ section.derivatives .subEntry .sense {
 
 section.derivatives .h4SubSense {
     font-family: var(--font-family-serif);
-    font-size: 1.1em;
+    font-size: inherit;
     font-weight: normal;
     color: var(--color-purple);
     margin-right: .5em;
@@ -1008,24 +1005,11 @@ section.etymology.etym .moreInformation .sentence_dictionary li::before {
     margin: 5px 5px 0 0;
 }
 
-section.etymology.note:not(.usage) {
-    border: unset;
-    padding: 0 .5em;
-}
-
-section.etymology.note:not(.usage) * {
-    display: inline;
-}
-
-section.etymology.note:not(.usage)::before {
-    content: "▶︎";
-    font-size: .7em;
-    color: var(--color-blue);
-    margin-right: .5em;
-}
-
-.sense-note {
+section.etymology.note:not(.usage),
+.entryContent[data-dictname^="ENG"] .sense-note,
+.entryContent[data-dictname^="SYN"] .feature {
     font-family: var(--font-family-serif);
+    font-size: .9em;
     padding: .5em 1em;
     border: 1px solid var(--border-color);
     border-radius: 1em;

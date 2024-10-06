@@ -573,6 +573,11 @@
     padding: 20px;
 }
 
+.Hazuki-note hr {
+    margin: .5em 0;
+    border: .5px dashed rgb(170, 170, 255);
+}
+
 .Hazuki-note .md .highlighted {
     color: #3794FF;
     background-color: #e3efff;

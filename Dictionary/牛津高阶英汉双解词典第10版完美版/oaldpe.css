@@ -1697,21 +1697,16 @@ details un {
     border-radius: 0.5rem 0.5rem 0rem 0rem;
     padding: .6rem 1rem .6rem 1rem;
     margin: .5rem 0rem 0rem 0rem;
-/*    height: 1.5rem;*/
     height: 26px;
     overflow: hidden;
-    transition: height 0.18s ease; /* 添加过渡效果 */
-/*    transition: height 0.3s ease; /* 添加过渡动画，这里设置为0.5秒的匀速过渡 */*/
-
+    transition: height 0.18s ease;
 }
-/**/
 
 .phrasal_verb_links h3,
 .phrasal_verb_links .unbox {
     color: #7C377B;
     font-weight: 600;
     font-size: 1.25rem;
-/*    margin: 0rem 0rem 1rem 0rem;*/
 }
 
 .phrasal_verb_links .unbox  { /* attributes from h3 browser default  */
@@ -2989,9 +2984,9 @@ h1.headword .st {
 }
 
 h1.headword .hm, .xhm {
-    position: relative;
-    font-size: .8em;
-    top: -.5em;
+    font-size: .6em;
+    vertical-align: super;
+    top: unset;
 }
 
 .oaldpe > .idm-g .idm {
@@ -3640,6 +3635,7 @@ ul + .xrefs, ul + .topic-g {
 
 /* 词条链接 */
 .xrefs .xr-g, .topic-g .topic {
+    font-style: normal;
     font-size: inherit;
     font-weight: inherit;
 }
@@ -3963,6 +3959,14 @@ div.collapse span.unbox[unbox="vocab"] ul.bullet li:last-child {
 
 .collapse .unbox[unbox="which_word"] .body table tr td:not(:last-child) {
     padding-right: 1em;
+}
+
+.collapse .unbox[unbox="british_american"] .body .labels {
+    font-size: inherit;
+}
+
+.collapse .unbox[unbox="british_american"] .body .labels labelx {
+    display: none;
 }
 
 /* Collocations 词语搭配 (make-up) | Language Bank 用语库 (example) | Express Yourself 情景表达 (explain) | More About 补充说明 (pronoun) */

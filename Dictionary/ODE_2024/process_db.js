@@ -232,7 +232,7 @@ function reorderNavigation($) {
 }
 
 function setupPron($) {
-    $('.entryContent[data-dictname="EC(英中)"]').find('.headpron .prx, .infg .pr').each(function () {
+    $('.entryContent[data-dictname="EC(英中)"]').find('.prx, .pr').each(function () {
         const $ancestor = $(this);
         const $links = $ancestor.find('a[href="href="]');
         $links.each(function () {
@@ -241,11 +241,11 @@ function setupPron($) {
         });
     });
 
-    $('.headpron, .infpron, .entryContent[data-dictname="EC(英中)"] .infg .pr').each(function () {
+    $('.headpron, .infpron, .entryContent[data-dictname="EC(英中)"] .pr').each(function () {
         $(this).find('*').addBack().contents().filter(function () {
             return this.nodeType === 3; // Text nodes
         }).each(function () {
-            $(this).replaceWith(this.nodeValue.replace(/\/([^\/]+)\//g, '<span class="pronunciation">| $1 |</span>'));
+            $(this).replaceWith(this.nodeValue.replace(/\/([^\/]+)\//g, '<span class="pron">| $1 |</span>'));
         });
     });
 
@@ -261,23 +261,33 @@ function setupPron($) {
 
         $this.replaceWith($newAnchor);
     });
+
+    $('.pron').each(function () {
+        const $pron = $(this);
+        const $label = $pron.prev('.infpronLbl');
+        const $audio = $pron.next('a.sound');
+        const $container = $('<span class="phonetics"></span>');
+
+        $label.remove();
+        $container.append($pron.clone()).append($audio);
+        $pron.replaceWith($container);
+    });
 }
 
 function setupEntryHeader($) {
     $('.entryHeader').each(function () {
         const $entryHeader = $(this);
-        const $title = $entryHeader.children('.pageTitle');
-        const $realTitle = $('<span class="realTitle"></span>').append($title.contents());
+        const $pageTitle = $entryHeader.children('.pageTitle');
+        const $realTitle = $('<span class="realTitle"></span>').append($pageTitle.contents()).appendTo($pageTitle); // Put original content in a span
+
         const dictname = $entryHeader.closest('.entryContent').data('dictname');
-
-        const $speaker = dictname === 'ENG(UK)' ? $realTitle.children('a.sound') : null;
-        const $headpron = (dictname === 'ENG(UK)' || dictname === 'ENG(US)') ? $entryHeader.children('.headpron') : null;
-
-        if (dictname === 'EC(英中)' || dictname === 'CE(中英)') {
-            $realTitle.prepend($realTitle.children('em').remove().contents());
+        if (dictname === 'ENG(UK)' || dictname === 'ENG(US)') {
+            const $headpron = $entryHeader.children('.headpron').appendTo($pageTitle);
+            const $speaker = $realTitle.children('a.sound'); // weird speaker
+            $headpron.children('.phonetics').append($speaker);
+        } else if (dictname === 'EC(英中)' || dictname === 'CE(中英)') {
+            $realTitle.prepend($realTitle.children('em').remove().contents()); // Inside the realTitle, replace <em> with its content
         }
-
-        $title.append($realTitle, $headpron, $speaker);
     });
 }
 

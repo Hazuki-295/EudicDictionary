@@ -1075,7 +1075,7 @@ var oaldpeCfg = {
     // region 发音，图片显示
     setupWordPron();
 
-    fnShowSyllable(oaldpeCfg.showSyllable);
+    fnShowSyllable();
 
     fnOnlineWordPron(oaldpeCfg.onlineWordPron);
 
@@ -1099,28 +1099,30 @@ var oaldpeCfg = {
         });
     }
 
-    function fnShowSyllable(itemValue) {
-        $(".oaldpe .headword")
-        .click(function(e) {
-            e.stopPropagation();
-            var selection = window.getSelection();
-            if (selection.toString().length > 0 && this.contains(selection.anchorNode)) {
-                // $(this).trigger('textSelected', [selection]);
-                console.log("有文本被选中");
-            } else {
-                toggleSyllable($(this));
+    function fnShowSyllable() {
+        const toggleSyllable = $headword => {
+            if ($headword.attr("syllable")) {
+                $headword.contents().filter((_, node) => node.nodeType === Node.TEXT_NODE)
+                    .each((_, node) => {
+                        const text = node.textContent;
+                        node.textContent = text.includes("·") ? text.replace(/·/g, "") : $headword.attr("syllable");
+                    });
             }
-        })
-        .each(function() {
-            if (!itemValue)
-                toggleSyllable($(this));
-        });        
-    }
+        };
 
-    function toggleSyllable($obj) {
-        if ($obj.attr("syllable")) {
-            $obj.text($obj.text().indexOf("·") > -1 ? $obj.text().replace(/·/g, "") : $obj.attr("syllable"));
-        }
+        $(".oaldpe .headword").each(function () {
+            const $headword = $(this);
+            if (!oaldpeCfg.showSyllable) toggleSyllable($headword);
+
+            $headword.on('click', function () {
+                const selection = window.getSelection();
+                if (selection.toString().length > 0 && this.contains(selection.anchorNode)) {
+                    console.log("有文本被选中");
+                } else {
+                    toggleSyllable($headword);
+                }
+            });
+        });
     }
 
     function fnOnlineWordPron(itemValue) {
