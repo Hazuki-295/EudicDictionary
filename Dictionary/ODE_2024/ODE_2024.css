@@ -301,6 +301,11 @@ h2.partOfSpeechTitle + .headpron {
     display: inline-block;
 }
 
+.subEntry .phonetics {
+    font-size: .9em;
+    margin: .25em 0;
+}
+
 .pron {
     display: inline-block;
     color: var(--color-blue);
@@ -311,8 +316,15 @@ a.sound {
     margin: 0 .2em;
 }
 
-a.sound::before {
+a.sound-ai {
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+}
+
+a.sound::before, a.sound-ai::before {
     font-family: 'oalecd9', 'Segoe UI Symbol';
+    font-style: normal;
     font-weight: normal;
     content: "🔊";
     opacity: .7;
@@ -369,6 +381,7 @@ h2.partOfSpeechTitle {
 
 /* 及物性说明 */
 .transivityStatement {
+    display: inline-block;
     font-family: var(--font-family-serif);
     font-style: normal;
     font-size: .9em;
@@ -491,6 +504,25 @@ h2.partOfSpeechTitle {
 
 li.sentence::before {
     content: "◇";
+}
+
+.ode-2024[enable-tts="true"] .entryContent[data-dictname^="ENG"] .exampleGroup::before,
+.ode-2024[enable-tts="true"] .entryContent[data-dictname^="ENG"] li.sentence::before {
+    display: none;
+}
+
+.entryContent[data-dictname^="ENG"] a.sound-ai::before {
+    color: var(--text-grey-color);
+}
+
+.entryContent[data-dictname="ENG(UK)"] .exampleGroup:hover a.sound-ai::before,
+.entryContent[data-dictname="ENG(UK)"] li.sentence:hover a.sound-ai::before {
+    color: var(--color-blue);
+}
+
+.entryContent[data-dictname="ENG(US)"] .exampleGroup:hover a.sound-ai::before,
+.entryContent[data-dictname="ENG(US)"] li.sentence:hover a.sound-ai::before {
+    color: var(--color-red);
 }
 
 .entryContent:not([data-dictname^="SYN"]) .exampleGroup em.example, li.sentence {
@@ -1014,6 +1046,10 @@ section.etymology.note:not(.usage),
     border: 1px solid var(--border-color);
     border-radius: 1em;
     margin: .5em 0;
+}
+
+section.etymology[data-title="Usage"] {
+    font-family: var(--font-family-serif);
 }
 
 /* Light Mode */

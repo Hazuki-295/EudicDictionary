@@ -20,6 +20,11 @@ var odeConfig = {
     // 选项（默认为true）：false=否，true=是
     unfoldOtherSection: true,
 
+    /******** 发音相关 ********/
+    // 【配置项：是否启用例句在线 TTS 发音】
+    // 选项（默认为true）：false=否，true=是
+    enableOnlineTTS: true,
+
     /******** 欧路词典相关 ********/
     // 【配置项：是否在手机 Eudic 里使用更大的屏宽】
     // 选项（默认为true）：false=否，true=是
@@ -259,7 +264,7 @@ $(function () {
 
                 $section.addClass("expanded"); // 默认展开
                 if (!odeConfig.unfoldPhraseSection) { // 默认折叠
-                    $heading.trigger("click");
+                    setTimeout(() => $heading.trigger("click"), 0); // GoldenDict-ng Mystery BUG!
                 }
 
                 const $jumpLink = $("<span>", { class: "jumplink", text: $heading.text(), "data-title": $heading.text() })
@@ -398,6 +403,144 @@ $(function () {
         function isEudicAPP() {
             var ua = navigator.userAgent.toLowerCase();
             return (ua.indexOf("eudic") > -1) && (ua.indexOf("android") > -1 || ua.indexOf("iphone") > -1);
+        }
+
+        // region TTS 相关
+        (function initTTS() {
+            if (!odeConfig.enableOnlineTTS) return;
+
+            const ttsService = createEdgeTTS();
+
+            const ttsConfig = {
+                "UK": { locale: "en-GB", voice: "en-GB-RyanNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+                "US": { locale: "en-US", voice: "en-US-JennyNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" }
+            };
+
+            const speak = (text, config) => ttsService.playText(text, config);
+
+            $ode.find('.entryContent[data-dictname^="ENG"]').each(function () {
+                const $entryContent = $(this);
+                const dictname = $entryContent.data('dictname');
+
+                $entryContent.find('.exampleGroup em.example, li.sentence').each(function () {
+                    const $example = $(this);
+                    const text = $example.text();
+
+                    const $speaker = $('<a>', { class: 'sound-ai' }).prependTo($example);
+                    $speaker.on('click', () => speak(text, dictname === "ENG(UK)" ? ttsConfig["UK"] : ttsConfig["US"]));
+                });
+            });
+
+            $ode.attr("enable-tts", "true");
+        })();
+
+        function createEdgeTTS() {
+            const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+            const SYNTH_URL = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`;
+            const AUDIO_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
+
+            const BINARY_DELIM = "Path:audio\r\n";
+            const CONTENT_TYPE_JSON = "Content-Type:application/json\r\nPath:speech.config\r\n\r\n";
+            const CONTENT_TYPE_SSML = "Content-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n";
+
+            let socket = null, requests = {};
+
+            const createSSML = (inputText, { locale, voice, pitch, rate, volume }) =>
+                `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${locale}">
+                    <voice name="${voice}"><prosody pitch="${pitch}" rate="${rate}" volume="${volume}">${inputText}</prosody></voice>
+                </speak>`;
+
+            async function ensureSocketReady() {
+                if (!socket || socket.readyState === WebSocket.CLOSED) {
+                    const reopened = !!socket; // Check if the socket existed before
+                    socket = new WebSocket(SYNTH_URL);
+                    socket.onmessage = onSocketMessage;
+                    socket.onclose = () => console.warn('WebSocket closed.');
+                    socket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        socket.close();
+                    };
+                    await new Promise((resolve) => {
+                        socket.onopen = () => {
+                            console.log(reopened ? 'WebSocket reopened.' : 'WebSocket opened.');
+                            setAudioOutputFormat();
+                            resolve();
+                        };
+                    });
+                } else if (socket.readyState === WebSocket.CONNECTING) {
+                    await new Promise((resolve) => socket.addEventListener('open', resolve, { once: true }));
+                }
+            }
+
+            async function sendWhenReady(message) {
+                await ensureSocketReady();
+                socket.send(message);
+            }
+
+            async function setAudioOutputFormat(format = AUDIO_FORMAT) {
+                const messagePayload = JSON.stringify({ context: { synthesis: { audio: { outputFormat: format } } } });
+                await sendWhenReady(`${CONTENT_TYPE_JSON}${messagePayload}`);
+            }
+
+            async function onSocketMessage(event) {
+                if (!(event.data instanceof Blob)) return;
+
+                const dataText = await event.data.text();
+                const requestId = dataText.match(/X-RequestId:(.*?)\r\n/)[1];
+                const request = requests[requestId];
+                if (!request) return;
+
+                const arrayBuffer = await event.data.arrayBuffer();
+                const dataView = new DataView(arrayBuffer);
+
+                /* Check if the audio fragment is the last one */
+                if (dataView.getUint8(0) === 0x00 && dataView.getUint8(1) === 0x67 && dataView.getUint8(2) === 0x58) {
+                    if (request.audioDataChunks.length) {
+                        const audioBlob = new Blob(request.audioDataChunks, { type: 'audio/mp3' });
+                        request.resolve(URL.createObjectURL(audioBlob));
+                        delete requests[requestId];
+                    }
+                } else {
+                    const audioStartIndex = dataText.indexOf(BINARY_DELIM) + BINARY_DELIM.length;
+                    const audioData = new Blob([arrayBuffer.slice(audioStartIndex)]);
+                    request.audioDataChunks.push(audioData);
+                }
+            }
+
+            async function sendSSMLRequest(inputText, config) {
+                const ssml = createSSML(inputText, config);
+                const requestId = uuidv4().replace(/-/g, '');
+                const requestMessage = `X-RequestId:${requestId}\r\n${CONTENT_TYPE_SSML}${ssml}`;
+
+                requests[requestId] = { audioDataChunks: [], resolve: null, reject: null };
+                await sendWhenReady(requestMessage);
+
+                return new Promise((resolve, reject) => {
+                    requests[requestId].resolve = resolve;
+                    requests[requestId].reject = reject;
+                });
+            }
+
+            function uuidv4() {
+                return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            }
+
+            async function playText(inputText, config) {
+                try {
+                    const audioUrl = await sendSSMLRequest(inputText, config);
+                    if (!globalAudio.paused) globalAudio.pause();
+                    globalAudio.src = audioUrl;
+
+                    const cleanup = () => URL.revokeObjectURL(audioUrl);
+                    globalAudio.addEventListener('ended', cleanup, { once: true });
+                    globalAudio.play();
+                } catch (error) {
+                    console.error('Failed to play audio:', error);
+                }
+            }
+
+            return { playText };
         }
     });
 });
