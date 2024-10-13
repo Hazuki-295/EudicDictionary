@@ -241,7 +241,7 @@ function setupPron($) {
         });
     });
 
-    $('.headpron, .infpron, .entryContent[data-dictname="EC(英中)"] .pr').each(function () {
+    $('.headpron, .infpron, .prx, .pr').each(function () {
         $(this).find('*').addBack().contents().filter(function () {
             return this.nodeType === 3; // Text nodes
         }).each(function () {
