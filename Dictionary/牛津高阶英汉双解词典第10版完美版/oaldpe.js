@@ -1,8 +1,8 @@
 /* ********用户自定义配置区开始******** */
-// 可直接在词典里搜索以下任意词头，进入配置界面，常用配置无需修改此js文件。
-// “oaldpeconfig”、“oaldpecfg”、“oaldcfg”、“opcfg”、“oaldconfig”、“opconfig”和“opc”
+// 可直接在词典里搜索以下任意词头，进入配置界面，常用配置无需修改此 js 文件。
+// 'oaldpeconfig', 'oaldpecfg', 'oaldcfg', 'opcfg', 'oaldconfig', 'opconfig', 'opc'
 
-var oaldpeCfg = {
+var oaldpeConfig = {
     /******** 中文翻译相关 ********/
     // 【配置项1：中文翻译选项】（点击 “词性导航” 白色块，或点击 “O10” 小图标，可显示/隐藏中文翻译）
     // 选项（默认为1）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏义项中文，5-仅显示义项中文
@@ -259,25 +259,7 @@ var oaldpeCfg = {
 };
 /* ********用户自定义配置区结束******** */
 
-
-(function () {
-    var _userAgent = navigator.userAgent.toLowerCase();
-    if ((/windows\snt/.test(_userAgent)
-        && /chrome|firefox/.test(_userAgent)) || jQuery('.gdarticle').css('-webkit-column-gap') == '1px') {
-        console.log('Windows Chrome/firefox detected.');
-        if (/windows\snt/.test(_userAgent) && /chrome|firefox/.test(_userAgent))
-            $("a.speaker").click(function () {
-                fSound = $(this).attr('href');
-                fSound = fSound.replace('sound://', '');
-                (new Audio(fSound)).play();
-            });
-        return jQuery;
-    } else {
-        return jQuery.noConflict(true)
-    }
-})()
-
-(function ($) {
+$(function () {
     // avoiding repeated loading
     if ($(".oaldpe #is-oaldpe-loaded").length) {
         return;
@@ -415,7 +397,7 @@ var oaldpeCfg = {
 
     var globalAudio = new Audio();
 
-    var oaldpeCfgDuplicate = Object.assign({}, oaldpeCfg);
+    var oaldpeConfigDuplicate = Object.assign({}, oaldpeConfig);
 
     // region 初始化
     updateConfigFromLocalStorage();
@@ -431,52 +413,52 @@ var oaldpeCfg = {
     detectDarkModeEnabled();
 
     function updateConfigFromLocalStorage() {
-        if (oaldpeCfg.disableConfigWord) return;
+        if (oaldpeConfig.disableConfigWord) return;
 
         Object.keys(localStorage).forEach(key => {
             if (!key.startsWith(OALDPE_PREFIX_LOCALSTORAGE)) return;
 
             const localStorageValue = localStorage.getItem(key);
-            const oaldpeCfgKey = key.replace(OALDPE_PREFIX_LOCALSTORAGE, "");
+            const oaldpeConfigKey = key.replace(OALDPE_PREFIX_LOCALSTORAGE, "");
 
-            /* convert from localStorage string to oaldpeCfg type */
-            if (oaldpeCfgKey === "britishTTS") {
-                oaldpeCfg[oaldpeCfgKey] = OALDPE_BRITISH_TTS_OPTION[parseInt(localStorageValue)];
-            } else if (oaldpeCfgKey === "americanTTS") {
-                oaldpeCfg[oaldpeCfgKey] = OALDPE_AMERICAN_TTS_OPTION[parseInt(localStorageValue)];
+            /* convert from localStorage string to oaldpeConfig type */
+            if (oaldpeConfigKey === "britishTTS") {
+                oaldpeConfig[oaldpeConfigKey] = OALDPE_BRITISH_TTS_OPTION[parseInt(localStorageValue)];
+            } else if (oaldpeConfigKey === "americanTTS") {
+                oaldpeConfig[oaldpeConfigKey] = OALDPE_AMERICAN_TTS_OPTION[parseInt(localStorageValue)];
             }
 
-            const oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
-            if (typeof oaldpeCfgValue === "number") {
-                oaldpeCfg[oaldpeCfgKey] = parseInt(localStorageValue);
-            } else if (typeof oaldpeCfgValue === "boolean") {
-                oaldpeCfg[oaldpeCfgKey] = localStorageValue === "1";
+            const oaldpeConfigValue = oaldpeConfig[oaldpeConfigKey];
+            if (typeof oaldpeConfigValue === "number") {
+                oaldpeConfig[oaldpeConfigKey] = parseInt(localStorageValue);
+            } else if (typeof oaldpeConfigValue === "boolean") {
+                oaldpeConfig[oaldpeConfigKey] = localStorageValue === "1";
             }
         });
     }
 
     function updateConfigToUI() {
-        if (oaldpeCfg.disableConfigWord) return;
+        if (oaldpeConfig.disableConfigWord) return;
 
-        Object.keys(oaldpeCfg).forEach(oaldpeCfgKey => {
-            const oaldpeCfgValue = oaldpeCfg[oaldpeCfgKey];
+        Object.keys(oaldpeConfig).forEach(oaldpeConfigKey => {
+            const oaldpeConfigValue = oaldpeConfig[oaldpeConfigKey];
 
             let index;
 
-            /* convert from oaldpeCfg type to index number */
-            if (oaldpeCfgKey === "britishTTS") {
-                index = OALDPE_BRITISH_TTS_OPTION.indexOf(oaldpeCfgValue);
-            } else if (oaldpeCfgKey === "americanTTS") {
-                index = OALDPE_AMERICAN_TTS_OPTION.indexOf(oaldpeCfgValue);
+            /* convert from oaldpeConfig type to index number */
+            if (oaldpeConfigKey === "britishTTS") {
+                index = OALDPE_BRITISH_TTS_OPTION.indexOf(oaldpeConfigValue);
+            } else if (oaldpeConfigKey === "americanTTS") {
+                index = OALDPE_AMERICAN_TTS_OPTION.indexOf(oaldpeConfigValue);
             }
 
-            if (typeof oaldpeCfgValue === "number") {
-                index = oaldpeCfgValue;
-            } else if (typeof oaldpeCfgValue === "boolean") {
-                index = oaldpeCfgValue ? 1 : 0;
+            if (typeof oaldpeConfigValue === "number") {
+                index = oaldpeConfigValue;
+            } else if (typeof oaldpeConfigValue === "boolean") {
+                index = oaldpeConfigValue ? 1 : 0;
             }
 
-            $(`#oaldpe-config .config-item[id=${oaldpeCfgKey}] .select`).attr("cfg-selected", index); // convert to string automatically
+            $(`#oaldpe-config .config-item[id=${oaldpeConfigKey}] .select`).attr("cfg-selected", index); // convert to string automatically
         });
     }
 
@@ -529,7 +511,7 @@ var oaldpeCfg = {
     }
 
     function oaldpeConfigEvent() {
-        if (oaldpeCfg.disableConfigWord || !$("#oaldpe-config").length) return;
+        if (oaldpeConfig.disableConfigWord || !$("#oaldpe-config").length) return;
 
         updateConfigToUI(); // 初始化配置
 
@@ -560,7 +542,7 @@ var oaldpeCfg = {
                 .filter(key => key.startsWith(OALDPE_PREFIX_LOCALSTORAGE))
                 .forEach(key => localStorage.removeItem(key));
 
-            oaldpeCfg = oaldpeCfgDuplicate;
+            oaldpeConfig = oaldpeConfigDuplicate;
             updateConfigToUI();
 
             const $this = $(this);
@@ -570,7 +552,7 @@ var oaldpeCfg = {
     }
 
     function fnDisableConfigWord() {
-        if (oaldpeCfg.disableConfigWord)
+        if (oaldpeConfig.disableConfigWord)
             $("#oaldpe-config .head-title").css("color", "red").text("配置词头已被禁用");
     }
 
@@ -599,8 +581,8 @@ var oaldpeCfg = {
 
         configItems.forEach(item => {
             if (item.prefix === 'autoFoldEudicNote' && !isEudic()) return;
-            if (item.prefix === 'officialExPronOpt' && oaldpeCfg.officialExPronOpt === 2) return;
-            if (item.prefix === 'Eruda' && !oaldpeCfg.enableErudaConsole) return;
+            if (item.prefix === 'officialExPronOpt' && oaldpeConfig.officialExPronOpt === 2) return;
+            if (item.prefix === 'Eruda' && !oaldpeConfig.enableErudaConsole) return;
 
             const $configGroup = $('<div>', { class: 'config-group' });
             const $label = $('<div>', { class: 'config-group__label', text: item.label });
@@ -641,23 +623,23 @@ var oaldpeCfg = {
         }
 
         // Autofold Eudic Note
-        handleConfig('autoFoldEudicNote', oaldpeCfg.autoFoldEudicNote ? 'on' : 'off', 'on');
+        handleConfig('autoFoldEudicNote', oaldpeConfig.autoFoldEudicNote ? 'on' : 'off', 'on');
 
         // Online Example Pron
-        handleConfig('officialExPronOpt', oaldpeCfg.officialExPronOpt === 1 ? 'on' : 'off', 'on');
+        handleConfig('officialExPronOpt', oaldpeConfig.officialExPronOpt === 1 ? 'on' : 'off', 'on');
 
         // Default Example Pron
-        $oaldpe.attr("pron", oaldpeCfg.defaultBritishExPron ? "uk" : "us");
+        $oaldpe.attr("pron", oaldpeConfig.defaultBritishExPron ? "uk" : "us");
         $configGear.find('.oaldpe-config-gear__head__brand').click(function () {
             const currentPron = $oaldpe.attr('pron');
             $oaldpe.attr('pron', currentPron === 'uk' ? 'us' : 'uk');
         });
 
-        handleConfig('defaultBritishExPron', oaldpeCfg.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
+        handleConfig('defaultBritishExPron', oaldpeConfig.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
     }
 
     async function setupErudaConsole() {
-        if (!oaldpeCfg.enableErudaConsole) return;
+        if (!oaldpeConfig.enableErudaConsole) return;
         await $.getScript('https://cdn.jsdelivr.net/npm/eruda');
         eruda.init({
             defaults: {
@@ -677,46 +659,50 @@ var oaldpeCfg = {
     }
 
     function detectDarkModeEnabled() {
-        if (!oaldpeCfg.autoDarkMode) return;
+        if (!oaldpeConfig.autoDarkMode) return;
 
         const $oaldpe = $(".oaldpe");
-        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
         if (!$oaldpe.length) return;
 
-        function handleThemeChange(event) {
-            $oaldpe.attr('data-theme', event.matches ? 'dark' : 'light');
-        }
+        if (!isGoldenDict() && !isEudic()) {
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const handleThemeChange = (event) => {
+                const isDarkMode = event.matches;
+                $oaldpe.attr('data-theme', isDarkMode ? 'dark' : 'light');
+                if (isPreview()) $('body').css('background-color', isDarkMode ? 'rgb(26, 26, 26)' : '');
+            };
 
-        if (!isEudic()) {
             handleThemeChange(darkModeMediaQuery); // Initial check
             darkModeMediaQuery.addEventListener('change', handleThemeChange); // Listen for changes
+
+            return;
+        }
+
+        if (isGoldenDict()) {
+            $oaldpe.attr('data-theme', $('html').attr('data-darkreader-scheme') === 'dark' ? 'dark' : 'light');
             return;
         }
 
         // Delete the Eudic fixed style to prevent conflicts
         $oaldpe.parent().find('.eudic_custom_night').remove(); // Initial check
-        new MutationObserver((mutationsList) => {
-            mutationsList.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.classList?.contains('eudic_custom_night')) node.remove();
+        if (!$oaldpe.parent().attr('observer-attached')) {
+            new MutationObserver((mutationsList) => {
+                mutationsList.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.classList?.contains('eudic_custom_night')) node.remove();
+                    });
                 });
-            });
-        }).observe($oaldpe.parent()[0], { childList: true });
+            }).observe($oaldpe.parent()[0], { childList: true });
+            $oaldpe.parent().attr('observer-attached', 'true');
+        }
 
         // Set the theme based on the body's class
-        function setTheme() {
-            if (document.body.classList.contains('black') || document.body.classList.contains('night')) {
-                $oaldpe.attr('data-theme', 'dark');
-            } else {
-                $oaldpe.attr('data-theme', 'light');
-            }
-        }
-        setTheme(); // Initial check
+        const setEudicTheme = () => $oaldpe.attr('data-theme', $('body').is('.black, .night') ? 'dark' : 'light');
+        setEudicTheme(); // Initial check
         new MutationObserver((mutationsList) => {
             mutationsList.forEach((mutation) => {
                 if (mutation.attributeName === 'class') {
-                    setTheme();
+                    setEudicTheme();
                 }
             });
         }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
@@ -725,16 +711,16 @@ var oaldpeCfg = {
     // region 中文翻译相关
     fnExamplesChineseBeAlone();
 
-    fnShowTranslation(oaldpeCfg.showTranslation);
+    fnShowTranslation(oaldpeConfig.showTranslation);
 
     fnShowTraditional();
 
-    fnTouchToTranslate(oaldpeCfg.touchToTranslate);
+    fnTouchToTranslate(oaldpeConfig.touchToTranslate);
 
     replaceFullWidthCharsInChn();
 
     function fnExamplesChineseBeAlone() {
-        if (!oaldpeCfg.examplesChineseBeAlone) {
+        if (!oaldpeConfig.examplesChineseBeAlone) {
             const $exampleChn = $(".oaldpe .exText chn");
             $exampleChn.css("display", "inline");
             $exampleChn.parent().css("margin-left", "4px");
@@ -752,13 +738,13 @@ var oaldpeCfg = {
         if (itemValue === 0) {
             fnImgTranslationOpt(0);
         } else {
-            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
+            fnImgTranslationOpt(oaldpeConfig.showTraditional ? 2 : 1);
         }
     }
 
     function fnShowTraditional() {
         const $oaldpe = $(".oaldpe");
-        if (oaldpeCfg.showTraditional) {
+        if (oaldpeConfig.showTraditional) {
             $oaldpe.find("chn.simple").remove();
             $oaldpe.attr("trans", "traditional");
         } else {
@@ -776,7 +762,7 @@ var oaldpeCfg = {
             e.stopPropagation();
             $(this).find("chn").each(function() {
                 if (!$(this).parent().is("labelx")) {
-                    if (oaldpeCfg.examplesChineseBeAlone) {
+                    if (oaldpeConfig.examplesChineseBeAlone) {
                         $(this).slideToggle("fast");
                     } else {
                         $(this).fadeToggle("fast");
@@ -914,19 +900,19 @@ var oaldpeCfg = {
     }
 
     function chineseToggle() {
-        if (oaldpeCfg.showTranslation === 1) {
+        if (oaldpeConfig.showTranslation === 1) {
             $(".oaldpe chn").fadeOut("fast");
         } else {
             $(".oaldpe chn").fadeIn("fast");
         }
 
-        oaldpeCfg.showTranslation = oaldpeCfg.showTranslation === 1 ? 0 : 1;
-        // console.log(oaldpeCfg.showTranslation);
+        oaldpeConfig.showTranslation = oaldpeConfig.showTranslation === 1 ? 0 : 1;
+        // console.log(oaldpeConfig.showTranslation);
 
-        if (oaldpeCfg.showTranslation === 0) {
+        if (oaldpeConfig.showTranslation === 0) {
             fnImgTranslationOpt(0);
         } else {
-            fnImgTranslationOpt(oaldpeCfg.showTraditional ? 2 : 1);
+            fnImgTranslationOpt(oaldpeConfig.showTraditional ? 2 : 1);
         }
 
         box3RefreshHeight();
@@ -935,7 +921,7 @@ var oaldpeCfg = {
     // region 词性导航栏
     setupNavigation();
 
-    fnSelectNavbarAll(oaldpeCfg.selectNavbarAll);
+    fnSelectNavbarAll(oaldpeConfig.selectNavbarAll);
 
     function setupNavigation() {
         addNavigation();
@@ -1031,7 +1017,7 @@ var oaldpeCfg = {
         const $navbar = $("<div></div>").addClass("oaldpe-nav");
 
         // 只有一个entry时隐藏
-        if (!oaldpeCfg.showNavbar || $entries.length === 1) $navbar.hide();
+        if (!oaldpeConfig.showNavbar || $entries.length === 1) $navbar.hide();
 
         $entries.each(function () {
             const $entry = $(this);
@@ -1045,14 +1031,14 @@ var oaldpeCfg = {
         $navbar.append($spanAll);
 
         const $navbar_span = $navbar.children("span");
-        if (oaldpeCfg.selectNavbarAll) {
+        if (oaldpeConfig.selectNavbarAll) {
             $spanAll.addClass('active');
         } else {
             $navbar_span.first().addClass("active");
         }
-        showHideEntry(oaldpeCfg.selectNavbarAll ? -1 : 0);
+        showHideEntry(oaldpeConfig.selectNavbarAll ? -1 : 0);
 
-        if (oaldpeCfg.NavbarMargin) $navbar_span.css("padding", ".2rem 1.2rem");
+        if (oaldpeConfig.NavbarMargin) $navbar_span.css("padding", ".2rem 1.2rem");
 
         $oaldpe.first().prepend($navbar);
     }
@@ -1065,7 +1051,7 @@ var oaldpeCfg = {
 
     function fnSelectNavbarAll(itemValue) {
         // 词性导航滚动到最右边
-        if (itemValue && oaldpeCfg.showNavbar) {
+        if (itemValue && oaldpeConfig.showNavbar) {
             var _$navbar = $(".oaldpe-nav");
             // 由于手机欧路滚动失效，所以加10000个像素
             _$navbar.scrollLeft(_$navbar.scrollLeft() + _$navbar.width() + 10000);
@@ -1077,11 +1063,11 @@ var oaldpeCfg = {
 
     fnShowSyllable();
 
-    fnOnlineWordPron(oaldpeCfg.onlineWordPron);
+    fnOnlineWordPron(oaldpeConfig.onlineWordPron);
 
-    fnOnlineImage(oaldpeCfg.onlineImage);
+    fnOnlineImage(oaldpeConfig.onlineImage);
 
-    fnImgTranslationOpt(oaldpeCfg.imgTranslationOpt);
+    fnImgTranslationOpt(oaldpeConfig.imgTranslationOpt);
 
     imageZoomEvent();
 
@@ -1112,7 +1098,7 @@ var oaldpeCfg = {
 
         $(".oaldpe .headword").each(function () {
             const $headword = $(this);
-            if (!oaldpeCfg.showSyllable) toggleSyllable($headword);
+            if (!oaldpeConfig.showSyllable) toggleSyllable($headword);
 
             $headword.on('click', function () {
                 const selection = window.getSelection();
@@ -1218,7 +1204,7 @@ var oaldpeCfg = {
 
     function fnOfficialExPronOpt() {
         const $oaldpe = $(".oaldpe");
-        const optionValue = oaldpeCfg.officialExPronOpt;
+        const optionValue = oaldpeConfig.officialExPronOpt;
         const $exampleAudio = $('.oaldpe example-audio > a, .oaldpe .ei > a');
 
         // 不启用官方例句发音
@@ -1295,13 +1281,13 @@ var oaldpeCfg = {
     }
 
     function showExamplesLabel() {
-        if (oaldpeCfg.officialExPronOpt === 2) {
+        if (oaldpeConfig.officialExPronOpt === 2) {
             $('.oaldpe example-audio').each(function () {
                 $(this).parent().addClass('audio_disabled');
             });
         }
 
-        if (!oaldpeCfg.enableOnlineTTS) {
+        if (!oaldpeConfig.enableOnlineTTS) {
             $('.oaldpe example-audio-ai').each(function () {
                 $(this).parent().addClass('audio_disabled');
             });
@@ -1311,7 +1297,7 @@ var oaldpeCfg = {
     function fnEnableOnlineTTS() {
         const $audioElements = $(".oaldpe example-audio-ai");
 
-        if (!oaldpeCfg.enableOnlineTTS) {
+        if (!oaldpeConfig.enableOnlineTTS) {
             $audioElements.addClass('audio_hide');
             return;
         }
@@ -1322,7 +1308,7 @@ var oaldpeCfg = {
             globalAudio.src = ""; // 在ios上TTS要先把src设置为空，第一次播放才会发音
 
             const $this = $(this);
-            selectedTTS = $this.hasClass("audio_uk") ? oaldpeCfg.britishTTS : oaldpeCfg.americanTTS;
+            selectedTTS = $this.hasClass("audio_uk") ? oaldpeConfig.britishTTS : oaldpeConfig.americanTTS;
             let exampleText = $this.parent().siblings("div.exText").clone();
             exampleText.find(".cf, chn").remove();
             let speakText = exampleText.text().replace(/\(.*?\)/g, "").replace(/somebody\/something/g, "somebody or something").replace(/\u200B/g, "");
@@ -1342,19 +1328,19 @@ var oaldpeCfg = {
     }
 
     // region 内容显示
-    fnSimplifyPos(oaldpeCfg.simplifyPos);
+    fnSimplifyPos(oaldpeConfig.simplifyPos);
 
-    fnSimplifyGrammar(oaldpeCfg.simplifyGrammar);
+    fnSimplifyGrammar(oaldpeConfig.simplifyGrammar);
 
     fnSimplifySthSb();
 
-    fnUsePlaceholder(oaldpeCfg.usePlaceholder);
+    fnUsePlaceholder(oaldpeConfig.usePlaceholder);
 
-    fnPhrasesAddUnderline(oaldpeCfg.phrasesAddUnderline);
+    fnPhrasesAddUnderline(oaldpeConfig.phrasesAddUnderline);
 
-    fnNormalSenseNumber(oaldpeCfg.normalSenseNumber);
+    fnNormalSenseNumber(oaldpeConfig.normalSenseNumber);
 
-    fnCustomizeCSS(oaldpeCfg.customizeCSS);
+    fnCustomizeCSS(oaldpeConfig.customizeCSS);
 
     function fnSimplifyPos(itemValue) {
         itemValue && $(".oaldpe .pos").each(function(){
@@ -1369,7 +1355,7 @@ var oaldpeCfg = {
     }
 
     function fnSimplifySthSb() {
-        if (oaldpeCfg.simplifySthSb) {
+        if (oaldpeConfig.simplifySthSb) {
             $('.oaldpe .cf, .oaldpe .idm').each(function () {
                 const $this = $(this);
                 const html = $this.html();
@@ -1421,23 +1407,23 @@ var oaldpeCfg = {
 
     addBox2Toggle();
 
-    fnUnfoldBox2(oaldpeCfg.unfoldBox2);
+    fnUnfoldBox2(oaldpeConfig.unfoldBox2);
 
-    fnAutoUnfoldBox2(oaldpeCfg.autoUnfoldBox2);
+    fnAutoUnfoldBox2(oaldpeConfig.autoUnfoldBox2);
 
-    fnUnfoldBox2Subtitle(oaldpeCfg.unfoldBox2Subtitle);
+    fnUnfoldBox2Subtitle(oaldpeConfig.unfoldBox2Subtitle);
 
-    fnUnfoldBox3(oaldpeCfg.unfoldBox3);
+    fnUnfoldBox3(oaldpeConfig.unfoldBox3);
 
     addRocketAndReturn();
 
     scrollingAndJumping();
 
-    fnBox2ShowSwitch(oaldpeCfg.box2ShowSwitch);
+    fnBox2ShowSwitch(oaldpeConfig.box2ShowSwitch);
 
-    fnBox3ShowSwitch(oaldpeCfg.box3ShowSwitch);
+    fnBox3ShowSwitch(oaldpeConfig.box3ShowSwitch);
 
-    fnOthersShowSwitch(oaldpeCfg.othersShowSwitch);
+    fnOthersShowSwitch(oaldpeConfig.othersShowSwitch);
 
     function setupCollapse() {
         $(".oaldpe .li_sense_before").each(function () {
@@ -1445,7 +1431,7 @@ var oaldpeCfg = {
             const $sense = $iteration.next('.sense');
             const $collapsibleElements = $sense.children(".examples, .collapse, .un, .xrefs, .topic-g").add($sense.find("#ox-enlarge"));
 
-            if (!oaldpeCfg.unfoldSense) {
+            if (!oaldpeConfig.unfoldSense) {
                 $collapsibleElements.hide();
                 $iteration.addClass("collapsed"); // 默认折叠
                 $(".oaldpe").attr("concise", "true");
@@ -1476,7 +1462,7 @@ var oaldpeCfg = {
     function fnUnfoldBox1() {
         const $oaldpeH2 = $(".oaldpe h2.shcut");
 
-        if (!oaldpeCfg.unfoldBox1) {
+        if (!oaldpeConfig.unfoldBox1) {
             $oaldpeH2.siblings().hide();
         } else {
             $oaldpeH2.parent().addClass("is-active");
@@ -1590,7 +1576,7 @@ var oaldpeCfg = {
             var _$returnRocket = $(_rocketHtml).click(function(e) {
                 e.stopPropagation();
                 // $(".oaldpe").before(`<div>${_$objEle}</div>`);
-                if (oaldpeCfg.leavesBox3Fold)
+                if (oaldpeConfig.leavesBox3Fold)
                     box3Fold($(this));
                 $('html, body').animate({ scrollTop: _$objEle.offset().top - 48 }, 300);
             });
@@ -1614,7 +1600,7 @@ var oaldpeCfg = {
             }, {
                 duration: 300,    
                 complete: function() {  
-                    if (oaldpeCfg.jumpsBox3Unfold && $(this).is("html")) 
+                    if (oaldpeConfig.jumpsBox3Unfold && $(this).is("html")) 
                         box3Unfold(_objHref);
                 }
             });
@@ -1664,17 +1650,17 @@ var oaldpeCfg = {
     setupEudicConfigurations();
 
     function Eudic_widerScreen() {
-        if (oaldpeCfg.widerScreenEudic && isEudicAPP())
+        if (oaldpeConfig.widerScreenEudic && isEudicAPP())
             $(".oaldpe").parent().css({ margin: "5px 8px 5px 5px", padding: "unset" });
     }
 
     function Eudic_removeHeader() {
-        if (oaldpeCfg.removeEudicHeader && isEudic())
+        if (oaldpeConfig.removeEudicHeader && isEudic())
             $('#wordInfoHead').remove();
     }
 
     function Eudic_autoFoldCustomNote() {
-        if (oaldpeCfg.autoFoldEudicNote && isEudic())
+        if (oaldpeConfig.autoFoldEudicNote && isEudic())
             observeCustomNoteAdded(() => $('#expCustomNote .expHead').click());
     }
 
@@ -1791,6 +1777,10 @@ var oaldpeCfg = {
     function isMacosIpadSim() {
         var ua = navigator.userAgent.toLowerCase();
         return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
+    }
+
+    function isPreview() {
+        return window.self !== window.top && parent.$('#k_iframe').length;
     }
 
     // region TTS 功能
@@ -2182,30 +2172,3 @@ var oaldpeCfg = {
     }
 
 });
-
-
-
-/*
-Words used for testing
-
-"wordorigin":               // 词源
-"wordfinder":               // 联想词horse
-"cult":                     // 文化football
-"synonyms":                 // 同义词辨析like, awful
-"which_word":               // 词语辨析like, about
-"colloc":                   // 词语搭配show(n.1)
-"homophone":                // 同音词or
-"more_about":               // 词语辨析
-"mlt":                      // 同类词语学习a, up, or, be,mere
-"wordfamily":               // 词族
-"grammar":                  // 语法说明if, like, very
-"express":                  // 情景表达like
-"langbank":                 // 用语库for, up, like, about
-"vocab":                    // 词汇扩充
-"british_american":         // 英式 / 美式
-"snippet":                  // 牛津搭配词典
-"extra_examples":           // 更多例句
-"verbforms":                // 动词形式
-"more_about":               // 补充说明like
-*/
-
