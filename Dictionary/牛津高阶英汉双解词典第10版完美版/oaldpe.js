@@ -1075,8 +1075,6 @@ $(function () {
 
     showExamplesLabel();
 
-    fnEnableOnlineTTS();
-
     function setupWordPron() {
         const $oaldpe = $(".oaldpe");
         const $phons = $oaldpe.find('.phons_br, .phons_n_am');
@@ -1292,39 +1290,6 @@ $(function () {
                 $(this).parent().addClass('audio_disabled');
             });
         }
-    }
-
-    function fnEnableOnlineTTS() {
-        const $audioElements = $(".oaldpe example-audio-ai");
-
-        if (!oaldpeConfig.enableOnlineTTS) {
-            $audioElements.addClass('audio_hide');
-            return;
-        }
-
-        $audioElements.find("a.audio_uk, a.audio_us").click(function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            globalAudio.src = ""; // 在ios上TTS要先把src设置为空，第一次播放才会发音
-
-            const $this = $(this);
-            selectedTTS = $this.hasClass("audio_uk") ? oaldpeConfig.britishTTS : oaldpeConfig.americanTTS;
-            let exampleText = $this.parent().siblings("div.exText").clone();
-            exampleText.find(".cf, chn").remove();
-            let speakText = exampleText.text().replace(/\(.*?\)/g, "").replace(/somebody\/something/g, "somebody or something").replace(/\u200B/g, "");
-
-            if (speakText.includes("/")) {
-                const match = speakText.match(/\w+(?:\/\w+)+/);
-                if (match) {
-                    const slashWord = match[0];
-                    const splitWords = slashWord.split("/");
-                    const results = splitWords.map(word => speakText.replace(slashWord, word));
-                    speakText = results.join("\nor ");
-                }
-            }
-
-            speak(speakText);
-        });
     }
 
     // region 内容显示
@@ -1783,145 +1748,135 @@ $(function () {
         return window.self !== window.top && parent.$('#k_iframe').length;
     }
 
-    // region TTS 功能
-    var ttsConfig = {
-        "美音女1": {
-            locale: "en-US",
-            voice: "en-US-MichelleNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音女2": {
-            locale: "en-US",
-            voice: "en-US-AriaNeural",
-            pitch: "+0Hz",
-            rate: "+20%",
-            volume: "+0%",
-        },
-        "美音女3": {
-            locale: "en-US",
-            voice: "en-US-AnaNeural",
-            pitch: "+0Hz",
-            rate: "+20%",
-            volume: "+0%",
-        },
-        "美音女4": {
-            locale: "en-US",
-            voice: "en-US-JennyNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音男1": {
-            locale: "en-US",
-            voice: "en-US-ChristopherNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音男2": {
-            locale: "en-US",
-            voice: "en-US-EricNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音男3": {
-            locale: "en-US",
-            voice: "en-US-GuyNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音男4": {
-            locale: "en-US",
-            voice: "en-US-RogerNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "美音男5": {
-            locale: "en-US",
-            voice: "en-US-SteffanNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "英音女1": {
-            locale: "en-GB",
-            voice: "en-GB-SoniaNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "英音女2": {
-            locale: "en-GB",
-            voice: "en-GB-MaisieNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "英音女3": {
-            locale: "en-GB",
-            voice: "en-GB-LibbyNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "英音男1": {
-            locale: "en-GB",
-            voice: "en-GB-RyanNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-        "英音男2": {
-            locale: "en-GB",
-            voice: "en-GB-ThomasNeural",
-            pitch: "+0Hz",
-            rate: "+0%",
-            volume: "+0%",
-        },
-    }
+    // region TTS 相关
+    const ttsConfig = {
+        "美音女1": { locale: "en-US", voice: "en-US-MichelleNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音女2": { locale: "en-US", voice: "en-US-AriaNeural", pitch: "+0Hz", rate: "+20%", volume: "+0%" },
+        "美音女3": { locale: "en-US", voice: "en-US-AnaNeural", pitch: "+0Hz", rate: "+20%", volume: "+0%" },
+        "美音女4": { locale: "en-US", voice: "en-US-JennyNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音男1": { locale: "en-US", voice: "en-US-ChristopherNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音男2": { locale: "en-US", voice: "en-US-EricNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音男3": { locale: "en-US", voice: "en-US-GuyNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音男4": { locale: "en-US", voice: "en-US-RogerNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "美音男5": { locale: "en-US", voice: "en-US-SteffanNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "英音女1": { locale: "en-GB", voice: "en-GB-SoniaNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "英音女2": { locale: "en-GB", voice: "en-GB-MaisieNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "英音女3": { locale: "en-GB", voice: "en-GB-LibbyNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "英音男1": { locale: "en-GB", voice: "en-GB-RyanNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" },
+        "英音男2": { locale: "en-GB", voice: "en-GB-ThomasNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" }
+    };
 
-    var selectedTTS = "美音女1";
+    (function initTTS() {
+        if (!oaldpeConfig.enableOnlineTTS) return;
 
-    function create_edge_TTS(
-        timeout = 10,
-        auto_reconnect = true) {
+        const ttsService = createEdgeTTS();
+        const speak = (text, config) => ttsService.playText(text, config);
 
+        $(".oaldpe example-audio-ai a.audio_uk, .oaldpe example-audio-ai a.audio_us").each(function () {
+            const $audio = $(this);
+            const config = ttsConfig[$audio.hasClass("audio_uk") ? oaldpeConfig.britishTTS : oaldpeConfig.americanTTS];
+
+            let inputText = $audio.parent().prev(".exText")
+                .clone().find(".cf, chn").remove().end().text()
+                .replace(/somebody\/something/g, "somebody or something")
+                .replace(/\(.*?\)|\u200B/g, "");
+
+            const match = inputText.match(/\b(\w+(?:\/\w+)+)\b/);
+            if (match) inputText = match[0].split("/").map(word => inputText.replace(match[0], word)).join("\nor ");
+
+            $audio.on("click", (event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                speak(inputText, config);
+            });
+        });
+    })();
+
+    function createEdgeTTS() {
         const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-        const VOICES_URL = `https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=${TRUSTED_CLIENT_TOKEN}`;
         const SYNTH_URL = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`;
+        const AUDIO_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
+
         const BINARY_DELIM = "Path:audio\r\n";
-        const VOICE_LANG_REGEX = /\w{2}-\w{2}/;
+        const CONTENT_TYPE_JSON = "Content-Type:application/json\r\nPath:speech.config\r\n\r\n";
+        const CONTENT_TYPE_SSML = "Content-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n";
 
-        let _outputFormat = "audio-24khz-48kbitrate-mono-mp3";
-        /* 修改发音人和语言 */
-        let _voiceLocale = 'en-US',
-            _voice = 'en-US-MichelleNeural',
-            // 调整音色
-            _pitch = '+0Hz',
-            // 调整速度
-            _rate = '+20%',
-            // 调整音量
-            _volume = '+0%';
+        let socket = null, requests = {};
 
-        const _queue = {
-            message: [],
-            url_resolve: {},
-            url_reject: {},
-        };
+        const createSSML = (inputText, { locale, voice, pitch, rate, volume }) =>
+            `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${locale}">
+                <voice name="${voice}"><prosody pitch="${pitch}" rate="${rate}" volume="${volume}">${inputText}</prosody></voice>
+            </speak>`;
 
-        let ready = false;
+        async function ensureSocketReady() {
+            if (!socket || socket.readyState === WebSocket.CLOSED) {
+                const reopened = !!socket; // Check if the socket existed before
+                socket = new WebSocket(SYNTH_URL);
+                socket.onmessage = onSocketMessage;
+                socket.onclose = () => console.warn('WebSocket closed.');
+                socket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    socket.close();
+                };
+                await new Promise((resolve) => {
+                    socket.onopen = () => {
+                        console.log(reopened ? 'WebSocket reopened.' : 'WebSocket opened.');
+                        setAudioOutputFormat();
+                        resolve();
+                    };
+                });
+            } else if (socket.readyState === WebSocket.CONNECTING) {
+                await new Promise((resolve) => socket.addEventListener('open', resolve, { once: true }));
+            }
+        }
 
-        function _SSMLTemplate(input) {
-            return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${ttsConfig[selectedTTS].voiceLocale}">
-                      <voice name="${ttsConfig[selectedTTS].voice}">
-                       <prosody pitch="${ttsConfig[selectedTTS].pitch}" rate="${ttsConfig[selectedTTS].rate}" volume="${ttsConfig[selectedTTS].volume}">${input}</prosody>
-                      </voice>
-                  </speak>`;
+        async function sendWhenReady(message) {
+            await ensureSocketReady();
+            socket.send(message);
+        }
+
+        async function setAudioOutputFormat(format = AUDIO_FORMAT) {
+            const messagePayload = JSON.stringify({ context: { synthesis: { audio: { outputFormat: format } } } });
+            await sendWhenReady(`${CONTENT_TYPE_JSON}${messagePayload}`);
+        }
+
+        async function onSocketMessage(event) {
+            if (!(event.data instanceof Blob)) return;
+
+            const dataText = await event.data.text();
+            const requestId = dataText.match(/X-RequestId:(.*?)\r\n/)[1];
+            const request = requests[requestId];
+            if (!request) return;
+
+            const arrayBuffer = await event.data.arrayBuffer();
+            const dataView = new DataView(arrayBuffer);
+
+            /* Check if the audio fragment is the last one */
+            if (dataView.getUint8(0) === 0x00 && dataView.getUint8(1) === 0x67 && dataView.getUint8(2) === 0x58) {
+                if (request.audioDataChunks.length) {
+                    const audioBlob = new Blob(request.audioDataChunks, { type: 'audio/mp3' });
+                    request.resolve(URL.createObjectURL(audioBlob));
+                    delete requests[requestId];
+                }
+            } else {
+                const audioStartIndex = dataText.indexOf(BINARY_DELIM) + BINARY_DELIM.length;
+                const audioData = new Blob([arrayBuffer.slice(audioStartIndex)]);
+                request.audioDataChunks.push(audioData);
+            }
+        }
+
+        async function sendSSMLRequest(inputText, config) {
+            const ssml = createSSML(inputText, config);
+            const requestId = uuidv4().replace(/-/g, '');
+            const requestMessage = `X-RequestId:${requestId}\r\n${CONTENT_TYPE_SSML}${ssml}`;
+
+            requests[requestId] = { audioDataChunks: [], resolve: null, reject: null };
+            await sendWhenReady(requestMessage);
+
+            return new Promise((resolve, reject) => {
+                requests[requestId].resolve = resolve;
+                requests[requestId].reject = reject;
+            });
         }
 
         function uuidv4() {
@@ -1929,246 +1884,20 @@ $(function () {
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
         }
 
-        let socket = null;
-        create_new_ws();
+        async function playText(inputText, config) {
+            try {
+                const audioUrl = await sendSSMLRequest(inputText, config);
+                if (!globalAudio.paused) globalAudio.pause();
+                globalAudio.src = audioUrl;
 
-        function setFormat(format) {
-            if (format)
-                _outputFormat = format;
-
-            /**/
-            socket.send(`Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n
-                          {
-                              "context": {
-                                  "synthesis": {
-                                      "audio": {
-                                          "metadataoptions": {
-                                              "sentenceBoundaryEnabled": "false",
-                                              "wordBoundaryEnabled": "false"
-                                          },
-                                          "outputFormat": "${_outputFormat}" 
-                                      }
-                                  }
-                              }
-                          }
-                      `);
-        }
-
-        async function createURL(requestId) {
-            let index_message = 0;
-            for (let message of _queue.message) {
-                const isbinary = message instanceof Blob;
-
-                if (!isbinary)
-                    continue;
-
-                const data = await message.text();
-
-                //console.log(data); //does the message order change?
-                //console.log(await event.data.arrayBuffer());
-
-                const Id = /X-RequestId:(.*?)\r\n/gm.exec(data)[1];
-
-                if (Id !== requestId)
-                    continue;
-
-                if (data.charCodeAt(0) === 0x00 && data.charCodeAt(1) === 0x67 && data.charCodeAt(2) === 0x58) {
-                    // Last (empty) audio fragment
-                    console.log(`Last (empty) audio fragment`)
-
-                    const blob = new Blob(_queue[requestId], {
-                        'type': 'audio/mp3'
-                    });
-
-                    _queue[requestId] = null; //release memory
-
-                    const url = URL.createObjectURL(blob);
-                    console.log(url)
-
-                    //URL.revokeObjectURL(url);
-                    _queue.url_resolve[requestId](url);
-
-                    //return url
-
-                } else {
-                    const index = data.indexOf(BINARY_DELIM) + BINARY_DELIM.length;
-
-                    const audioData = message.slice(index);
-                    _queue[requestId].push(audioData);
-
-                    _queue.message[index_message] = null; //release blob memory
-                }
-
-                ++index_message;
+                const cleanup = () => URL.revokeObjectURL(audioUrl);
+                globalAudio.addEventListener('ended', cleanup, { once: true });
+                globalAudio.play();
+            } catch (error) {
+                console.error('Failed to play audio:', error);
             }
         }
 
-        function onopen(event) {
-            console.log('open');
-            //socket.send('Hello Server!');
-            //socket.close()
-
-            setFormat();
-            ready = true;
-        }
-
-        async function onmessage(event) {
-            const isbinary = event.data instanceof Blob;
-            // console.log(`Message from server, type: ${typeof (event.data)} Blob: ${isbinary}`);
-
-            _queue.message.push(event.data)
-
-            if (!isbinary) {
-                //console.log(event.data);
-                const requestId = /X-RequestId:(.*?)\r\n/gm.exec(event.data)[1];
-
-                if (event.data.includes("Path:turn.end")) {
-                    // end of turn
-                    createURL(requestId);
-                }
-
-            } else {
-            }
-        }
-
-        function onerror(event) {
-            ready = false;
-            console.log('WebSocket error: ', event);
-        }
-
-        function onclose(event) {
-            ready = false;
-            console.log('WebSocket close: ', event); //may be closed by remote
-        }
-
-        function addSocketListeners() {
-            socket.addEventListener('open', onopen);
-            // Listen for messages
-            socket.addEventListener('message', onmessage);
-
-            // Listen for possible errors
-            socket.addEventListener('error', onerror);
-
-            // Listen for possible errors
-            socket.addEventListener('close', onclose);
-        }
-
-        function create_new_ws() {
-            //try {
-            // Create WebSocket connection.
-            socket = new WebSocket(SYNTH_URL);
-            addSocketListeners();
-        }
-
-        let toStream = function (input) {
-            let requestSSML = _SSMLTemplate(input);
-            const requestId = uuidv4().replace(/-/g, '');
-            // const requestId = uuidv4().replaceAll('-', '');
-            const request = `X-RequestId:${requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n
-                      ` + requestSSML.trim();
-
-            _queue[requestId] = [];
-
-            return new Promise((resolve, reject) => {
-                _queue.url_resolve[requestId] = resolve,
-                    _queue.url_reject[requestId] = reject;
-
-                if (!ready) {
-                    if (auto_reconnect) {
-                        create_new_ws();
-                        socket.addEventListener('open', _ => socket.send(request));
-
-                        setTimeout(_ => {
-                            if (!ready)
-                                reject('reconnect timeout')
-                        }, timeout * 1000);
-                    } else
-                        reject('socket error or timeout');
-                } else {
-                    socket.send(request)
-                }
-
-            });
-
-        }
-
-        async function play(input, play_count = 1, play_span = 5000) {
-            const url = await toStream(input);
-
-            let play_resolve = function () {
-            };
-            // globalAudio.pause();
-            !globalAudio.paused && globalAudio.pause();
-
-            globalAudio.src = url;
-            // var audio = new Audio(url);
-            console.log('before play' + globalAudio.duration) //NaN
-            //let play_count = 3; //repeat times
-            globalAudio.onended = (e) => {
-                console.log(e);
-                if (--play_count > 0) {
-                    console.log("play----");
-                    setTimeout(_ => globalAudio.play(), play_span);
-                } else {
-                    //URL.revokeObjectURL(url);
-                    play_resolve(url);
-                    console.log('play end');
-                }
-            }
-
-            await globalAudio.play();
-            console.log('after play' + globalAudio.duration);
-
-            return new Promise((resolve, reject) => {
-                play_resolve = resolve
-            });
-
-        }
-
-        return new Promise((resolve, reject) => {
-            setTimeout(_ => reject('socket open timeout'), timeout * 1000);
-            // Connection opened
-            socket.addEventListener('open', function (event) {
-
-                resolve({
-                    _: play,
-                    toStream,
-                    setVoice: (voice, locale) => {
-                        _voice = voice;
-                        if (!locale) {
-                            const voiceLangMatch = VOICE_LANG_REGEX.exec(_voice);
-                            if (!voiceLangMatch)
-                                throw new Error("Could not infer voiceLocale from voiceName!");
-                            _voiceLocale = voiceLangMatch[0];
-                        } else {
-                            _voiceLocale = locale;
-                        }
-                    },
-                    setFormat,
-                    isReady: _ => ready
-                })
-            });
-        });
-
+        return { playText };
     }
-
-    var tts;
-
-    async function init() {
-        tts = await create_edge_TTS();
-    }
-
-    typeof Promise !== "undefined" && init();
-
-    //-------------------------------
-
-    async function speak(chn) {
-        try {
-            await tts._(chn)
-        } catch (e) {
-            console.log('catch error:')
-            console.log(e)
-        }
-    }
-
 });
