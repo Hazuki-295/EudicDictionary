@@ -1146,6 +1146,41 @@ section.etymology[data-title="Usage"] {
     top: 2px;
 }
 
+/* HTML Diff */
+/* Added content */
+ins.diffins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    border-bottom: 1px solid #c3e6cb;
+}
+
+/* Removed content */
+del.diffdel {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    border-bottom: 1px solid #f5c6cb;
+}
+
+/* Modified sections */
+ins.diffmod {
+    background-color: #fff3cd;
+    color: #856404;
+    text-decoration: none;
+    border-bottom: 1px solid #ffeeba;
+}
+
+del.diffmod {
+    background-color: #ffeeba;
+    color: #856404;
+    text-decoration: line-through;
+    border-bottom: 1px solid #f5c6cb;
+}
+
+/* Special tags */
+ins.mod {}
+
 /* Light Mode */
 .ode-2024 {
     --grey-0: #fff;

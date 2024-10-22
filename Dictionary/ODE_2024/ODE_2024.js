@@ -45,7 +45,20 @@ var odeConfig = {
     autoDarkMode: true,
 };
 
-$(function () {
+const SRC_FILE = 'ODE_2024.js';
+const BUNDLE_PATH = '/dist/htmlDiff.bundle.js';
+
+async function initHtmlDiff() {
+    if (typeof window.HtmlDiff !== 'undefined') return;
+    try {
+        const scriptPath = $(`script[src*="${SRC_FILE}"]`).attr('src').replace(/\/[^/]*$/, BUNDLE_PATH);
+        await $.getScript(scriptPath);
+    } catch { }
+}
+
+$(async function main() {
+    await initHtmlDiff();
+
     $(".ode-2024").each(function () {
         const $ode = $(this);
         if ($ode.attr("script-loaded") === "true") return;

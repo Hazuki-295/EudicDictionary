@@ -2,6 +2,7 @@
 !package-lock.json
 !Makefile
 
+dist/
 node_modules/
 
 !.gitignore
