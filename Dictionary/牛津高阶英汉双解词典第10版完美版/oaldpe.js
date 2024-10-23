@@ -29,10 +29,6 @@ var oaldpeConfig = {
     // 选项（默认为false）：false=否，true=是
     selectNavbarAll: false,
 
-    // 【配置项7：是否在导航栏每个选项首尾加宽留白】（方便双击或单击时不会点到文字而触发查词功能）
-    // 选项（默认为true）：false=否，true=是
-    NavbarMargin: true,
-
     /******** 单词、例句发音，图片显示 ********/
     // 【配置项8：是否显示音节划分】（点击单词可切换音节划分）
     // 选项（默认为false）：false=不显示，true=显示
@@ -147,30 +143,6 @@ var oaldpeConfig = {
     enableErudaConsole: true,
 
     /******** 其他自定义配置（仅支持通过此js文件修改） ********/
-    // 【配置项35：自定义折叠块2开关】（浅蓝色折叠区）
-    // 选项（默认都为true）：false=不显示，true=显示
-    box2ShowSwitch: {
-        "verbforms": true, // 动词形式
-        "wordorigin": true, // 词源
-        "colloc": true,     // 词语搭配
-        "snippet": true,   // 牛津搭配词典
-        "wordfinder": true, // 联想词
-        "extra_examples": true, // 更多例句
-        "cult": true,       // 文化
-        "synonyms": true,   // 同义词辨析
-        "which_word": true, // 词语辨析
-        "homophone": true,  // 同音词
-        "more_about": true, // 词语辨析
-        "mlt": true,        // 同类词语学习
-        "wordfamily": true, // 词族
-        "grammar": true,    // 语法说明
-        "express": true,    // 情景表达
-        "langbank": true,   // 用语库
-        "vocab": true,      // 词汇扩充
-        "british_american": true,  // 英式 / 美式
-        "more_about": true, // 补充说明
-    },
-
     // 【配置项36：自动展开折叠块2开关】（浅蓝色折叠区）
     // 选项（默认仅展开词源）：false=不展开，true=展开
     autoUnfoldBox2: {
@@ -193,64 +165,6 @@ var oaldpeConfig = {
         "vocab": false,      // 词汇扩充
         "british_american": false,  // 英式 / 美式
         "more_about": false, // 补充说明
-    },
-
-    // 【配置项37：自定义折叠块3开关】（Idioms、Phrasal verbs）
-    // 选项（默认都为true）：false=不显示，true=显示
-    box3ShowSwitch: {
-        "idioms": true, // 习语
-        "phrasal_verb_links": true, // 短语动词
-    },
-
-    // 【配置项38：其他显示开关】
-    // 选项（默认都为true）：false=不显示，true=显示
-    othersShowSwitch: {
-        "h2.shcut": true, // 整个box1标题(包含英文和翻译)
-        ".box_title unboxx": true, // box2标题翻译（浅红色折叠区）
-        "h2.shcut shcut": true,  // box1标题翻译（绿虚线折叠区）
-        ".symbols": true, // 钥匙图标
-        ".phonetics": true, // 单词发音
-        ".sense .def": true, // 义项英文
-        ".examples": true, // 例句
-        ".grammar": true, // 语法，如[transitive]或[t]
-        ".cf": true, // 固定搭配，如take sth with you
-        ".topic-g": true, // Topics
-        ".use": true, // 用法，如(not used in the progressive tenses 不用于进行时)
-        ".xrefs[xt='see']": true, // see also
-        ".xrefs[xt='cp']": true, // 对比
-        ".xrefs[xt='nsyn'], .oaldpe .xrefs[xt='syn']": true, // 同义词
-        ".xrefs[xt='opp']": true, // 反义词
-        ".labels": true, // 标签，如(informal非正式用语)
-        ".pos": true, // 词性，如verb或v.
-        ".dis-g": true, // 主要用于，如(of machines, etc.机器等)(of verbs, nouns, etc.动词、名词等)
-        ".variants": true, // 变体，如(also break time)
-        ".un[un=help]": true, // 帮助
-        ".inflections": true, // 词形变化，如(plural As, A's, a's)
-        "div#ox-enlarge": true, // 图片
-    },
-
-    // 【配置项39：自定义CSS样式】
-    // 选项（默认都为空）：不为空=使用自定义，为空=不使用自定义
-    // 示例1：{"color": "red"}
-    // 示例2：{"color": "#BE002F", "font-size": "20px"}
-    // 示例3：{"font-weight": "bold", "font-style": "italic"}
-    // 示例4：{"background-color": "green", "font-style": "normal"}
-    // 其他用法不懂的可参考https://www.runoob.com/css/css-tutorial.html，也可自行百度或求助AI。
-    customizeCSS: {
-        ".examples li .x": {}, // 例句英文
-        ".examples li .x chn": {}, // 例句中文
-        ".def": {}, // 义项的英文释义
-        "deft > chn": {}, // 权威中文释义
-        "h1.headword": {}, // 词头
-        ".oaldpe-nav": {}, // 导航栏
-        ".oaldpe-nav span": {}, // 导航栏选项
-        ".pos": {}, // 词性，如verb或v.
-        ".cf": {}, // 固定搭配，如take sth with you
-        ".grammar": {}, // 语法，如[transitive]或[t]
-        "div.li_sense_before": {}, // 义项数字
-        ".webtop > .idm": {}, // Idioms下的词组
-        ".sense > .variants": {}, // 义项前的变体类型，如：east第一个义项的usually
-        ".sense > .variants > .v-g": {}, // 义项前的变体内容，如：east第一个义项的the east
     },
 
     // 【配置项40：是否禁用配置词头】（深蓝词典用户需要禁用，因为不兼容）
@@ -1038,8 +952,6 @@ $(function () {
         }
         showHideEntry(oaldpeConfig.selectNavbarAll ? -1 : 0);
 
-        if (oaldpeConfig.NavbarMargin) $navbar_span.css("padding", ".2rem 1.2rem");
-
         $oaldpe.first().prepend($navbar);
     }
 
@@ -1305,8 +1217,6 @@ $(function () {
 
     fnNormalSenseNumber(oaldpeConfig.normalSenseNumber);
 
-    fnCustomizeCSS(oaldpeConfig.customizeCSS);
-
     function fnSimplifyPos(itemValue) {
         itemValue && $(".oaldpe .pos").each(function(){
             $(this).text(OALDPE_POS[$(this).text()]);
@@ -1355,16 +1265,6 @@ $(function () {
         !itemValue && $('.oaldpe div.li_sense_before').addClass('colored');
     }
 
-    function fnCustomizeCSS(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues)
-            .filter(key => Object.keys(itemValues[key]).length !== 0);
-        for (var i = 0; i < _keysWithFalseValue.length; i++) {
-            _css = itemValues[_keysWithFalseValue[i]];
-            _selector = ".oaldpe " + _keysWithFalseValue[i];
-            $(_selector).css(_css);
-        }
-    }
-
     // region 折叠控制
     setupCollapse();
 
@@ -1383,12 +1283,6 @@ $(function () {
     addRocketAndReturn();
 
     scrollingAndJumping();
-
-    fnBox2ShowSwitch(oaldpeConfig.box2ShowSwitch);
-
-    fnBox3ShowSwitch(oaldpeConfig.box3ShowSwitch);
-
-    fnOthersShowSwitch(oaldpeConfig.othersShowSwitch);
 
     function setupCollapse() {
         $(".oaldpe .li_sense_before").each(function () {
@@ -1570,39 +1464,6 @@ $(function () {
                 }
             });
         });
-    }
-
-    function fnBox2ShowSwitch(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues).filter(key => !itemValues[key]);
-        if (_keysWithFalseValue.length) {
-            var _selectors = _keysWithFalseValue.map(item => `.oaldpe .collapse .unbox[unbox=${item}]`).join(', ');
-            $(_selectors).closest('div.collapse').hide();
-        }
-    }
-
-    function fnBox3ShowSwitch(itemValue) {
-        if (!itemValue["idioms"])
-            $(".oaldpe div.idioms[hclass='idioms']").hide();
-
-        if (!itemValue["phrasal_verb_links"])
-            $(".oaldpe aside.phrasal_verb_links[hclass='phrasal_verb_links']").hide();
-
-        if (!itemValue["idioms"] && !itemValue["phrasal_verb_links"]) {
-            $(".oaldpe span.jumplinks").hide();
-        } else if (!itemValue["idioms"]) {
-            $(".oaldpe span.jumplinks a.Ref[title='Idioms definition']").hide();
-        } else if (!itemValue["phrasal_verb_links"]) {
-            $(".oaldpe span.jumplinks a.Ref[title='Phrasal Verbs definition']").hide();
-        }
-    }
-
-    function fnOthersShowSwitch(itemValues) {
-        var _keysWithFalseValue = Object.keys(itemValues)
-            .filter(key => !itemValues[key]);
-        if (_keysWithFalseValue.length) {
-            var _selectors = _keysWithFalseValue.map(item => `.oaldpe ${item}`).join(' ,');
-            $(_selectors).hide();
-        }
     }
 
     // region 欧路词典相关
