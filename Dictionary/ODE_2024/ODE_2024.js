@@ -11,7 +11,7 @@ var odeConfig = {
 
     // 【配置项：是否展开折叠块 phrases, phrasal verbs】
     // 选项（默认为false）：false=否，true=是
-    unfoldPhraseSection: false,
+    unfoldPhraseSections: false,
 
     // 【配置项：点击 phrases, phrasal verbs 跳转后，自动展开内容】
     // 选项（默认为true）：false=不展开，true=展开
@@ -45,10 +45,10 @@ var odeConfig = {
     autoDarkMode: true,
 };
 
-const SRC_FILE = 'ODE_2024.js';
-const BUNDLE_PATH = '/dist/htmlDiff.bundle.js';
-
 async function initHtmlDiff() {
+    const SRC_FILE = 'ODE_2024.js';
+    const BUNDLE_PATH = '/dist/htmlDiff.bundle.js';
+
     if (typeof window.HtmlDiff !== 'undefined') return;
     try {
         const scriptPath = $(`script[src*="${SRC_FILE}"]`).attr('src').replace(/\/[^/]*$/, BUNDLE_PATH);
@@ -136,9 +136,9 @@ $(async function main() {
 
         setupOtherSections();
 
-        function scrollToTarget(target, offset = 100, complete = () => { }) {
+        function scrollToTarget($target, offset = 100, complete = () => { }) {
             $('html, body').animate({
-                scrollTop: target.offset().top - offset
+                scrollTop: $target.offset().top - offset
             }, 500, complete);
         }
 
@@ -292,41 +292,38 @@ $(async function main() {
         function setupPhraseSections() {
             $ode.find("section.phrases, section.phrasalVerbs").each(function () {
                 const $section = $(this);
-                const $entryContainer = $section.closest(".entryPageContent");
+                const $heading = $section.children("h2");
+                const $content = $heading.next();
+                const $entryContainer = $section.closest(".entryPageContent").append($section); // Move to the end
                 const $entryHeader = $entryContainer.children("header.entryHeader");
                 const $jumplinkContainer = $entryHeader.find(".jumplinks").length ? $entryHeader.find(".jumplinks") : $("<div>", { class: "jumplinks" }).appendTo($entryHeader);
+                const $jumpLink = $("<span>", { class: "jumplink", text: $heading.text(), "data-title": $heading.text() }).appendTo($jumplinkContainer);
+                const $backLink = $("<span>", { class: "jumplink_back" }).appendTo($heading);
 
-                const $heading = $section.children("h2");
                 $heading.on("click", function () {
                     $section.toggleClass("expanded");
-                    $(this).next().slideToggle("fast");
+                    $content.slideToggle("fast");
                 });
 
                 $section.addClass("expanded"); // 默认展开
-                if (!odeConfig.unfoldPhraseSection) { // 默认折叠
-                    setTimeout(() => $heading.trigger("click"), 0); // GoldenDict-ng Mystery BUG!
+                if (!odeConfig.unfoldPhraseSections) { // 默认折叠
+                    Promise.resolve().then(() => $heading.trigger("click")); // GoldenDict-ng Mystery BUG!
                 }
 
-                const $jumpLink = $("<span>", { class: "jumplink", text: $heading.text(), "data-title": $heading.text() })
-                    .appendTo($jumplinkContainer)
-                    .on("click", () => scrollToTarget($section, undefined, function () {
-                        if (odeConfig.jumpsUnfold && !$section.hasClass("expanded")) {
+                $jumpLink.on("click", () => scrollToTarget($section, undefined, function () {
+                    if (odeConfig.jumpsUnfold && !$section.hasClass("expanded")) {
+                        $heading.trigger("click");
+                    }
+                }));
+
+                $backLink.on("click", (event) => {
+                    event.stopPropagation();
+                    scrollToTarget($jumpLink, undefined, function () {
+                        if (odeConfig.leavesFold && $section.hasClass("expanded")) {
                             $heading.trigger("click");
                         }
-                    }));
-
-                const $backLink = $("<span>", { class: "jumplink_back" })
-                    .appendTo($heading)
-                    .on("click", (event) => {
-                        event.stopPropagation();
-                        scrollToTarget($jumpLink, undefined, function () {
-                            if (odeConfig.leavesFold && $section.hasClass("expanded")) {
-                                $heading.trigger("click");
-                            }
-                        });
                     });
-
-                $section.appendTo($entryContainer);
+                });
             });
         }
 
@@ -369,31 +366,32 @@ $(async function main() {
             // Assume offline audio is supported initially
             let offlineAudioSupported = true;
 
-            function playAudio(href_offline, href_ogg, href_mp3) {
-                const audioSrc = offlineAudioSupported ? href_offline : (oggSupported ? href_ogg : href_mp3);
-                console.log(`(${offlineAudioSupported ? 'offline' : 'online'}) audio: ${audioSrc}`);
-
-                globalAudio.src = audioSrc;
-                globalAudio.play().catch((error) => {
-                    console.error(`Failed to play ${offlineAudioSupported ? 'offline' : 'online'} audio.`, error);
-                    if (offlineAudioSupported) {
-                        offlineAudioSupported = false;
-                        playAudio(href_offline, href_ogg, href_mp3); // Retry with online audio
-                    }
-                });
-            }
-
             $ode.find('a.sound').each(function () {
                 const $audio = $(this);
                 const href_offline = isEudicPC() ? $audio.attr('href') : $audio.attr('href').replace('sound://', '');
                 const href_ogg = $audio.attr('data-href');
                 const href_mp3 = href_ogg.replace('/uk_pron_ogg/', '/uk_pron/').replace('/us_pron_ogg/', '/us_pron/').replace('.ogg', '.mp3');
 
+                function playAudio() {
+                    const audioSrc = offlineAudioSupported ? href_offline : (oggSupported ? href_ogg : href_mp3);
+                    const playType = offlineAudioSupported ? 'offline' : 'online';
+                    console.log(`(${playType}) audio: ${audioSrc}`);
+
+                    globalAudio.src = audioSrc;
+                    globalAudio.play().catch((error) => {
+                        console.error(`Failed to play ${playType} audio.`, error);
+                        if (offlineAudioSupported) {
+                            offlineAudioSupported = false;
+                            playAudio(); // Retry with online audio
+                        }
+                    });
+                }
+
                 $audio.on('click', function (event) {
                     event.stopPropagation();
                     event.preventDefault();
                     if (!globalAudio.paused) globalAudio.pause();
-                    playAudio(href_offline, href_ogg, href_mp3);
+                    playAudio();
                 });
             });
         }
@@ -492,7 +490,7 @@ $(async function main() {
             }
 
             // Delete the Eudic fixed style to prevent conflicts
-            $ode.parent().find('.eudic_custom_night').remove(); // Initial check
+            $ode.siblings('.eudic_custom_night').remove(); // Initial check
             if (!$ode.parent().attr('observer-attached')) {
                 new MutationObserver((mutationsList) => {
                     mutationsList.forEach((mutation) => {
@@ -522,13 +520,15 @@ $(async function main() {
         Eudic_removeHeader();
 
         function Eudic_widerScreen() {
-            if (odeConfig.widerScreenEudic && isEudicAPP())
+            if (odeConfig.widerScreenEudic && isEudicAPP()) {
                 $ode.parent().css({ margin: "5px 8px 5px 5px", padding: "unset" });
+            }
         }
 
         function Eudic_removeHeader() {
-            if (odeConfig.removeEudicHeader && isEudic())
+            if (odeConfig.removeEudicHeader && isEudic()) {
                 $('#wordInfoHead').remove();
+            }
         }
 
         // region Helper functions
@@ -567,8 +567,6 @@ $(async function main() {
                 "US": { locale: "en-US", voice: "en-US-JennyNeural", pitch: "+0Hz", rate: "+0%", volume: "+0%" }
             };
 
-            const speak = (text, config) => ttsService.playText(text, config);
-
             $ode.find('.entryContent[data-dictname^="ENG"]').each(function () {
                 const $entryContent = $(this);
                 const dictname = $entryContent.data('dictname');
@@ -578,7 +576,7 @@ $(async function main() {
                     const text = $example.text();
 
                     const $speaker = $('<a>', { class: 'sound-ai' }).prependTo($example);
-                    $speaker.on('click', () => speak(text, dictname === "ENG(UK)" ? ttsConfig["UK"] : ttsConfig["US"]));
+                    $speaker.on('click', () => ttsService.playText(text, dictname === "ENG(UK)" ? ttsConfig["UK"] : ttsConfig["US"]));
                 });
             });
 
