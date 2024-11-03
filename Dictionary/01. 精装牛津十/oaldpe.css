@@ -94,6 +94,7 @@ ol, ul {
     background-color: rgb(0 122 108 / 80%);
     border-radius: 100px;
     overflow: auto hidden;
+    margin-bottom: .3rem;
     user-select: none;
 }
 
@@ -257,10 +258,6 @@ h1.headword .hm, .xhm {
 }
 
 /* 词头排版微调 */
-.entry > .top-container .webtop {
-    margin-top: .3em;
-}
-
 .webtop > .symbols {
     vertical-align: 1px;
 }
@@ -485,7 +482,7 @@ h2.shcut shcut chn {
 
 .pv-g:first-of-type {
     border-radius: 10px 10px 0 0;
-    margin-top: .5em;
+    margin-top: 1em;
 }
 
 .pv-g:last-of-type {
@@ -573,16 +570,16 @@ h2.shcut shcut chn {
     color: #9f5350;
 }
 
-.labels labelx::before {
+.labels labelx chn::before {
     content: ' ';
 }
 
 /* 用法 */
 .use {
-    color: #2f5a8a;
+    color: var(--text-grey-color);
 }
 
-.webtop > .use uset::before {
+.webtop > .use uset chn::before {
     content: ' ';
 }
 
@@ -635,6 +632,10 @@ h2.shcut shcut chn {
     color: var(--color-blue);
 }
 
+.xref:hover {
+    text-decoration: underline;
+}
+
 /* Gloss */
 .gloss {
     font-style: normal;
@@ -644,6 +645,22 @@ h2.shcut shcut chn {
 .ei {
     font-style: italic;
     color: var(--color-blue);
+}
+
+.ei a.sound {
+    display: none; /* Hide the audio */
+}
+
+.ei chn {
+    color: var(--text-grey-color);
+}
+
+.ei chn::before {
+    content: '（';
+}
+
+.ei chn::after {
+    content: '）';
 }
 
 /* Emphasized Bold */
@@ -839,7 +856,7 @@ a.pron-us::before,
 
 /* 例句样式 */
 ul.examples > li > .exText .cf {
-    margin-right: .3em;
+    margin-right: 2px;
 }
 
 ul.examples > li > .exText .cl {
@@ -873,11 +890,17 @@ ul.examples > li > .exText .unx + undt chn {
 .xrefs, .topic-g {
     display: block;
     font-size: .85em;
-    margin: .25em 0;
+    line-height: calc(1em / 0.85 * var(--line-height));
+}
+
+.sense .sensetop + .xrefs, .sense .sensetop + .topic-g,
+.xrefs ~ .topic-g, .topic-g ~ .xrefs,
+.xrefs ~ .xrefs, .topic-g ~ .topic-g {
+    margin-top: 1px;
 }
 
 ul.examples + .xrefs, ul.examples + .topic-g {
-    margin-top: .5em;
+    margin-top: .3rem;
 }
 
 .sense .def .xrefs { /* America */
@@ -1012,6 +1035,7 @@ a.Ref .xs::before {
     content: '— ';
 }
 
+/* which | condition (n.) -> Synonyms */
 .un .h4 {
     display: block;
     font-family: var(--font-family-sans-serif);
@@ -1019,40 +1043,6 @@ a.Ref .xs::before {
     font-weight: bold;
     color: seagreen;
     margin-bottom: .5em;
-}
-
-.un .ei a.sound {
-    display: none;
-}
-
-.un[un='help'] unx {
-    display: block;
-}
-
-.un[un='help'] unx chn {
-    display: inline-block;
-    margin-top: 1em;
-    margin-bottom: 2em;
-}
-
-.un[un='help'] unx:last-child chn {
-    margin-bottom: unset;
-}
-
-.idioms .un[un='help'] {
-    border: unset;
-    border-left: 2px solid var(--border-color);
-    border-radius: unset;
-    padding: .5em 1em;
-}
-
-.idioms .un[un='help'] unx chn {
-    display: inline-block;
-    color: var(--color-green);
-    background: rgb(0 122 108 / 20%);
-    border-radius: 3px;
-    padding: 2px 5px;
-    margin-top: 2px;
 }
 
 .un:not([un='help']) chn {
@@ -1065,6 +1055,30 @@ a.Ref .xs::before {
 
 .un:not([un='help']) chn::after {
     content: '）';
+}
+
+.un[un='help'] unx {
+    display: block;
+}
+
+.un[un='help'] unx chn {
+    display: block;
+    margin-top: 1em;
+}
+
+.idioms .un[un='help'] {
+    border: unset;
+    border-left: 2px solid var(--border-color);
+    border-radius: unset;
+    padding: .5em 1em;
+}
+
+.idioms .un[un='help'] unx chn {
+    color: var(--color-green);
+    background: rgb(0 122 108 / 20%);
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin-top: 2px;
 }
 
 /* 折叠块 */
@@ -1138,10 +1152,10 @@ a.Ref .xs::before {
     font-weight: normal;
     color: var(--color-blue);
     border-bottom: 1px solid var(--border-color-light);
-    padding-bottom: 1px;
+    padding-bottom: 2px;
 }
 
-.collapse .unbox .body .unbox undt::before {
+.collapse .unbox .body .unbox undt chn::before {
     content: ' ';
 }
 
@@ -1155,49 +1169,56 @@ a.Ref .xs::before {
     display: block;
 }
 
+.collapse .unbox .body .p:not(:last-child) {
+    margin-bottom: 1em;
+}
+
 /* List bullet */
 .collapse .unbox .body ul.bullet {
     margin-left: 1em;
     position: relative;
 }
 
+.collapse .unbox .body ul.bullet:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+.collapse .unbox .body ul.bullet > li:not(:last-of-type) {
+    margin-bottom: 1em;
+}
+
 .collapse .unbox .body ul.bullet > li::before {
     position: absolute;
     content: '▪';
     left: -1em;
-    color: var(--grey-6);
-    opacity: .7;
-}
-
-.collapse .unbox .body ul.bullet > li {
-    margin-bottom: 1em;
+    color: var(--grey-5);
 }
 
 /* List inline */
-.collapse .unbox .body ul.inline li {
-    display: inline-block;
+.collapse .unbox .body ul.inline:not(:last-of-type) {
+    margin-bottom: .75em;
 }
 
-.collapse .unbox .body ul.inline li:last-child {
-    margin-bottom: .8em;
+.collapse .unbox .body ul.inline li {
+    display: inline-block;
 }
 
 .collapse .unbox .body ul.inline li:not(:last-child)::after {
     content: '•';
     color: var(--grey-5);
-    padding: 0 .3em;
+    padding: 0 5px;
 }
 
 /* List collocations */
 .collapse .unbox .body ul.collocs_list li {
     display: inline-block;
-    margin: 0 .75em .5em 0;
+    margin: 0 .5em .5em 0;
 }
 
 .collapse .unbox .body ul.collocs_list li::before {
     content: '•';
     color: var(--grey-5);
-    padding: 0 5px 0 4px;
+    padding: 0 5px;
 }
 
 /* List definitions */
@@ -1211,11 +1232,11 @@ a.Ref .xs::before {
 
 /* List examples */
 .collapse .unbox .body ul.examples {
-    padding-top: .2em;
+    margin-top: .3rem;
 }
 
 .collapse .unbox .body ul.examples:not(:last-child) {
-    padding-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 /* 标签 */
@@ -1228,17 +1249,7 @@ a.Ref .xs::before {
 }
 
 /* 折叠块中文 */
-.collapse .unbox .body > .p > undt,
-.collapse .unbox .body > .p > .ei > undt,
-.collapse .unbox .body > ul.bullet > li > undt,
-.collapse .unbox .body > ul.bullet > li > .item > undt,
-.collapse .unbox .body > .deflist > .defpara > undt {
-    display: block;
-    margin-top: 2px;
-}
-
 .collapse .unbox .body > .p > undt chn,
-.collapse .unbox .body > .p > .ei > undt chn,
 .collapse .unbox .body > ul.bullet > li > undt chn,
 .collapse .unbox .body > ul.bullet > li > .item > undt chn,
 .collapse .unbox .body > .deflist > .defpara > undt chn {
@@ -1247,6 +1258,7 @@ a.Ref .xs::before {
     background: rgb(0 122 108 / 20%);
     border-radius: 3px;
     padding: 0 2px;
+    margin-left: 4px;
 }
 
 /* British/American (英式 / 美式) > have | subway */
@@ -1277,7 +1289,7 @@ a.Ref .xs::before {
     padding: 1em;
 }
 
-.collapse .unbox[unbox='cult'] .p:not(:last-of-type) {
+.collapse .unbox[unbox='cult'] .p:not(:last-child) {
     margin-bottom: 2em;
 }
 
@@ -1289,13 +1301,17 @@ a.Ref .xs::before {
     font-style: normal;
 }
 
+.collapse .unbox[unbox='cult'] ubx {
+    display: block;
+}
+
 .collapse .unbox[unbox='cult'] ubx chn {
     display: inline-block;
     color: var(--color-green);
     background: rgb(0 122 108 / 20%);
     border-radius: 3px;
     padding: 2px 5px;
-    margin-top: 2px;
+    margin-top: 5px;
 }
 
 /* Express Yourself (情景表达) > explain */
@@ -1307,20 +1323,20 @@ a.Ref .xs::before {
     margin-left: unset;
 }
 
-.collapse .unbox[unbox='express'] .body ul.bullet > li::before {
-    display: none;
-}
-
 .collapse .unbox[unbox='express'] .body ul.bullet > li {
     margin-bottom: unset;
 }
 
-/* Extra Examples (更多例句) */
-.collapse .unbox[unbox='extra_examples'] .box_title + * {
-    padding: .4em .8em;
+.collapse .unbox[unbox='express'] .body ul.bullet > li::before {
+    display: none;
 }
 
-/* Grammar Point (语法说明) > have (aux. v.) | used to */
+/* Extra Examples (更多例句) */
+.collapse .unbox[unbox='extra_examples'] .box_title + * {
+    padding: .4em .5em .6em;
+}
+
+/* Grammar Point (语法说明) > have (aux. v.) | used to | whether */
 .collapse .unbox[unbox='grammar'] .box_title + * {
     padding: 1em;
 }
@@ -1340,32 +1356,30 @@ a.Ref .xs::before {
     text-decoration: line-through;
 }
 
+.collapse .unbox[unbox='grammar'] .body > ul.bullet > li > undt chn {
+    display: inline;
+    color: var(--text-grey-color);
+    background: unset;
+    padding: unset;
+    margin-left: unset;
+}
+
+.collapse .unbox[unbox='grammar'] .body > ul.bullet > li > undt chn::before {
+    content: '（';
+}
+
+.collapse .unbox[unbox='grammar'] .body > ul.bullet > li > undt chn::after {
+    content: '）';
+}
+
 /* Homophones (同音词) > dessert */
 .collapse .unbox[unbox='homophone'] .box_title + * {
     padding: 1em;
 }
 
-.collapse .unbox[unbox='homophone'] .body ul.bullet {
-    margin-left: unset;
-}
-
-.collapse .unbox[unbox='homophone'] .body ul.bullet > li::before {
-    display: none;
-}
-
-.collapse .unbox[unbox='homophone'] .body ul.bullet > li {
-    font-style: italic;
-    color: var(--color-orange);
-}
-
-.collapse .unbox[unbox='homophone'] .body ul.bullet li .eb {
-    font-style: normal;
-    margin-right: 2px;
-}
-
 .collapse .unbox[unbox='homophone'] .body .unbox:first-of-type {
     font-family: var(--font-family-serif);
-    font-size: 1.125em;
+    font-size: 1.2em;
     font-weight: normal;
     color: var(--color-blue);
     margin-bottom: unset;
@@ -1378,25 +1392,43 @@ a.Ref .xs::before {
     margin-bottom: 1em;
 }
 
+.collapse .unbox[unbox='homophone'] .body ul.bullet {
+    margin-left: unset;
+}
+
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li {
+    font-style: italic;
+    color: var(--color-orange);
+}
+
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li::before {
+    display: none;
+}
+
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li .eb {
+    font-style: normal;
+    margin-right: 2px;
+}
+
 /* Language Bank (用语库) > example */
 .collapse .unbox[unbox='langbank'] .box_title + * {
     padding: 1em;
 }
 
 .collapse .unbox[unbox='langbank'] .body .unbox:not(:first-of-type) {
-    margin-bottom: unset;
+    margin-bottom: .5em;
 }
 
 .collapse .unbox[unbox='langbank'] .body ul.bullet {
     margin-left: unset;
 }
 
-.collapse .unbox[unbox='langbank'] .body ul.bullet > li::before {
-    display: none;
-}
-
 .collapse .unbox[unbox='langbank'] .body ul.bullet > li {
     margin-bottom: unset;
+}
+
+.collapse .unbox[unbox='langbank'] .body ul.bullet > li::before {
+    display: none;
 }
 
 /* More Like This (同类词语学习) > limb */
@@ -1413,11 +1445,15 @@ a.Ref .xs::before {
     margin-left: unset;
 }
 
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li:not(:last-of-type) {
+    margin-bottom: 2em;
+}
+
 .collapse .unbox[unbox='more_about'] .body ul.bullet > li::before {
     display: none;
 }
 
-.collapse .unbox[unbox='more_about'] .body ul.bullet .unx::before {
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li .unx::before {
     display: inline-block;
     content: '•';
     color: var(--color-blue);
@@ -1425,9 +1461,29 @@ a.Ref .xs::before {
     text-align: center;
 }
 
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li undt {
+    display: inline;
+}
+
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li undt chn {
+    display: inline;
+    color: var(--text-grey-color);
+    background: unset;
+    padding: unset;
+    margin-left: unset;
+}
+
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li undt chn::before {
+    content: '（';
+}
+
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li undt chn::after {
+    content: '）';
+}
+
 /* Oxford Collocations Dictionary (牛津搭配词典) > explain -> .collocs_list | make up (phrasal v.) -> .p) */
 .collapse .unbox[unbox='snippet'] .box_title + * {
-    padding: .4em .8em;
+    padding: .5em .8em;
 }
 
 .collapse .unbox[unbox='snippet'] .body .unbox {
@@ -1435,12 +1491,12 @@ a.Ref .xs::before {
     font-size: inherit;
     font-weight: normal;
     color: var(--color-blue);
-    border-bottom: unset;
     padding-bottom: unset;
+    border-bottom: unset;
     margin-bottom: 2px;
 }
 
-/* Synonyms (同义词辨析) > take, make | condition (n.) -> .un | direct (v.) -> additional subtitle */
+/* Synonyms (同义词辨析) > take, make | direct (adj.) -> additional subtitle */
 .collapse .unbox[unbox='synonyms'] .box_title + * {
     padding: 1em;
 }
@@ -1449,49 +1505,40 @@ a.Ref .xs::before {
     color: var(--grey-5);
 }
 
-.collapse .unbox[unbox='synonyms'] .body ul.bullet ul.examples > li::before {
-    visibility: visible;
-}
-
-.collapse .unbox[unbox='synonyms'] .body ul.bullet ul.examples > li > example-audio,
-.collapse .unbox[unbox='synonyms'] .body ul.bullet ul.examples > li > example-audio-ai {
-    display: none;
-}
-
 /* Verb Forms (动词形式) > have */
 .collapse .unbox[unbox='verbforms'] .box_title + * {
     padding: 4px 8px;
 }
 
-.collapse .unbox[unbox='verbforms'] .body table.verb_forms_table {
+.collapse .unbox[unbox='verbforms'] .body table {
     font-size: inherit;
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form {
+.collapse .unbox[unbox='verbforms'] .body tr {
     display: block;
     margin-bottom: .5em;
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_form {
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_form {
     display: inline;
     color: var(--text-color);
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_form .vf_prefix {
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_form .vf_prefix {
     display: none;
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_phons {
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_phons {
     display: inline;
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_phons .phonetics .phons_br,
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_phons .phonetics .phons_n_am {
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_phons .phonetics .phons_br,
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_phons .phonetics .phons_n_am {
     margin-right: unset;
     margin-left: 4px;
 }
 
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr td.verb_form::before {
     display: inline-block;
     font-size: .9em;
     color: var(--color-green);
@@ -1502,38 +1549,38 @@ a.Ref .xs::before {
 }
 
 /* Present Simple */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='root'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='root'] td.verb_form::before {
     content: 'p.s.';
 }
 
 /* Third Person Singular */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='thirdps'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='thirdps'] td.verb_form::before {
     content: 'h.s.i.';
 }
 
 /* Past Simple */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='past'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='past'] td.verb_form::before {
     content: 'p.';
 }
 
 /* Past Participle */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='pastpart'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='pastpart'] td.verb_form::before {
     content: 'p.p.';
 }
 
 /* Present Participle */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='prespart'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='prespart'] td.verb_form::before {
     content: '-ing';
 }
 
 /* Negative */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='neg'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='neg'] td.verb_form::before {
     content: 'neg';
     margin-right: .4em;
 }
 
 /* Short Form */
-.collapse .unbox[unbox='verbforms'] .body tr.verb_form[form='short'] td.verb_form::before {
+.collapse .unbox[unbox='verbforms'] .body tr[form='short'] td.verb_form::before {
     content: 'short';
     margin-right: .4em;
 }
@@ -1548,16 +1595,19 @@ a.Ref .xs::before {
     padding: 1em;
 }
 
-.collapse .unbox[unbox='which_word'] .body ul.bullet {
-    margin-top: 1em;
+.collapse .unbox[unbox='which_word'] .body ul.bullet > li:not(:last-of-type) {
+    margin-bottom: 1.5em;
 }
 
-.collapse .unbox[unbox='which_word'] .body ul.bullet > li > .item {
-    margin-bottom: .5em;
+.collapse .unbox[unbox='which_word'] .body ul.bullet > li > .item:not(:last-child) {
+    margin-bottom: 1em;
 }
 
 .collapse .unbox[unbox='which_word'] .body table {
     font-size: inherit;
+    padding: .5em;
+    background: var(--background-color);
+    border-radius: 10px;
     margin: 1em 0;
 }
 
@@ -1568,7 +1618,8 @@ a.Ref .xs::before {
 }
 
 .collapse .unbox[unbox='which_word'] .body table tr td {
-    padding-right: 1.5em;
+    color: var(--text-color);
+    padding-right: 2em;
 }
 
 /* Word Family (词族) > explain */
@@ -1598,39 +1649,28 @@ a.Ref .xs::before {
     padding: 1em;
 }
 
-.collapse .unbox[unbox='wordfinder'] .body .unbox:not(:first-of-type) {
-    margin-bottom: unset;
-}
-
 .collapse .unbox[unbox='wordfinder'] .body ul.bullet {
     margin-left: unset;
+}
+
+.collapse .unbox[unbox='wordfinder'] .body ul.bullet > li {
+    display: inline-block;
+    margin-bottom: unset;
 }
 
 .collapse .unbox[unbox='wordfinder'] .body ul.bullet > li::before {
     display: none;
 }
 
-.collapse .unbox[unbox='wordfinder'] .body ul.bullet > li {
-    margin-bottom: unset;
-}
-
-.collapse .unbox[unbox='wordfinder'] .body ul.bullet > li {
-    display: inline-block;
-}
-
 .collapse .unbox[unbox='wordfinder'] .body ul.bullet > li:not(:last-child)::after {
     content: '•';
     color: var(--grey-5);
-    padding: 0 .3em;
+    padding: 0 5px;
 }
 
 /* Word Origin (词源) */
 .collapse .unbox[unbox='wordorigin'] .box_title + * {
     padding: 4px 8px;
-}
-
-.collapse .unbox[unbox='wordorigin'] .p:not(:last-of-type) {
-    margin-bottom: 1em;
 }
 
 .collapse .unbox[unbox='wordorigin'] .p ubx {
@@ -1669,7 +1709,6 @@ a.Ref .xs::before {
     position: absolute;
     right: .5rem;
     z-index: 1;
-    transform: translateY(.2rem);
 }
 
 .oaldpe-config-gear * {
@@ -1923,6 +1962,7 @@ a.Ref .xs::before {
     margin-left: 4px;
     margin-bottom: 4px;
     border: 1px solid #0069B4;
+    cursor: pointer;
 }
 
 #ox-enlarge img {

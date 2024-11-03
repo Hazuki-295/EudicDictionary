@@ -287,11 +287,21 @@ $(function main() {
 
     const oaldpeConfigDuplicate = Object.assign({}, oaldpeConfig);
 
+    const isLocalStorageAvailable = (function () {
+        try {
+            localStorage.setItem('__test__', '__test__');
+            localStorage.removeItem('__test__');
+            return true;
+        } catch { return false; }
+    })();
+
     updateConfigFromLocalStorage();
 
     oaldpeConfigEvent();
 
     function updateConfigFromLocalStorage() {
+        if (!isLocalStorageAvailable) return;
+
         Object.keys(localStorage).forEach(key => {
             if (!key.startsWith(OALDPE_PREFIX_LOCALSTORAGE)) return;
             const localStorageValue = localStorage.getItem(key);
@@ -380,6 +390,19 @@ $(function main() {
             }
         });
 
+        if (!isLocalStorageAvailable) {
+            $('#oaldpe-config .head-title')
+                .append('（已禁用，请直接修改 JS 文件）')
+                .css('color', 'red');
+
+            $('#oaldpe-config button')
+                .prop('disabled', true)
+                .css('background-color', '#999')
+                .css('cursor', 'unset');
+
+            return;
+        }
+
         $('#oaldpe-config button[type="submit"]').on('click', function () { // 保存配置
             $allSelect.addClass('unfolded').trigger('click');
 
@@ -437,12 +460,16 @@ $(function main() {
 
                 if (!syllable) return;
 
-                $headword.css('cursor', 'pointer').on('click', function () {
+                const toggleSyllable = function () {
                     if (window.getSelection().toString().length > 0) return; // 有文本被选中
-                    textNode.nodeValue = textNode.nodeValue.includes('·') ? $headword.attr('headword') : $headword.attr('syllable');
-                });
+                    textNode.nodeValue = textNode.nodeValue.includes('·')
+                        ? $headword.attr('headword')
+                        : $headword.attr('syllable');
+                };
 
-                if (!oaldpeConfig.showSyllable) $headword.trigger('click');
+                $headword.css('cursor', 'pointer').on('click', toggleSyllable);
+
+                if (!oaldpeConfig.showSyllable) toggleSyllable();
             });
         }
 
@@ -553,7 +580,9 @@ $(function main() {
                     $option.siblings().removeClass('active');
 
                     const booleanValue = $option.attr('id') === `${oaldpeConfigKey}_${booleanTrueEquvalent}`;
-                    localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + oaldpeConfigKey, booleanValue ? '1' : '0');
+                    if (isLocalStorageAvailable) {
+                        localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + oaldpeConfigKey, booleanValue ? '1' : '0');
+                    }
 
                     // Take effect immediately
                     if (oaldpeConfigKey === 'officialExPronOpt') {
@@ -674,15 +703,22 @@ $(function main() {
         const $definitionChn = $allSenseDefinition.find('chn'); // 释义中文
 
         // region 中文翻译相关
+        fnExamplesChineseBeAlone();
+
         fnShowTranslation();
 
         fnShowTraditional();
 
         fnTouchToTranslate();
 
-        fnExamplesChineseBeAlone();
-
         replaceFullWidthCharsInChn();
+
+        function fnExamplesChineseBeAlone() {
+            if (!oaldpeConfig.examplesChineseBeAlone) {
+                $exampleChn.css('display', 'inline');
+                $exampleChn.parent().css('margin-left', '4px');
+            }
+        }
 
         function fnShowTranslation() {
             const option = oaldpeConfig.showTranslation;
@@ -744,13 +780,6 @@ $(function main() {
                 const $exampleChn = $(this).find('chn');
                 oaldpeConfig.examplesChineseBeAlone ? $exampleChn.slideToggle('fast') : $exampleChn.fadeToggle('fast');
             });
-        }
-
-        function fnExamplesChineseBeAlone() {
-            if (!oaldpeConfig.examplesChineseBeAlone) {
-                $exampleChn.css('display', 'inline');
-                $exampleChn.parent().css('margin-left', '4px');
-            }
         }
 
         function replaceFullWidthCharsInChn() {
