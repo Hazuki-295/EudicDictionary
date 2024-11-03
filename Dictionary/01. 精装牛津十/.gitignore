@@ -1,0 +1,18 @@
+# Ignore everything by default
+*
+
+# Allow specific directories to be tracked
+!Hazuki-note/
+!Hazuki-note/**/
+
+# Track specific essential files in this subdirectory
+!Hazuki-note/src/clickToCopy.js
+!Hazuki-note/src/notes.css
+!Hazuki-note/src/notes.js
+!Hazuki-note/webpack.config.js
+!config.html
+!oaldpe.css
+!oaldpe.js
+
+# Track the subdirectory .gitignore file
+!.gitignore

@@ -1,0 +1,9 @@
+# Ignore everything by default
+*
+
+# Allow specific directories to be tracked
+!Dictionary/
+!Dictionary/**/
+
+# Track the root .gitignore file
+!.gitignore

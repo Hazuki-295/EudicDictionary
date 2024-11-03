@@ -1,0 +1,17 @@
+# Ignore everything by default
+*
+
+# Allow specific directories to be tracked
+!utilities/
+!utilities/**/
+
+# Track specific essential files in this subdirectory
+!utilities/src/exportHtmlDiff.js
+!utilities/webpack.config.js
+!Makefile
+!ODE_2024.css
+!ODE_2024.js
+!process_db.js
+
+# Track the subdirectory .gitignore file
+!.gitignore
