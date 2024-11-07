@@ -1,6 +1,9 @@
-<link href=oaldpe.css rel=stylesheet type=text/css>
-<script src=oaldpe-jquery-3.6.0.min.js></script>
-<script src=oaldpe.js></script>
+<html>
+
+<head>
+    <link rel="stylesheet" href="oaldpe.css">
+</head>
+
 
 <body>
     <div id=oaldpe-config>
@@ -20,11 +23,13 @@
                 </div>
             </div>
             <div class=config-item id=showTraditional>
-                <div class=config-title>配置项2：是否使用台湾繁体中文翻译</div>
+                <div class=config-title>配置项2：是否使用繁体中文翻译</div>
                 <div class=config-subtitle></div>
                 <div class=select cfg-selected=0>
-                    <div class=option value=0>0 - 不使用（默认）</div>
-                    <div class=option value=1>1 - 使用</div>
+                    <div class=option value=0>0 - 简体（默认）</div>
+                    <div class=option value=1>1 - 繁体（香港）</div>
+                    <div class=option value=2>2 - 繁体（台湾）</div>
+                    <div class=option value=3>3 - 繁体（台湾，带词组转换）</div>
                 </div>
             </div>
             <div class=config-item id=touchToTranslate>
@@ -109,7 +114,7 @@
             </div>
             <div class=config-item id=officialExPronOpt>
                 <div class=config-title>配置项12：官方例句发音选项</div>
-                <div class=config-subtitle>（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项）</div>
+                <div class=config-subtitle>（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件）</div>
                 <div class=select cfg-selected=1>
                     <div class=option value=0>0 - 启用官方离线例句发音</div>
                     <div class=option value=1>1 - 启用官方在线例句发音（默认）</div>
@@ -288,4 +293,8 @@
             <button type=reset>重置配置</button>
         </div>
     </div>
+    <script src=oaldpe-jquery.js></script>
+    <script src=oaldpe.js></script>
 </body>
+
+</html>

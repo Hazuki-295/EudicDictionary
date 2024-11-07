@@ -10,6 +10,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
     mode: 'development',
+    resolve: {
+        extensions: ['.js', '.mjs', '.json'], 
+    },
     module: {
         rules: [
             {
@@ -21,7 +24,7 @@ module.exports = {
                 type: 'asset/inline',
             },
             {
-                test: /\.(woff2)$/i,
+                test: /\.(woff2|ttf)$/i,
                 type: 'asset/inline',
             },
         ],

@@ -11,8 +11,10 @@
 !Hazuki-note/src/notes.js
 !Hazuki-note/webpack.config.js
 !config.html
+!Makefile
 !oaldpe.css
 !oaldpe.js
+!process_db.js
 
 # Track the subdirectory .gitignore file
 !.gitignore

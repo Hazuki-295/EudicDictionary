@@ -58,6 +58,7 @@
     font-weight: 300 800;
 }
 
+/* Mimic `:root {}`, which is disabled in Eudic */
 .ode-2024 {
     --color-red: #de002d;
     --color-green: #007a6c;
@@ -66,16 +67,17 @@
     --color-cream: #e9d9c4;
     --color-purple: #8a51c0;
     --primary-color: #3c9ae3;
-    --background-color: rgba(0, 136, 221, .06);
-    --border-color: rgba(0, 136, 221, .35);
-    --background-color-purple: rgba(138, 81, 192, .06);
-    --border-color-purple: rgba(138, 81, 192, .35);
-    --font-family-sans-serif: 'Open Sans', Helvetica, Arial, sans-serif;
-    --font-family-serif: 'Bookerly', Georgia, 'Times New Roman', serif;
+    --background-color: rgb(0 136 221 / 6%);
+    --border-color: rgb(0 136 221 / 35%);
+    --background-color-purple: rgb(138 81 192 / 6%);
+    --border-color-purple: rgb(138 81 192 / 35%);
+    --font-family-sans-serif: 'Open Sans', helvetica, arial, sans-serif;
+    --font-family-serif: 'Bookerly', georgia, 'Times New Roman', serif;
     --font-size: 15px;
     --line-height: 1.4;
 }
 
+/* Mimic `html {}` */
 .ode-2024 {
     font-family: var(--font-family-sans-serif);
     font-size: var(--font-size);
@@ -101,22 +103,24 @@ li {
 
 .ode-2024 [class^='icon-'] {
     font-family: oup-icons !important; /* Eudic Bug Fix */
-    font-style: normal;
+    font-style: normal; /* <i> tag */
 }
 
-/* 导航栏 navigation */
+/* 导航栏 Navigation */
 .navigation {
     display: flex;
     justify-content: space-around;
     padding: 5px;
     background-color: var(--color-cream);
+    border-radius: 8px 8px 0 0;
+    overflow-x: auto;
 }
 
 .navigationItem {
-    display: inline-block;
     font-family: var(--font-family-sans-serif);
     font-size: 12px;
-    color: #666;
+    text-align: center;
+    white-space: nowrap;
     padding: 2px 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -124,236 +128,131 @@ li {
     transition: color .3s ease, background-color .3s ease;
 }
 
+.navigationItem {
+    background-color: transparent;
+    color: #666;
+}
+
 .navigationItem.active, .navigationItem:hover {
+    background-color: white;
     color: #333;
-    background-color: #fff;
 }
 
 /* 词条框架 */
 .entryContent {
-    display: none;
+    display: none; /* Hide by default */
 }
 
-.entryContent.active {
+.entryContent:first-of-type {
     display: block;
-}
-
-.responsive_row:not(:first-child) {
-    margin-top: 2em;
-}
-
-.responsive_row:not(:first-child)::before {
-    content: '';
-    display: block;
-    background-color: var(--color-cream);
-    height: 1.5em;
 }
 
 .entryPageContent {
     color: var(--text-color);
+    margin-bottom: 2em;
 }
 
 /* 词条标题 */
+.responsive_row ~ .responsive_row::before {
+    content: '';
+    display: block;
+    height: 1.5em;
+    background-color: var(--color-cream);
+    border-radius: 8px 8px 0 0;
+}
+
 header.entryHeader {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-    border-radius: 0 0 20px 20px;
+    padding-top: .75em;
+    padding-right: calc(.75em + 150px);
     padding-bottom: 1em;
+    padding-left: 1em;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
     margin-bottom: 1em;
     position: relative;
+}
+
+header.entryHeader .logoarea {
+    position: absolute;
+    display: flex;
+    height: 30px;
+    right: calc(var(--font-size) * 0.75);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+header.entryHeader .logoarea::after {
+    content: '';
+    width: 150px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    transition: width 1s;
+}
+
+@media (max-width: 768px) {
+    header.entryHeader {
+        padding-right: calc(.75em + 100px);
+    }
+
+    header.entryHeader .logoarea::after {
+        width: 100px;
+    }
 }
 
 header.entryHeader * {
     font-size: calc(var(--font-size) * 0.9);
 }
 
-header.entryHeader > .pageTitle,
-header.entryHeader > .pageTitle ~ * {
-    padding-left: var(--font-size);
-    box-sizing: border-box;
-}
-
-header.entryHeader > .pageTitle {
-    display: block;
-    padding-top: calc(var(--font-size) * 0.5);
-}
-
 header.entryHeader .senses {
     display: none;
 }
 
-header.entryHeader .logoarea {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 30px;
-    box-sizing: border-box;
-    padding-left: unset;
-    padding-right: var(--font-size);
-}
-
-header.entryHeader .logoarea::after {
-    content: '';
-    width: 100px;
-    height: 100%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: width 1s;
-}
-
-header.entryHeader .logoarea .conciseButton {
-    font-family: var(--font-family-sans-serif);
-    color: #333;
-    background-color: #fbeee0;
-    padding: 2px .5em;
-    border: 1px solid #ccc;
-    border-radius: 1em;
-    cursor: pointer;
-    margin-right: .5em;
-}
-
-header.entryHeader .logoarea .conciseButton:hover {
-    background-color: #f9e3d3;
-    border-color: #999;
-}
-
-.realTitle {
-    font-family: var(--font-family-serif);
-    font-size: calc(var(--font-size) * 1.5) !important;
-    font-weight: bold;
-    color: #2b1d17;
-    margin-right: 10px;
-}
-
-.realTitle .homograph {
-    font-size: .6em;
-    font-weight: normal;
-    vertical-align: super;
-    margin-left: .2em;
+/* Definition / Synonyms of {w} in English */
+h1.definitionOf {
+    display: none;
 }
 
 /* Top 1000 frequently used words */
 .top1000 a {
+    display: flex;
+    min-height: 1rem;
     font-family: var(--font-family-serif);
     font-size: calc(var(--font-size) * 0.8);
     color: unset;
     pointer-events: none;
 }
 
-.top1000 .icon-top-word {
+.top1000 a .icon-top-word {
     display: inline-block;
-    width: 1em;
-    margin-right: 2px;
+    width: 1rem;
+    height: 1rem;
 }
 
-.top1000 .icon-top-word::before {
+.top1000 a .icon-top-word::before {
     content: '\e60e';
     color: var(--color-blue);
-    opacity: .7;
-    vertical-align: -1.5px;
-}
-
-/* Responsive design */
-@media (min-width: 768px) {
-    header.entryHeader .logoarea::after {
-        width: 150px;
-    }
-}
-
-@media (max-width: 375px) {
-    .navigationItem {
-        font-size: 10px;
-        padding: 1px 5px;
-    }
-
-    header.entryHeader * {
-        font-size: calc(var(--font-size) * 0.8);
-    }
-
-    header.entryHeader > .pageTitle,
-    header.entryHeader > .pageTitle ~ * {
-        padding-left: calc(var(--font-size) * 0.8);
-    }
-
-    header.entryHeader .logoarea::after {
-        width: 75px;
-    }
-
-    header.entryHeader .logoarea .conciseButton {
-        font-size: calc(var(--font-size) * 0.75);
-    }
-
-    .realTitle {
-        font-size: calc(var(--font-size) * 1.2) !important;
-    }
-
-    .top1000 a {
-        font-size: calc(var(--font-size) * 0.7);
-    }
-}
-
-/* Definition / Synonyms of {w} in English */
-.entryContent[data-dictname^='ENG'] h1.definitionOf,
-.entryContent[data-dictname^='SYN'] h1.definitionOf {
-    display: none;
-}
-
-/* Translation of {w} in Chinese / English */
-.entryBilingual .senseGroup > h1:first-of-type {
-    display: none;
-}
-
-/* 单词发音 */
-.headpron, .infpron {
-    display: inline-block;
-    font-family: 'Lucida Sans Unicode', 'Lucida Grande';
-    font-weight: normal;
-}
-
-h2.partOfSpeechTitle + .headpron {
-    font-size: .9em;
-    margin-right: .5em;
-    margin-bottom: .5em;
-}
-
-/* 音标 */
-.phonetics {
-    display: inline-block;
-}
-
-.subEntry .phonetics {
-    font-size: .9em;
-    margin: .25em 0 .5em;
-}
-
-.pron {
-    display: inline-block;
-    color: var(--color-blue);
-}
-
-/* 发音喇叭 */
-a.sound {
-    margin: 0 .2em;
-}
-
-a.sound-ai {
-    position: absolute;
-    left: 0;
-    cursor: pointer;
-}
-
-a.sound::before, a.sound-ai::before {
-    font-family: 'oalecd9', 'Segoe UI Symbol';
-    font-style: normal;
-    font-weight: normal;
-    content: '🔊';
     opacity: .7;
 }
 
 /* 第一层 */
+/* 词头样式 */
+.realTitle {
+    display: inline-block;
+    font-family: var(--font-family-serif);
+    font-size: 20px !important;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-right: 8px;
+}
+
+.realTitle .homograph {
+    font-size: .75em;
+    font-weight: normal;
+    vertical-align: super;
+    margin-left: 2px;
+}
+
 /* 词性样式 */
 h2.partOfSpeechTitle {
     font-size: inherit;
@@ -364,15 +263,17 @@ h2.partOfSpeechTitle {
 .partOfSpeech {
     font-weight: bold;
     color: var(--color-orange);
-    margin-right: .2em;
 }
 
-.partOfSpeech:not(:first-of-type)::before {
+.partOfSpeech ~ .partOfSpeech::before { /* which */
     content: ' ';
 }
 
+.partOfSpeech + .inflectionGroup {
+    margin-left: .3em;
+}
+
 .inflectionGroup {
-    display: inline;
     font-size: .9em;
 }
 
@@ -389,9 +290,58 @@ h2.partOfSpeechTitle {
     content: ' ';
 }
 
-/* 及物性说明 */
-.transivityStatement, .cnt {
+/* 单词发音 */
+.headpron, .infpron {
+    display: inline;
+}
+
+h2.partOfSpeechTitle + .headpron { /* perfect */
+    font-size: .9em;
+}
+
+.subEntry .headpron { /* way */
+    font-size: .9em;
+}
+
+.subEntry .headpron::after {
+    content: ' ';
+}
+
+.phonetics {
     display: inline-block;
+    font-weight: normal;
+}
+
+.phon {
+    display: inline-block;
+    font-family: 'Lucida Sans Unicode', 'Lucida Grande';
+    color: var(--color-blue);
+}
+
+/* 发音喇叭 */
+a.audio_play_button {
+    display: inline-block;
+    width: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+a.audio_play_button.tts {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+a.audio_play_button::before {
+    font-family: 'oalecd9', 'Segoe UI Symbol';
+    font-style: normal;
+    font-weight: normal;
+    content: '\1F50A'; /* 🔊 */
+    opacity: .7;
+}
+
+/* 及物性说明 */
+.transivityStatement {
     font-family: var(--font-family-serif);
     font-style: normal;
     font-size: .9em;
@@ -400,12 +350,12 @@ h2.partOfSpeechTitle {
 
 .senseGroup > .transivityStatement {
     display: block;
-    margin: .25em 0 .5em;
+    margin: .5em 0;
 }
 
 /* 第二层 */
 /* 释义排版 */
-.se1, .senseGroup {
+.se1 {
     padding-top: .5em;
     margin-top: .5em;
     margin-bottom: 1em;
@@ -416,8 +366,9 @@ h2.partOfSpeechTitle {
     margin-bottom: .5em;
 }
 
-.msDict.sense, li.sense {
+.msDict.sense {
     padding-left: 18px;
+    margin-top: .5em;
     margin-bottom: .5em;
 }
 
@@ -428,11 +379,23 @@ h2.partOfSpeechTitle {
     background: var(--background-color);
 }
 
+.msDict.subsense.subsenseFirst {
+    padding-top: .5em;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.msDict.subsense.subsenseLast {
+    padding-bottom: .5em;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .senseInnerWrapper {
     position: relative;
 }
 
-.msDict .iteration, li.sense .iteration {
+.msDict .iteration {
     display: inline-block !important;
     position: absolute;
     font-family: Optima;
@@ -442,7 +405,7 @@ h2.partOfSpeechTitle {
     width: 2em;
 }
 
-.msDict.sense .iteration, li.sense .iteration {
+.msDict.sense .iteration {
     font-style: italic;
     color: var(--color-red);
     left: -25px;
@@ -456,7 +419,7 @@ h2.partOfSpeechTitle {
     top: 2px;
 }
 
-.senseInnerWrapper.weird .iteration {
+.msDict.sense .iteration.single {
     font-style: normal;
     font-weight: normal;
 }
@@ -486,51 +449,58 @@ h2.partOfSpeechTitle {
 }
 
 /* 例句排版 */
-.entryContent:not([data-dictname^='SYN']) .exampleGroup, li.sentence {
+.entryContent[data-dictname^='ENG'] .exampleGroup,
+.entryContent[data-dictname^='ENG'] li.sentence {
     display: block;
-    padding-left: 1.2em;
+    padding-left: 1.25rem;
     margin-top: .3em;
     position: relative;
 }
 
-.entryContent:not([data-dictname^='SYN']) .exampleGroup::before, li.sentence::before {
+.entryContent[data-dictname^='ENG'] .exampleGroup::before,
+.entryContent[data-dictname^='ENG'] li.sentence::before {
     position: absolute;
     display: inline-block;
+    content: '◆';
     font-family: 'Source Han Serif CN';
     font-size: .5em;
-    content: '◆';
-    width: calc(1em / 0.5 * 1.2);
+    width: 1.25rem;
     text-align: center;
+    line-height: calc(1em / 0.5 * var(--line-height));
     color: var(--text-grey-color);
     opacity: .7;
     left: 0;
-    top: .8em;
+    top: 0;
 }
 
-li.sentence::before {
+.entryContent[data-dictname^='ENG'] li.sentence::before {
     content: '◇';
 }
 
+/* TTS 例句喇叭 */
 .ode-2024[enable-tts='true'] .entryContent[data-dictname^='ENG'] .exampleGroup::before,
 .ode-2024[enable-tts='true'] .entryContent[data-dictname^='ENG'] li.sentence::before {
     display: none;
 }
 
-.entryContent[data-dictname^='ENG'] a.sound-ai::before {
+.entryContent .exampleGroup a.audio_play_button::before,
+.entryContent li.sentence a.audio_play_button::before {
     color: var(--text-grey-color);
 }
 
-.entryContent[data-dictname='ENG(UK)'] .exampleGroup:hover a.sound-ai::before,
-.entryContent[data-dictname='ENG(UK)'] li.sentence:hover a.sound-ai::before {
+.entryContent[data-dictname='ENG(UK)'] .exampleGroup:hover a.audio_play_button::before,
+.entryContent[data-dictname='ENG(UK)'] li.sentence:hover a.audio_play_button::before {
     color: var(--color-blue);
 }
 
-.entryContent[data-dictname='ENG(US)'] .exampleGroup:hover a.sound-ai::before,
-.entryContent[data-dictname='ENG(US)'] li.sentence:hover a.sound-ai::before {
+.entryContent[data-dictname='ENG(US)'] .exampleGroup:hover a.audio_play_button::before,
+.entryContent[data-dictname='ENG(US)'] li.sentence:hover a.audio_play_button::before {
     color: var(--color-red);
 }
 
-.entryContent:not([data-dictname^='SYN']) .exampleGroup em.example, li.sentence {
+/* 例句样式 */
+.entryContent[data-dictname^='ENG'] .exampleGroup em.example,
+.entryContent[data-dictname^='ENG'] li.sentence {
     font-family: var(--font-family-serif);
     color: var(--text-grey-color);
 }
@@ -581,7 +551,7 @@ li.sentence::before {
 
 .moreInformation .sentence_dictionary, .moreInformation .entrySynList {
     font-size: .9em;
-    display: none;
+    display: none; /* Hide by default */
 }
 
 .moreInformation .sentence_dictionary {
@@ -597,6 +567,7 @@ li.sentence::before {
     margin-top: .5em;
 }
 
+/* Highlighted synonyms */
 .moreInformation .entrySynList strong,
 .entryContent[data-dictname^='SYN'] .exampleGroup ~ div:not(.antList) strong {
     font-family: var(--font-family-serif);
@@ -604,15 +575,17 @@ li.sentence::before {
     color: var(--primary-color);
 }
 
-.sense .moreInformation .entrySynList,
-section.phrasesSubEntryBlock .subsense .moreInformation .entrySynList,
+/* Rounded border */
+.sense .moreInformation .entrySynList, /* Main sense */
+section.phrasesSubEntryBlock .subsense .moreInformation .entrySynList, /* Phrase Section Subsense */
 .entryContent[data-dictname^='SYN'] .exampleGroup ~ div:not(.antList) {
     border: 1px dashed var(--border-color);
     border-radius: 1em;
     padding: 1em;
 }
 
-.subsense .moreInformation .entrySynList,
+/* Border left */
+.subsense .moreInformation .entrySynList, /* Subsense */
 .entryContent[data-dictname^='SYN'] section.phrasesSubEntryBlock .exampleGroup ~ div:not(.antList) {
     border: unset;
     border-radius: unset;
@@ -621,10 +594,12 @@ section.phrasesSubEntryBlock .subsense .moreInformation .entrySynList,
 }
 
 .moreInformation .entrySynList div:not(:last-child),
+.entryContent[data-dictname^='SYN'] .iteration + div:not(.antList) > div:not(:last-child), /* cafe */
 .entryContent[data-dictname^='SYN'] .exampleGroup ~ div:not(.antList) > div:not(:last-child) {
     margin-bottom: .75em;
 }
 
+/* view synonyms */
 .moreInformation .entrySynList div.containSynMore {
     padding-right: 100px;
     position: relative;
@@ -643,11 +618,11 @@ section.phrasesSubEntryBlock .subsense .moreInformation .entrySynList,
 
 .moreInformation .entrySynList a.entrySynMore {
     display: inline-block;
-    font-size: .85em;
+    font-size: 10px;
     color: var(--color-purple);
     border: 1px solid var(--color-purple);
-    border-radius: 1em;
-    padding: 0 4px;
+    border-radius: var(--font-size);
+    padding: 2px 5px;
     transition: color .3s ease, border-color .3s ease, background-color .3s ease;
 }
 
@@ -706,47 +681,36 @@ strong {
     margin-bottom: .3em;
 }
 
-header.entryHeader > .variantGroup {
-    margin-bottom: unset;
-}
-
-.variant, strong.wordForm {
-    font-weight: normal;
+.variantGroup .variant {
     color: var(--color-blue);
 }
 
 strong.wordForm {
+    font-family: var(--font-family-serif);
     font-size: .9em;
 }
 
 /* 语域、语体风格 */
-em.languageGroup, em.gr, .rs_skip.reg, .rs_skip.fld {
+em.languageGroup {
     font-family: var(--font-family-serif);
     font-style: italic;
     font-size: .9em;
     color: #27a058;
-    border: unset;
 }
 
-.reg, .rs_skip.lev {
+.reg {
     font-family: var(--font-family-serif);
-    font-style: normal;
     font-size: .85em;
     color: #e3533a;
-    border: .5px solid #e3533a;
-    padding: 0 4px;
-}
-
-.reg.bullet {
-    border: unset;
-    padding-right: unset;
+    background-color: #f9e8e2;
+    padding: 1px .5em;
 }
 
 .reg + em.languageGroup::before {
     content: ' ';
 }
 
-.icon-warning {
+.icon-warning { /* much */
     display: inline-block;
     width: 1em;
 }
@@ -771,7 +735,6 @@ a.crossRef:hover {
     font-family: var(--font-family-serif);
     font-size: .9em;
     color: var(--color-purple);
-    margin-bottom: .5em;
 }
 
 /* 词源 */
@@ -792,20 +755,19 @@ a.crossRef:hover {
 
 /* 插图 */
 .msDict.sense > img {
-    position: relative;
     float: right;
     width: 75px;
     height: auto;
-    border: 1px solid var(--color-cream);
     margin-left: 4px;
     margin-bottom: 4px;
+    border: 1px solid var(--color-cream);
+    cursor: pointer;
+    position: relative;
     z-index: 1;
 }
 
 .msDict.sense > img.enlarged {
     width: 100%;
-    margin-left: unset;
-    margin-bottom: 1em;
 }
 
 /* 第三层 */
@@ -824,6 +786,7 @@ section.subEntryBlock[data-title^='Phra'].expanded {
 
 section.subEntryBlock[data-title^='Phra'] .msDict.subsense {
     background: unset;
+    border-radius: unset;
     border-left: 2px solid var(--border-color);
 }
 
@@ -835,9 +798,12 @@ section.subEntryBlock[data-title^='Phra'] h2 {
     color: var(--title-color);
 }
 
-.entryBilingual section.phrasesSubEntryBlock h3,
-.entryBilingual section.phrasesSubEntryBlock h4,
-section.subEntryBlock[data-title^='Phra'] .h4SubSense {
+section.subEntryBlock[data-title^='Phra'] h2 + * {
+    display: none; /* Hide by default */
+    margin-top: 1em;
+}
+
+section.subEntryBlock[data-title^='Phra'] dt .h4SubSense {
     font-family: var(--font-family-serif);
     font-size: inherit;
     font-weight: normal;
@@ -845,20 +811,13 @@ section.subEntryBlock[data-title^='Phra'] .h4SubSense {
     position: relative;
 }
 
-.entryBilingual section.phrasesSubEntryBlock h3::before,
-.entryBilingual section.phrasesSubEntryBlock h4::before,
-section.subEntryBlock[data-title^='Phra'] .h4SubSense::before {
+section.subEntryBlock[data-title^='Phra'] dt .h4SubSense::before {
     position: absolute;
     content: '▶︎';
     font-size: .7em;
+    line-height: calc(1em / 0.7 * var(--line-height));
     color: var(--color-red);
     left: -1em;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-section.subEntryBlock[data-title^='Phra'] h2 + dl {
-    margin-top: 1em;
 }
 
 section.subEntryBlock[data-title^='Phra'] dd {
@@ -866,6 +825,7 @@ section.subEntryBlock[data-title^='Phra'] dd {
     margin-bottom: 1em;
 }
 
+/* take (Phrasal Verbs) -> take apart */
 section.subEntryBlock[data-title^='Phra'] dd .senseInnerWrapper + .senseInnerWrapper {
     margin-top: .5em;
 }
@@ -882,7 +842,6 @@ section.phrases .h4SubSense {
     color: #004d99 !important;
 }
 
-.entryBilingual section.phrasesSubEntryBlock,
 section.phrasalVerbs, .jumplink[data-title='Phrasal verbs'] {
     --title-color: #7c377b;
     --primary-color: var(--color-purple);
@@ -892,7 +851,7 @@ section.phrasalVerbs, .jumplink[data-title='Phrasal verbs'] {
 
 .jumplink {
     display: inline-block;
-    font-family: Georgia;
+    font-family: georgia, serif;
     font-style: italic;
     color: var(--title-color);
     border: 1px solid var(--title-color);
@@ -909,7 +868,6 @@ section.phrasalVerbs, .jumplink[data-title='Phrasal verbs'] {
 }
 
 .jumplink_back {
-    content: '';
     display: inline-block;
     width: 1.25rem;
     height: 1.25rem;
@@ -921,21 +879,25 @@ section.phrasalVerbs, .jumplink[data-title='Phrasal verbs'] {
 }
 
 /* 其他折叠块 subEntryBlock、etymology 词源 */
-section.subEntryBlock:not([data-title^='Phra']), section.etymology {
+section.etymology,
+section.subEntryBlock:not([data-title^='Phra']) {
     font-size: .9em;
     border-left: 2px solid var(--border-color);
     margin: 1em 0;
 }
 
-section.subEntryBlock:not([data-title^='Phra']) h2, section.etymology h2 {
+section.etymology h2,
+section.subEntryBlock:not([data-title^='Phra']) h2 {
     font-family: Optima;
     font-size: 14px;
     color: var(--color-blue);
     padding: .3rem 1rem;
     cursor: pointer;
+    transition: background-color .1s linear;
 }
 
-section.subEntryBlock:not([data-title^='Phra']) h2::before, section.etymology h2::before {
+section.etymology h2::before,
+section.subEntryBlock:not([data-title^='Phra']) h2::before {
     font-family: 'Apple Symbols', 'Segoe UI Symbol';
     font-weight: normal;
     content: '⊕';
@@ -943,21 +905,27 @@ section.subEntryBlock:not([data-title^='Phra']) h2::before, section.etymology h2
     vertical-align: .5px;
 }
 
-section.subEntryBlock:not([data-title^='Phra']).expanded h2::before, section.etymology.expanded h2::before {
+section.etymology.expanded h2::before,
+section.subEntryBlock:not([data-title^='Phra']).expanded h2::before {
     content: '⊖';
 }
 
-section.subEntryBlock:not([data-title^='Phra']).expanded h2, section.etymology.expanded h2,
-section.subEntryBlock:not([data-title^='Phra']) h2:hover, section.etymology h2:hover {
+section.etymology h2:hover,
+section.etymology.expanded h2,
+section.subEntryBlock:not([data-title^='Phra']) h2:hover,
+section.subEntryBlock:not([data-title^='Phra']).expanded h2 {
     background-color: var(--background-color);
 }
 
 section.subEntryBlock:not([data-title^='Phra']) h2 ~ * {
+    display: none; /* Hide by default */
     padding: 1em;
 }
 
+/* 派生词 derivatives */
 section.derivatives .subEntry dt,
-section.derivatives .subEntry dt * {
+section.derivatives .subEntry dt *,
+section.derivatives .subEntry dd {
     display: inline;
 }
 
@@ -965,11 +933,7 @@ section.derivatives .subEntry:not(:last-child) {
     margin-bottom: 1em;
 }
 
-section.derivatives .subEntry .sense {
-    display: inline;
-}
-
-section.derivatives .h4SubSense {
+section.derivatives dt .h4SubSense {
     font-family: var(--font-family-serif);
     font-size: inherit;
     font-weight: normal;
@@ -977,16 +941,17 @@ section.derivatives .h4SubSense {
     margin-right: .5em;
 }
 
-section.derivatives .partOfSpeech {
+section.derivatives dd .partOfSpeech {
     font-weight: normal;
 }
 
-section.derivatives .variantGroup {
+section.derivatives dd .variantGroup {
     display: inline;
-    margin-left: .5em;
 }
 
+/* 词源 etymology (dandelion) */
 section.etymology h2 ~ * {
+    display: none; /* Hide by default */
     padding: 4px 8px;
 }
 
@@ -1022,128 +987,19 @@ section.etymology.etym .moreInformation .sentence_dictionary li::before {
 
 section.etymology.note:not(.usage),
 .entryContent[data-dictname^='ENG'] .sense-note,
-.entryContent[data-dictname^='SYN'] .feature,
-.entryBilingual > div > .xrg {
+.entryContent[data-dictname^='SYN'] .feature {
     display: block;
     font-family: var(--font-family-serif);
     font-size: .9em;
-    padding: .5em 1em;
-    border: 1px solid var(--border-color);
-    border-radius: 1em;
+    padding: 1em;
+    border-width: 1px;
+    border-style: dashed;
+    border-color: var(--border-color);
     margin: .5em 0;
 }
 
 section.etymology[data-title='Usage'] {
     font-family: var(--font-family-serif);
-}
-
-/* 第四层 EC(英中)、CE(中英) 相关样式 */
-/* 单词发音 */
-.entryBilingual .headpron {
-    margin-top: .3em;
-}
-
-.entryBilingual span.prx {
-    display: block;
-}
-
-.entryBilingual span.prx .neutral {
-    display: none;
-}
-
-.entryBilingual .senseGroup > span.prx {
-    font-size: .9em;
-    margin: .25em 0;
-}
-
-/* 词性样式 */
-.entryBilingual .frmg + .partOfSpeech {
-    display: block;
-}
-
-.infg {
-    display: inline;
-    font-size: .9em;
-}
-
-.infg .inf {
-    font-weight: bold;
-    color: var(--color-blue);
-}
-
-.infg .inf + .pr::before {
-    content: ' ';
-}
-
-.infg em {
-    font-style: normal;
-    color: unset;
-}
-
-.infg em:not(:first-of-type)::before {
-    content: ' ';
-}
-
-/* 标签元素 */
-.rs_skip.lev {
-    margin: 0 3px;
-}
-
-.rs_skip.indicator em {
-    font-family: var(--font-family-serif), 'Source Han Serif CN';
-    font-style: normal;
-}
-
-/* 释义排版 */
-.entryBilingual .pgr, .entryBilingual .frmg {
-    display: inline-block;
-    font-family: var(--font-family-serif);
-    color: var(--color-blue);
-}
-
-/* 例句排版 */
-.entryBilingual .exampleGroup em.example span[lang='zh'],
-.entryBilingual .exampleGroup em.example span[lang='en'] {
-    display: block;
-}
-
-.entryContent[data-dictname='EC(英中)'] .exampleGroup em.example span[lang='zh'],
-.entryContent[data-dictname='CE(中英)'] .exampleGroup em.example span[class='ex'] {
-    font-family: var(--font-family-serif), 'Source Han Serif CN';
-    font-size: .9em;
-    font-style: normal;
-}
-
-/* 词组 subEntryBlock */
-.entryBilingual section.phrasesSubEntryBlock .posPhrasalVerbs {
-    display: block;
-    margin: .25em 0;
-}
-
-.entryBilingual section.phrasesSubEntryBlock .subsense,
-.entryBilingual section.phrasesSubEntryBlock .subsinglesense {
-    display: block;
-    margin-top: .3em;
-    margin-bottom: .5em;
-}
-
-.entryBilingual section.phrasesSubEntryBlock .subsense {
-    padding-left: 18px;
-    position: relative;
-}
-
-.entryBilingual section.phrasesSubEntryBlock .subsense .iteration {
-    display: inline-block;
-    position: absolute;
-    font-family: Optima;
-    font-style: italic;
-    font-size: .9em;
-    font-weight: bold;
-    text-align: center;
-    color: var(--color-red);
-    width: 2em;
-    left: -.5em;
-    top: 2px;
 }
 
 /* HTML Diff */
@@ -1227,16 +1083,12 @@ ins.mod {}
     color: #333;
 }
 
-.ode-2024[data-theme='dark'] header.entryHeader {
-    box-shadow: 0 2px 5px rgba(255, 255, 255, .2);
-}
-
 .ode-2024[data-theme='dark'] .realTitle {
     color: #fbeee0;
 }
 
 .ode-2024[data-theme='dark'] .sense.highlight {
-    background-color: rgba(0, 136, 221, .25);
+    background-color: rgb(0 136 221 25%);
 }
 
 .ode-2024[data-theme='dark'] section.phrases .h4SubSense {

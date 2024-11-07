@@ -8,9 +8,9 @@ var oaldpeConfig = {
     // 选项（默认为1）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏释义中文，5-仅显示释义中文
     showTranslation: 1,
 
-    // 【配置项2：是否使用台湾繁体中文翻译】
-    // 选项（默认为false）：false=否，true=是
-    showTraditional: false,
+    // 【配置项2：是否使用繁体中文翻译】
+    // 选项（默认为0）：0-简体，1-繁体（香港），2-繁体（台湾），3-繁体（台湾，带词组转换）
+    showTraditional: 0,
 
     // 【配置项3：是否启用英文点译功能】（单句显示/隐藏中文）
     // 选项（默认为false）：false=否，true=是
@@ -43,14 +43,14 @@ var oaldpeConfig = {
     onlineImage: false,
 
     // 【配置项10：离线图片翻译选项】（当【是否启用在线图片】设置为 true 时，图片翻译无效）
-    // 选项（默认为3）：0-不使用翻译，1-简体中文翻译，2-港版繁体翻译，3-根据配置项【是否显示中文翻译】和配置项【是否使用台湾繁体中文翻译】自动选择
+    // 选项（默认为3）：0-不使用翻译，1-简体中文翻译，2-港版繁体翻译，3-根据配置项【中文翻译选项】和配置项【是否使用繁体中文翻译】自动选择
     imgTranslationOpt: 3,
 
     // 【配置项11：是否默认英音例句发音】（点击 “O10” 小图标中的词典铭牌进行切换）
     // 选项（默认为false）：false=美音，true=英音
     defaultBritishExPron: false,
 
-    // 【配置项12：官方例句发音选项】（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件。注：在线例句发音的音质更高。离线例句发音经过压缩，可作为备用选项）
+    // 【配置项12：官方例句发音选项】（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件）
     // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
     officialExPronOpt: 1,
 
@@ -157,11 +157,14 @@ var oaldpeConfig = {
 /* ********用户自定义配置区结束******** */
 
 $(function main() {
-    const OALDPE_PREFIX_FULL_IMAGE = 'https://www.oxfordlearnersdictionaries.com/media/english/fullsize/';
-    const OALDPE_PREFIX_THUMB_IMAGE = 'https://www.oxfordlearnersdictionaries.com/media/english/thumb/';
+    const SRC_FILE = 'oaldpe.js';
+    const SRC_PATH = isPreview() ? '/api/static' : $(`script[src*="${SRC_FILE}"]`).attr('src').replace(/\/[^/]*$/, '');
+
     const OALDPE_PREFIX_WORD_UK = 'https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/';
     const OALDPE_PREFIX_WORD_US = 'https://www.oxfordlearnersdictionaries.com/media/english/us_pron/';
     const OALDPE_PREFIX_EXAMPLE = 'https://oxford-x-file.oss-cn-hangzhou.aliyuncs.com/audio/xgs/xgs_audio/';
+    const OALDPE_PREFIX_FULL_IMAGE = 'https://www.oxfordlearnersdictionaries.com/us/media/english/fullsize/';
+    const OALDPE_PREFIX_THUMB_IMAGE = 'https://www.oxfordlearnersdictionaries.com/us/media/english/thumb/';
 
     const OALDPE_BRITISH_TTS_OPTION = ['英音男1', '英音男2', '英音女1', '英音女2', '英音女3'];
     const OALDPE_AMERICAN_TTS_OPTION = ['美音男1', '美音男2', '美音男3', '美音男4', '美音男5', '美音女1', '美音女2', '美音女3', '美音女4'];
@@ -175,24 +178,24 @@ $(function main() {
         'abbreviation': 'abbr.',
         'adverb, adjective': 'adv., adj.',
         'verb': 'v.',
-        'phrasal verb': 'phrasal v.',
+        'phrasal verb': 'phr. v.',
         'exclamation': 'interj.',
         'idiom': 'idiom',
         'conjunction': 'conj.',
         'preposition': 'prep.',
         'modal verb': 'modal v.',
-        'combining form': 'combining form',
+        'combining form': 'comb. form',
         'prefix': 'prefix',
-        'linking verb': 'linking v.',
+        'linking verb': 'link. v.',
         'suffix': 'suffix',
         'number': 'num.',
         'pronoun': 'pron.',
         'ordinal number': 'ordinal num.',
         'determiner': 'det.',
         'auxiliary verb': 'aux. v.',
-        'indefinite article': 'indefinite a.',
-        'definite article': 'definite a.',
-        'infinitive marker': 'infinitive marker',
+        'indefinite article': 'indef. a.',
+        'definite article': 'def. a.',
+        'infinitive marker': 'inf. marker',
         'symbol': 'symbol',
         'adjective, adverb': 'adj., adv.',
         'adverb, preposition': 'adv., prep.',
@@ -440,84 +443,39 @@ $(function main() {
         $oaldpe.attr('script-loaded', 'true');
 
         // region 初始化
+        const $oald = $oaldpe.find('.oald');
+        const $webtop = $oaldpe.find('.entry > .top-container .webtop');
+
         setupHeadword();
 
-        setupNavigation();
-
         setupConfigGear();
+
+        setupNavigation();
 
         setupErudaConsole();
 
         detectDarkModeEnabled();
 
         function setupHeadword() {
-            $oaldpe.find('.headword').each(function () {
-                const $headword = $(this);
+            $webtop.each(function () {
+                const $headword = $(this).children('.headword');
                 const syllable = $headword.attr('syllable');
-                const textNode = $headword.contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).get(0);
-
-                $headword.attr('headword', syllable ? textNode.nodeValue.replace(/·/g, '') : textNode.nodeValue);
-
-                if (!syllable) return;
+                const headword = $headword.attr('headword');
 
                 const toggleSyllable = function () {
                     if (window.getSelection().toString().length > 0) return; // 有文本被选中
-                    textNode.nodeValue = textNode.nodeValue.includes('·')
-                        ? $headword.attr('headword')
-                        : $headword.attr('syllable');
+                    const newHTML = $headword.text().includes('·')
+                        ? $headword.html().replace(syllable, headword)
+                        : $headword.html().replace(headword, syllable);
+                    $headword.html(newHTML);
                 };
 
-                $headword.css('cursor', 'pointer').on('click', toggleSyllable);
+                if (syllable) {
+                    $headword.css('cursor', 'pointer').on('click', toggleSyllable);
 
-                if (!oaldpeConfig.showSyllable) toggleSyllable();
-            });
-        }
-
-        function setupNavigation() {
-            const $entries = $oaldpe.find('.oald');
-
-            if (!oaldpeConfig.showNavbar || $entries.length <= 1) {
-                $entries.addClass('visible');
-                return;
-            }
-
-            // Switch control of visibility to JavaScript
-            $entries.first().addClass('visible'); // avoid reflow
-
-            const $navbar = $('<div></div>').addClass('oaldpe-nav').prependTo($oaldpe);
-            $entries.each((_, entry) => {
-                const $entry = $(entry);
-                const $pos = $entry.find('.webtop .pos');
-                const $headword = $entry.find('.webtop .headword');
-                const $span = $('<span></span>').appendTo($navbar);
-                $pos.length ? $span.text(OALDPE_POS[$pos.text()]) : $span.text($headword.attr('headword')).css('font-style', 'normal');
-            });
-
-            // Additional span for "All" and default active state setup
-            const $spanAll = $('<span></span>').text('All').appendTo($navbar);
-            const $navbarSpan = $navbar.children('span');
-
-            if (oaldpeConfig.selectNavbarAll) {
-                $spanAll.addClass('active');
-                $entries.addClass('visible');
-            } else {
-                $navbarSpan.first().addClass('active');
-                $entries.first().addClass('visible');
-            }
-
-            // Handle navbar clicks
-            $navbar.on('click', 'span', function () {
-                const $clickedSpan = $(this);
-                if ($clickedSpan.hasClass('active')) return;
-
-                $clickedSpan.addClass('active');
-                $clickedSpan.siblings().removeClass('active');
-
-                if ($clickedSpan.is($spanAll)) {
-                    $entries.addClass('visible');
-                } else {
-                    const index = $navbarSpan.index($clickedSpan);
-                    $entries.removeClass('visible').eq(index).addClass('visible');
+                    if (oaldpeConfig.showSyllable) {
+                        toggleSyllable();
+                    }
                 }
             });
         }
@@ -538,9 +496,13 @@ $(function main() {
                 .append($('<div>', { class: 'oaldpe-config-gear__head__icon' }));
             const $configGearBody = $('<div>', { class: 'oaldpe-config-gear__body' });
             $configGear.append($configGearHead, $configGearBody);
-            $oaldpe.children('.oaldpe-nav').length
-                ? $configGear.insertAfter($oaldpe.children('.oaldpe-nav'))
-                : $configGear.prependTo($oaldpe);
+
+            if ($webtop.length) {
+                $webtop.first().prepend($configGear);
+            } else {
+                const $container = $oaldpe.children('.idm-g');
+                $container.first().prepend($configGear);
+            }
 
             const configItems = [
                 { label: 'Autofold Eudic Note', oaldpeConfigKey: 'autoFoldEudicNote', options: ['on', 'off'] },
@@ -552,6 +514,7 @@ $(function main() {
             configItems.forEach(item => {
                 if (item.oaldpeConfigKey === 'autoFoldEudicNote' && !isEudic()) return;
                 if (item.oaldpeConfigKey === 'officialExPronOpt' && oaldpeConfig.officialExPronOpt === 2) return;
+                if (item.oaldpeConfigKey === 'defaultBritishExPron' && oaldpeConfig.officialExPronOpt === 2) return;
                 if (item.prefix === 'Eruda' && !oaldpeConfig.enableErudaConsole) return;
 
                 const $configGroup = $('<div>', { class: 'config-group' });
@@ -592,25 +555,82 @@ $(function main() {
             }
 
             // Autofold Eudic Note
-            handleConfig('autoFoldEudicNote', oaldpeConfig.autoFoldEudicNote ? 'on' : 'off', 'on');
-
-            // Online Example Pron
-            if (oaldpeConfig.officialExPronOpt !== 2) {
-                handleConfig('officialExPronOpt', oaldpeConfig.officialExPronOpt ? 'on' : 'off', 'on');
+            if (isEudic()) {
+                handleConfig('autoFoldEudicNote', oaldpeConfig.autoFoldEudicNote ? 'on' : 'off', 'on');
             }
 
-            // Default Example Pron
-            $oaldpe.attr('pron', oaldpeConfig.defaultBritishExPron ? 'uk' : 'us');
-            $configGear.find('.oaldpe-config-gear__head__brand').on('click', function () {
-                const currentPron = $oaldpe.attr('pron');
-                $oaldpe.attr('pron', currentPron === 'uk' ? 'us' : 'uk');
+            if (oaldpeConfig.officialExPronOpt !== 2) {
+                // Online Example Pron
+                handleConfig('officialExPronOpt', oaldpeConfig.officialExPronOpt ? 'on' : 'off', 'on');
+
+                // Default Example Pron
+                $oaldpe.attr('pron', oaldpeConfig.defaultBritishExPron ? 'uk' : 'us');
+                $configGear.find('.oaldpe-config-gear__head__brand').on('click', function () {
+                    const currentPron = $oaldpe.attr('pron');
+                    $oaldpe.attr('pron', currentPron === 'uk' ? 'us' : 'uk');
+                });
+                handleConfig('defaultBritishExPron', oaldpeConfig.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
+            }
+        }
+
+        function setupNavigation() {
+            if (!oaldpeConfig.showNavbar || $oald.length <= 1) {
+                $oald.addClass('visible');
+                return;
+            }
+
+            // Switch control of visibility to JavaScript
+            $oald.first().addClass('visible'); // avoid reflow
+
+            const $navbar = $('<div>').addClass('oaldpe-nav').prependTo($oaldpe);
+            $webtop.each(function () {
+                const $this = $(this);
+                const $pos = $this.children('.pos');
+                const $headword = $this.children('.headword');
+                const $span = $('<span>').appendTo($navbar);
+                $span.text($pos.text() || $headword.text());
             });
-            handleConfig('defaultBritishExPron', oaldpeConfig.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
+
+            // Additional span for "All" and default active state setup
+            const $spanAll = $('<span>').text('All').appendTo($navbar);
+            const $navbarSpan = $navbar.children('span');
+
+            if (oaldpeConfig.selectNavbarAll) {
+                $spanAll.addClass('active');
+                $oald.addClass('visible');
+            } else {
+                $navbarSpan.first().addClass('active');
+                $oald.first().addClass('visible');
+            }
+
+            // Handle navbar clicks
+            const $configGear = $oaldpe.find('.oaldpe-config-gear');
+            $navbar.on('click', 'span', function () {
+                const $clickedSpan = $(this);
+                if ($clickedSpan.hasClass('active')) return;
+
+                $clickedSpan.addClass('active');
+                $clickedSpan.siblings().removeClass('active');
+
+                if ($clickedSpan.is($spanAll)) {
+                    $oald.addClass('visible');
+                    $webtop.first().prepend($configGear);
+                } else {
+                    const index = $navbarSpan.index($clickedSpan);
+                    $oald.removeClass('visible').eq(index).addClass('visible');
+                    $webtop.eq(index).prepend($configGear);
+                }
+            });
         }
 
         async function setupErudaConsole() {
             if (!oaldpeConfig.enableErudaConsole) return;
-            await $.getScript('https://cdn.jsdelivr.net/npm/eruda');
+            try {
+                await $.getScript(`${SRC_PATH}/eruda`);
+                if (typeof eruda === 'undefined') throw new Error();
+            } catch {
+                await $.getScript('https://cdn.jsdelivr.net/npm/eruda');
+            }
             eruda.init({
                 defaults: {
                     displaySize: 40,
@@ -676,14 +696,14 @@ $(function main() {
         }
 
         // region 全局选择器
-        const $sense = $oaldpe.find('.li_sense li.sense');
+        const $sense = $oaldpe.find('li.sense');
         const senseExpandSelector = '.examples, .collapse, .un, .xrefs, .topic-g';
 
         const senseMapping = $sense.map(function () {
             const $this = $(this);
-            const $iteration = $this.prev('.li_sense_before');
-            const $senseExpand = $this.children(senseExpandSelector);
-            const $senseDefinition = $this.children().not($senseExpand);
+            const $iteration = $this.children('.iteration');
+            const $senseExpand = $iteration.siblings(senseExpandSelector);
+            const $senseDefinition = $iteration.siblings().not($senseExpand);
 
             return {
                 $sense: $this,
@@ -693,7 +713,6 @@ $(function main() {
             };
         }).get();
 
-        const allIteration = [];
         const $allSenseExpand = $(senseMapping.map(mapping => mapping.$senseExpand.get()).flat());
         const $allSenseDefinition = $(senseMapping.map(mapping => mapping.$senseDefinition.get()).flat());
 
@@ -704,6 +723,8 @@ $(function main() {
 
         // region 中文翻译相关
         fnExamplesChineseBeAlone();
+
+        setImgAttributes();
 
         fnShowTranslation();
 
@@ -718,6 +739,21 @@ $(function main() {
                 $exampleChn.css('display', 'inline');
                 $exampleChn.parent().css('margin-left', '4px');
             }
+        }
+
+        function setImgAttributes() {
+            $oaldpe.find('.fullsize, .thumb').each(function () {
+                const $img = $(this);
+                const src = $img.data('src');
+
+                const [baseName, extension] = src.split('.');
+
+                $img.attr({
+                    'data-root': $img.attr('src'),
+                    'data-simplified': $img.attr('src').replace(src, `simplified/${baseName}_simplified.${extension}`),
+                    'data-traditional': $img.attr('src').replace(src, `traditional/${baseName}_traditional.${extension}`)
+                });
+            });
         }
 
         function fnShowTranslation() {
@@ -743,26 +779,34 @@ $(function main() {
         }
 
         function fnImgTranslationOpt() {
-            // 图片翻译：0-不使用翻译 1-简体中文翻译 2-台湾繁体翻译 3-自动选择
+            // 图片翻译：0-不使用翻译 1-简体中文翻译 2-港版繁体翻译 3-自动选择
             const option = oaldpeConfig.imgTranslationOpt === 3
                 ? (oaldpeConfig.showTranslation ? (oaldpeConfig.showTraditional ? 2 : 1) : 0)
                 : oaldpeConfig.imgTranslationOpt;
 
-            const replacements = { 0: '/oa10src/', 1: '/oa10simp/', 2: '/oa10orth/' };
-
-            $oaldpe.find('img.fullsize, img.thumb').each(function () {
+            $oaldpe.find('.fullsize, .thumb').each(function () {
                 const $img = $(this);
-                $img.attr('src', $img.attr('src').replace(/\/oa10(?:simp|orth|src)\//g, replacements[option]));
+                $img.attr('src', [$img.data('root'), $img.data('simplified'), $img.data('traditional')][option]);
             });
         }
 
-        function fnShowTraditional() {
-            if (!oaldpeConfig.showTraditional) {
-                $oaldpe.attr('trans', 'simple');
-                $chn.filter('.traditional').remove();
-            } else {
-                $oaldpe.attr('trans', 'traditional');
-                $chn.filter('.simple').remove();
+        async function fnShowTraditional() {
+            if (oaldpeConfig.showTraditional !== 0) {
+                try {
+                    await $.getScript(`${SRC_PATH}/full.min.js`);
+                    if (typeof OpenCC === 'undefined') throw new Error();
+                } catch {
+                    await $.getScript('https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js');
+                }
+
+                const zhConvertLang = ['hk', 'tw', 'twp'][oaldpeConfig.showTraditional - 1];
+                const converter = OpenCC.Converter({ from: 'cn', to: zhConvertLang });
+
+                $chn.each(function () {
+                    const $this = $(this);
+                    const $target = $this.children().length ? $this.children().first() : $this;
+                    $target.text(converter($target.text()));
+                });
             }
         }
 
@@ -771,29 +815,79 @@ $(function main() {
 
             // 释义中文
             senseMapping.forEach(({ $sense, $senseDefinition }) => {
-                $sense.on('click', () => $senseDefinition.find('chn').fadeToggle('fast'));
+                $sense.on('click', function (event) {
+                    event.stopPropagation();
+                    if ($(event.target).is('.audio_play_button, .phon')) return;
+                    const $definitionChn = $senseDefinition.find('chn');
+                    $definitionChn.fadeToggle('fast');
+                });
             });
 
             // 例句中文
             $allExample.on('click', function (event) {
                 event.stopPropagation();
-                const $exampleChn = $(this).find('chn');
+                if ($(event.target).is('.audio_play_button')) return;
+                const $example = $(this);
+                const $labelChn = $example.children('.labels').find('chn');
+                const $exampleChn = $example.find('.x, .unx, .unx + undt').find('chn');
                 oaldpeConfig.examplesChineseBeAlone ? $exampleChn.slideToggle('fast') : $exampleChn.fadeToggle('fast');
+                $labelChn.fadeToggle('fast');
+            });
+
+            // 词头部分标签
+            $oaldpe.find('.webtop').children('.inflections, .variants, .labels, .use').on('click', function (event) {
+                if ($(event.target).is('.audio_play_button, .phon')) return;
+                const $chn = $(this).find('chn');
+                $chn.fadeToggle('fast');
+            });
+
+            // 释义 Shortcut
+            $oaldpe.find('.shcut-g').on('click', function () {
+                const $shcut = $(this).children('h2.shcut');
+                const $chn = $shcut.find('chn');
+                $chn.fadeToggle('fast');
+            });
+
+            /* 折叠块相关 */
+            $oaldpe.find('.collapse .unbox .body, .un').on('click', function (event) { // 全局点击
+                event.stopPropagation();
+                if ($(event.target).is('.audio_play_button, .phon')) return;
+                const $chn = $(this).find('chn');
+                $chn.is(':visible') ? $chn.fadeOut('fast') : $chn.fadeIn('fast');
+            });
+
+            $oaldpe.find( // 折叠块标题
+                '.collapse .unbox .box_title, ' +
+                '.collapse .unbox .body .unbox'
+            ).on('click', function (event) {
+                event.stopPropagation();
+                const $chn = $(this).find('chn');
+                $chn.fadeToggle('fast');
+            });
+
+            $oaldpe.find( // 折叠块中文
+                '.collapse .unbox .body > .p, ' +
+                '.collapse .unbox .body > .deflist > .defpara, ' +
+                '.collapse .unbox .body > ul.bullet > li'
+            ).on('click', function (event) {
+                event.stopPropagation();
+                const $chn = $(this).children('undt, ubx').find('chn');
+                $chn.fadeToggle('fast');
             });
         }
 
         function replaceFullWidthCharsInChn() {
             const replacements = { '／': '/' };
 
-            $chn.contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).each(function () { // Avoid removing the <ai> tag
-                this.nodeValue = this.nodeValue.replace(/／/g, replacements['／']);
+            $chn.each(function () {
+                const $this = $(this);
+                const $target = $this.children().length ? $this.children().first() : $this;
+                $target.text($target.text().replace(/／/g, replacements['／']));
             });
         }
 
         // region 发音，图片显示
         const globalAudio = new Audio();
-
-        const ttsService = createEdgeTTS();
 
         setupWordPron();
 
@@ -801,44 +895,39 @@ $(function main() {
 
         setupExamplePron();
 
-        function getOnlineExamplePronUrl(src) {
-            const parts = src.split('/');
-            const name = parts[parts.length - 1];
-            return OALDPE_PREFIX_EXAMPLE + name.replace('#', '%23').replace('.ogg', '.wav');
-        }
-
         function getOnlineWordPronUrl(src) {
-            const parts = src.split('/');
-            const name = parts[parts.length - 1];
-            return (name.indexOf('_gb_') > -1 ? OALDPE_PREFIX_WORD_UK : OALDPE_PREFIX_WORD_US) + name.substring(0, 1) + '/' + name.substring(0, 3) + '/' + name.substring(0, 5) + '/' + name;
+            const name = src.split('/').pop();
+            const prefix = name.indexOf('_gb_') > -1 ? OALDPE_PREFIX_WORD_UK : OALDPE_PREFIX_WORD_US;
+            return `${prefix}${name.slice(0, 1)}/${name.slice(0, 3)}/${name.slice(0, 5)}/${name}`;
         }
 
         function getOnlineImageUrl(src) {
-            var parts = src.split('/');
-            var name = parts[parts.length - 1];
-            parts = name.split('_');
-            name = name.replace('fullsize_', '').replace('thumb_', '').replace('.jpg', '.png');
-            var imgSrc = name.substring(0, 1) + '/' + replaceWithUnderscores(name).substring(0, 3) + '/' + replaceWithUnderscores(name).substring(0, 5) + '/' + name;
-            return (parts[0] === 'fullsize' ? OALDPE_PREFIX_FULL_IMAGE : OALDPE_PREFIX_THUMB_IMAGE) + imgSrc;
+            const filename = src.split('/').pop();
+            const name = filename.replace(/^(fullsize|thumb)_/g, '')
+            const namePath = name.split('.')[0].padEnd(5, '_');
+            const prefix = filename.split('_')[0] === 'fullsize' ? OALDPE_PREFIX_FULL_IMAGE : OALDPE_PREFIX_THUMB_IMAGE;
+            return `${prefix}${namePath.slice(0, 1)}/${namePath.slice(0, 3)}/${namePath.slice(0, 5)}/${name}`;
         }
 
-        function replaceWithUnderscores(str) {
-            return str.replace(/\..+/, match => {
-                return '_'.repeat(match.length);
-            });
+        function getOnlineExamplePronUrl(src) {
+            const name = src.split('/').pop();
+            const prefix = OALDPE_PREFIX_EXAMPLE;
+            return `${prefix}${name.replace('#', '%23').replace('.mp3', '.wav')}`;
         }
 
         function setupWordPron() {
-            $oaldpe.find('.audio_play_button').each(function () {
+            $oaldpe.find('.audio_play_button').not('.app, .app-ext').each(function () {
                 const $audio = $(this);
-                $audio.next('.phon').on('click', () => $audio[0].click());
+                const $phon = $audio.next('.phon');
+                $phon.on('click', () => $audio[0].click());
 
                 if (oaldpeConfig.onlineWordPron) {
-                    const onlineHref = getOnlineWordPronUrl($audio.attr('href'));
+                    $audio.attr('data-href', getOnlineWordPronUrl($audio.attr('href')));
                     $audio.on('click', function (event) {
+                        event.stopPropagation();
                         event.preventDefault();
-                        if (!globalAudio.paused) globalAudio.pause();
-                        globalAudio.src = onlineHref;
+                        globalAudio.pause();
+                        globalAudio.src = $audio.data('href');
                         globalAudio.play();
                     });
                 }
@@ -848,13 +937,13 @@ $(function main() {
         function setupImage() {
             $oaldpe.find('div[id="ox-enlarge"]').each(function () {
                 const $imgContainer = $(this);
-                const $fullsize = $imgContainer.find('img.fullsize');
-                const $thumb = $imgContainer.find('img.thumb');
 
-                if (oaldpeConfig.onlineImage) {
-                    $fullsize.attr('src', getOnlineImageUrl($fullsize.attr('src')));
-                    $thumb.attr('src', getOnlineImageUrl($thumb.attr('src')));
-                }
+                $imgContainer.find('.fullsize, .thumb').each(function () {
+                    const $img = $(this);
+                    if (oaldpeConfig.onlineImage) {
+                        $img.attr('src', getOnlineImageUrl($img.data('src')));
+                    }
+                });
 
                 $imgContainer.on('click', function (event) {
                     event.stopPropagation();
@@ -864,49 +953,39 @@ $(function main() {
         }
 
         function setupExamplePron() {
-            const $exampleAudio = $oaldpe.find('example-audio');
-
             // 不启用官方例句发音
-            if (oaldpeConfig.officialExPronOpt === 2) {
-                $exampleAudio.parent().addClass('audio_disabled');
-                return;
-            }
+            if (oaldpeConfig.officialExPronOpt === 2) return;
 
             // 启用官方例句在线发音
             if (oaldpeConfig.officialExPronOpt === 1) {
                 $oaldpe.attr('online-example-pron', 'true');
             }
 
-            $exampleAudio.children('a').each(function () {
+            $oaldpe.find('.audio_play_button').filter('.app, .app-ext').each(function () {
                 const $audio = $(this);
-                const href_online = getOnlineExamplePronUrl($audio.attr('href'));
-                const href_offline = isEudicPC()
-                    ? $audio.attr('href').replace('.ogg', '.mp3')
-                    : $audio.attr('href').replace('.ogg', '.mp3').replace('sound://', '');
 
-                function playAudio() {
-                    const audioSrc = $oaldpe.attr('online-example-pron') === 'true' ? href_online : href_offline;
-                    const playType = $oaldpe.attr('online-example-pron') === 'true' ? 'online' : 'offline';
-                    console.log(`(${playType}) audio: ${audioSrc}`);
-
-                    globalAudio.src = audioSrc;
-                    globalAudio.play().catch((error) => {
-                        console.error(`Failed to play ${playType} audio.`, error);
-                        const fallbackSrc = playType === 'online' ? href_offline : href_online;
-                        console.log(`(fallback) audio: ${fallbackSrc}`);
-                        globalAudio.src = fallbackSrc;
-                        globalAudio.play().catch((fallbackError) => {
-                            console.error(`Failed to play fallback audio.`, fallbackError);
-                        });
-                    });
+                if ($audio.closest('.examples').length) {
+                    const $example = $audio.closest('li');
+                    if ($audio.is('.pron-uk')) $example.attr('pron-uk', 'true');
+                    if ($audio.is('.pron-us')) $example.attr('pron-us', 'true');
                 }
 
-                $audio.on('click', function (event) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    if (!globalAudio.paused) globalAudio.pause();
-                    playAudio();
-                });
+                if (!$audio.is('.app-ext')) {
+                    $audio.attr('data-href', getOnlineExamplePronUrl($audio.attr('href')));
+                    $audio.on('click', function (event) {
+                        const online = $oaldpe.attr('online-example-pron') === 'true';
+
+                        if (online) {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            globalAudio.pause();
+
+                            console.log(`(online) audio: ${$audio.data('href')}`);
+                            globalAudio.src = $audio.data('href');
+                            globalAudio.play();
+                        }
+                    });
+                }
             });
         }
 
@@ -924,7 +1003,8 @@ $(function main() {
         function fnSimplifyPos() {
             if (oaldpeConfig.simplifyPos) {
                 $oaldpe.find('.pos').each(function () {
-                    $(this).text(OALDPE_POS[$(this).text()]);
+                    const $this = $(this);
+                    $this.text(OALDPE_POS[$this.text()]);
                 });
             }
         }
@@ -932,7 +1012,8 @@ $(function main() {
         function fnSimplifyGrammar() {
             if (oaldpeConfig.simplifyGrammar) {
                 $oaldpe.find('.grammar').each(function () {
-                    $(this).text(OALDPE_GRAMMAR[$(this).text()]);
+                    const $this = $(this);
+                    $this.text(OALDPE_GRAMMAR[$this.text()]);
                 });
             }
         }
@@ -951,9 +1032,10 @@ $(function main() {
             if (oaldpeConfig.usePlaceholder) {
                 $oaldpe.find('.oald').each(function () {
                     const $oald = $(this);
-                    const headword = $oald.find('.headword').attr('headword');
-                    $oald.find('.cf').each(function () {
-                        $(this).text($(this).text().replace(headword, '~'));
+                    const $webtop = $oald.find('.entry > .top-container .webtop');
+                    const headword = $webtop.children('.headword').text().replace(/·/g, '');
+                    $oald.find('.cf').contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).each(function () {
+                        this.nodeValue = this.nodeValue.replace(headword, '~');
                     });
                 });
             }
@@ -977,17 +1059,19 @@ $(function main() {
         initCollapse();
 
         function setupShcutFold() {
-            $oaldpe.find('h2.shcut').on('click', function () {
+            $oaldpe.find('h2.shcut').on('click', function (event) {
+                event.stopPropagation();
                 const $shcut = $(this);
                 $shcut.parent('.shcut-g').toggleClass('folded');
-                $shcut.siblings('.li_sense').slideToggle('fast');
+                $shcut.siblings('li.sense').slideToggle('fast');
             });
         }
 
         function setupSenseFold() {
             senseMapping.forEach(({ $iteration, $senseExpand }) => {
                 if (!$senseExpand.length) return;
-                $iteration.css('cursor', 'pointer').on('click', function () {
+                $iteration.css('cursor', 'pointer').addClass('clickable').on('click', function (event) {
+                    event.stopPropagation();
                     $iteration.toggleClass('folded');
                     $senseExpand.slideToggle('fast');
                 });
@@ -996,8 +1080,6 @@ $(function main() {
                     $iteration.addClass('folded');
                     $senseExpand.hide();
                 }
-
-                allIteration.push($iteration.get(0));
             });
 
             if (!oaldpeConfig.unfoldSense) {
@@ -1007,7 +1089,7 @@ $(function main() {
             $oaldpe.find('.idm, .pv').each(function () {
                 const $heading = $(this);
                 const $container = $heading.closest('.idm-g, .pv-g');
-                const $iteration = $container.find('.li_sense_before');
+                const $iteration = $container.find('.iteration').filter('.clickable');
                 $heading.on('click', () => ($iteration.filter('.folded').length ? $iteration.filter('.folded') : $iteration).trigger('click'));
             });
         }
@@ -1018,7 +1100,8 @@ $(function main() {
                 const $content = $boxTitle.next();
                 const $unbox = $boxTitle.parent();
 
-                $boxTitle.on('click', function () {
+                $boxTitle.on('click', function (event) {
+                    event.stopPropagation();
                     $unbox.hasClass('is-active')
                         ? $content.css('display', 'block').slideUp(300)
                         : $content.css('display', 'block').hide().slideDown(300);
@@ -1028,6 +1111,10 @@ $(function main() {
                 if (oaldpeConfig.unfoldUnbox || oaldpeConfig.autoUnfoldUnbox[$unbox.attr('unbox')]) {
                     $content.css('display', 'block');
                     $unbox.addClass('is-active');
+
+                    if (oaldpeConfig.touchToTranslate) { // Consistent with touchToTranslate
+                        $boxTitle.find('chn').show();
+                    }
                 }
             });
         }
@@ -1079,7 +1166,7 @@ $(function main() {
         }
 
         function initCollapse() {
-            const $allIteration = $(allIteration);
+            const $allIteration = $oaldpe.find('.iteration').filter('.clickable');
             const $shcut = $oaldpe.find('h2.shcut');
             const $boxTitle = $oaldpe.find('.collapse .unbox .box_title');
             const $phraseSectionHeading = $oaldpe.find('.idioms > .idioms_heading, .phrasal_verb_links > .unbox');
@@ -1114,8 +1201,7 @@ $(function main() {
         }
 
         // region 欧路词典相关
-        const SRC_FILE = 'oaldpe.js';
-        const SRC_PATH = isPreview() ? '/api/static' : $(`script[src*="${SRC_FILE}"]`).attr('src').replace(/\/[^/]*$/, '');
+        Eudic_overflowVisible();
 
         Eudic_widerScreen();
 
@@ -1125,9 +1211,17 @@ $(function main() {
 
         setupEudicConfigurations();
 
+        function Eudic_overflowVisible() {
+            if (isEudic()) {
+                const $ancestor = $oaldpe.closest('.explain_wrap_styleless');
+                $ancestor.css('overflow', 'visible');
+            }
+        }
+
         function Eudic_widerScreen() {
             if (oaldpeConfig.widerScreenEudic && isEudicAPP()) {
-                $oaldpe.parent().css({ margin: '5px 8px 5px 5px', padding: 'unset' });
+                const $parent = $oaldpe.parent('.expDiv');
+                $parent.css('padding', '5px 8px 5px 5px');
             }
         }
 
@@ -1139,7 +1233,13 @@ $(function main() {
 
         function Eudic_autoFoldCustomNote() {
             if (oaldpeConfig.autoFoldEudicNote && isEudic()) {
-                Promise.resolve().then(() => observeCustomNoteAdded(() => $('#expCustomNote .expHead').trigger('click')));
+                Promise.resolve().then(() => observeCustomNoteAdded(() => {
+                    const $expHead = $('#expCustomNote .expHead');
+                    if (!$expHead.hasClass('Folded')) {
+                        $expHead.addClass('Folded');
+                        $expHead.trigger('click');
+                    }
+                }));
             }
         }
 
@@ -1210,42 +1310,6 @@ $(function main() {
             }
         }
 
-        // region Helper functions
-        window.copyToClipboard = function (text) {
-            const $temp = $('<textarea>').val(text).appendTo('body').select();
-            document.execCommand('copy');
-            $temp.remove();
-        };
-
-        function isEudic() {
-            var ua = navigator.userAgent.toLowerCase();
-            return ua.indexOf('eudic') > -1;
-        }
-
-        function isEudicPC() {
-            var ua = navigator.userAgent.toLowerCase();
-            return ua.indexOf('eudic') > -1 && ua.indexOf('windows') > -1;
-        }
-
-        function isEudicAPP() {
-            var ua = navigator.userAgent.toLowerCase();
-            return (ua.indexOf('eudic') > -1) && (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1);
-        }
-
-        function isGoldenDict() {
-            var ua = navigator.userAgent.toLowerCase();
-            return ua.indexOf('goldendict') > -1;
-        }
-
-        function isMacosIpadSim() {
-            var ua = navigator.userAgent.toLowerCase();
-            return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
-        }
-
-        function isPreview() {
-            return window.self !== window.top && parent.$('#k_iframe').length;
-        }
-
         // region TTS 相关
         const ttsConfig = {
             '美音女1': { locale: 'en-US', voice: 'en-US-MichelleNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
@@ -1264,31 +1328,54 @@ $(function main() {
             '英音男2': { locale: 'en-GB', voice: 'en-GB-ThomasNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' }
         };
 
-        (function initTTS() {
-            const $exampleAudioAI = $oaldpe.find('example-audio-ai');
+        (async function initTTS() {
+            if (!oaldpeConfig.enableOnlineTTS) return;
 
-            if (!oaldpeConfig.enableOnlineTTS) {
-                $exampleAudioAI.parent().addClass('audio_disabled');
-                return;
+            try {
+                await $.getScript(`${SRC_PATH}/crypto-js.min.js`);
+                if (typeof CryptoJS === 'undefined') throw new Error();
+            } catch {
+                await $.getScript('https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js');
             }
 
-            $exampleAudioAI.children('a').each(function () {
-                const $audio = $(this);
-                const config = ttsConfig[$audio.hasClass('audio_uk') ? oaldpeConfig.britishTTS : oaldpeConfig.americanTTS];
+            const ttsService = createEdgeTTS();
 
-                let inputText = $audio.parent().prev('.exText')
-                    .clone().find('.cf, chn').remove().end().text()
-                    .replace(/somebody\/something/g, 'somebody or something')
-                    .replace(/\(.*?\)|\u200B/g, '');
+            $allExample.each(function () {
+                const $example = $(this);
+                const $audioContainer = $example.find('.x, .unx');
 
-                const match = inputText.match(/\b(\w+(?:\/\w+)+)\b/);
-                if (match) inputText = match[0].split('/').map(word => inputText.replace(match[0], word)).join('\nor ');
+                if (!$audioContainer.length) return;
 
-                $audio.on('click', (event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    ttsService.playText(inputText, config);
-                });
+                const $pron_uk = $audioContainer.find('.pron-uk');
+                const $pron_us = $audioContainer.find('.pron-us');
+
+                function createAudioElement(className, ttsConfig) {
+                    const $audio = $('<a>', { class: `sound audio_play_button ${className} icon-audio tts` }).appendTo($audioContainer);
+                    $audio.on('click', (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+
+                        let inputText = $audioContainer.clone().find('chn').remove().end().text()
+                            .replace(/somebody\/something/g, 'somebody or something')
+                            .replace(/&/g, 'and').replace(/\u200B/g, '')
+                            .replace(/\(.*?\)/g, '');
+
+                        const match = inputText.match(/\b(\w+(?:\/\w+)+)\b/);
+                        if (match) inputText = match[0].split('/').map(word => inputText.replace(match[0], word)).join('\nor ');
+
+                        ttsService.playText(inputText, ttsConfig);
+                    });
+                }
+
+                if (!$pron_uk.length) {
+                    createAudioElement('pron-uk', ttsConfig[oaldpeConfig.britishTTS]);
+                    $example.attr('pron-uk', 'true');
+                }
+
+                if (!$pron_us.length) {
+                    createAudioElement('pron-us', ttsConfig[oaldpeConfig.americanTTS]);
+                    $example.attr('pron-us', 'true');
+                }
             });
         })();
 
@@ -1308,10 +1395,31 @@ $(function main() {
                     <voice name="${voice}"><prosody pitch="${pitch}" rate="${rate}" volume="${volume}">${inputText}</prosody></voice>
                 </speak>`;
 
+            function generateSecMsGecToken() {
+                // Get the current time in Windows file time format (100ns intervals since 1601-01-01)
+                let ticks = BigInt((Date.now() / 1000 + 11644473600) * 10000000);
+
+                // Round down to the nearest 5 minutes (3,000,000,000 * 100ns = 5 minutes)
+                ticks -= ticks % BigInt(3000000000);
+
+                // Create the string to hash by concatenating the ticks and the trusted client token
+                const strToHash = `${ticks}${TRUSTED_CLIENT_TOKEN}`;
+
+                // Compute the SHA256 hash
+                const hash = CryptoJS.SHA256(strToHash);
+
+                // Return the hexadecimal representation of the hash
+                return hash.toString(CryptoJS.enc.Hex).toUpperCase();
+            }
+
             async function ensureSocketReady() {
                 if (!socket || socket.readyState === WebSocket.CLOSED) {
                     const reopened = !!socket; // Check if the socket existed before
-                    socket = new WebSocket(SYNTH_URL);
+
+                    const Sec_MS_GEC = generateSecMsGecToken();
+                    const Sec_MS_GEC_VERSION = '1-130.0.2849.68';
+
+                    socket = new WebSocket(`${SYNTH_URL}&Sec-MS-GEC=${Sec_MS_GEC}&Sec-MS-GEC-Version=${Sec_MS_GEC_VERSION}`);
                     socket.onmessage = onSocketMessage;
                     socket.onclose = () => console.warn('WebSocket closed.');
                     socket.onerror = (error) => {
@@ -1401,4 +1509,35 @@ $(function main() {
             return { playText };
         }
     });
+
+    // region Helper functions
+    window.copyToClipboard = function (text) {
+        const $temp = $('<textarea>').val(text).appendTo('body').select();
+        document.execCommand('copy');
+        $temp.remove();
+    };
+
+    function isEudic() {
+        var ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf('eudic') > -1;
+    }
+
+    function isEudicAPP() {
+        var ua = navigator.userAgent.toLowerCase();
+        return (ua.indexOf('eudic') > -1) && (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1);
+    }
+
+    function isGoldenDict() {
+        var ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf('goldendict') > -1;
+    }
+
+    function isMacosIpadSim() {
+        var ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
+    }
+
+    function isPreview() {
+        return window.self !== window.top && parent.document.querySelector('#k_iframe');
+    }
 });

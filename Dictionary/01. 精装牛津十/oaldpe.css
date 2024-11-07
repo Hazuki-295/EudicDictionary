@@ -44,6 +44,20 @@
     font-weight: bold;
 }
 
+@font-face {
+    font-family: 'Open Sans';
+    src: url(fonts/OpenSans/OpenSans-VariableFont_wdth,wght.ttf) format('truetype');
+    font-style: normal;
+    font-weight: 300 800;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url(fonts/OpenSans/OpenSans-Italic-VariableFont_wdth,wght.ttf) format('truetype');
+    font-style: italic;
+    font-weight: 300 800;
+}
+
 /* Mimic `:root {}`, which is disabled in Eudic */
 .oaldpe {
     --color-red: #de002d;
@@ -87,30 +101,41 @@ ol, ul {
 /* 导航栏 Navigation */
 .oaldpe-nav {
     display: flex;
-    font-family: georgia, serif;
-    font-style: italic;
-    font-size: .9em;
-    font-weight: bold;
-    background-color: rgb(0 122 108 / 80%);
-    border-radius: 100px;
-    overflow: auto hidden;
-    margin-bottom: .3rem;
-    user-select: none;
+    /* gap: 10px; */
+    padding: 5px 10px;
+    background-color: #e0f2e0;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #a5d6a7;
+    border-bottom: none;
+    overflow-x: auto;
 }
 
 .oaldpe-nav span {
-    flex: 1;
-    color: white;
-    text-align: center;
+    font-family: 'Open Sans', helvetica, arial, sans-serif;
+    font-weight: bold;
+    font-size: .9em;
+    text-transform: capitalize;
     white-space: nowrap;
-    border-radius: 100px;
-    padding: .2em .5em;
-    margin: 5px;
+    padding: 2px 10px;
+    border-radius: 5px;
+    border: 1px solid #a5d6a7;
+    cursor: pointer;
+    user-select: none;
+    transition: color .3s ease, background-color .3s ease;
 }
 
-.oaldpe-nav span.active {
-    color: #333;
-    background-color: white;
+.oaldpe-nav span:not(:first-of-type) {
+    margin-left: 10px; /* QT 5 workaround */
+}
+
+.oaldpe-nav span {
+    background-color: #a5d6a7;
+    color: #2f5932;
+}
+
+.oaldpe-nav span.active, .oaldpe-nav span:hover {
+    background-color: #4b8b45;
+    color: white;
 }
 
 /* 词条框架 */
@@ -126,8 +151,35 @@ ol, ul {
     display: block;
 }
 
-.entry {
+.oald-entry-root {
     color: var(--text-color);
+    margin-bottom: 1em;
+}
+
+/* 词条标题 */
+.entry > .top-container::before {
+    content: '';
+    display: block;
+    height: 1.5em;
+    background-color: #e0f2e0;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #a5d6a7;
+    border-bottom: none;
+}
+
+.oaldpe-nav ~ .oald .entry > .top-container::before {
+    display: none;
+}
+
+.oaldpe-nav ~ .oald.visible ~ .oald.visible .entry > .top-container::before {
+    display: block;
+}
+
+.entry > .top-container .webtop {
+    padding: .5em .75em .75em;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #a5d6a7;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
     margin-bottom: 1em;
 }
 
@@ -179,7 +231,6 @@ h1.headword .hm, .xhm {
 .webtop > .phonetics {
     display: block;
     margin-top: 2px;
-    margin-left: 4px; /* Easy to click */
     margin-bottom: 2px;
 }
 
@@ -192,12 +243,18 @@ h1.headword .hm, .xhm {
     color: var(--text-grey-color);
 }
 
-.phons_br {
-    margin-right: 5px;
+.phons_br + .phons_n_am {
+    margin-left: 4px;
+}
+
+.webtop > .phonetics .phons_br,
+.webtop > .phonetics .phons_n_am,
+.webtop > .phonetics .phons_we {
+    margin-left: 4px;
 }
 
 .phon {
-    font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    font-family: 'Lucida Sans Unicode', 'Lucida Grande';
     cursor: pointer;
 }
 
@@ -244,7 +301,7 @@ h1.headword .hm, .xhm {
     margin-right: 5px;
 }
 
-.opal_symbol {
+.symbols .opal_symbol {
     display: inline-block;
     font-family: georgia, serif;
     font-size: .8em;
@@ -254,12 +311,12 @@ h1.headword .hm, .xhm {
     border-radius: 5px;
     padding: 0 4px;
     margin: 0 .25em;
-    vertical-align: 2px;
 }
 
 /* 词头排版微调 */
 .webtop > .symbols {
-    vertical-align: 1px;
+    margin-right: 4px;
+    transform: translateY(-1px);
 }
 
 .webtop > .headword,
@@ -269,7 +326,6 @@ h1.headword .hm, .xhm {
 }
 
 .webtop > .idm + *, .webtop > .pv + * {
-    display: inline-block;
     margin-top: 4px !important;
 }
 
@@ -340,15 +396,15 @@ h2.shcut {
     font-size: inherit;
     color: var(--color-blue);
     background: var(--background-highlight);
-    margin-top: unset !important; /* mdx Bug Fix */
-}
-
-h2.shcut shcut {
-    margin-left: 4px;
+    cursor: pointer;
 }
 
 h2.shcut shcut chn {
     font-weight: normal;
+}
+
+h2.shcut shcut chn::before {
+    content: ' ';
 }
 
 /* Idioms, Phrasal Verbs */
@@ -361,10 +417,10 @@ h2.shcut shcut chn {
 
 .idioms .idioms_heading, .phrasal_verb_links .unbox {
     display: flex;
+    align-items: center;
     font-size: 1.25rem;
     font-weight: bold;
     color: var(--title-color);
-    align-items: center;
 }
 
 .idioms_back, .phrasal_back {
@@ -392,10 +448,6 @@ h2.shcut shcut chn {
     border-color: transparent;
 }
 
-.idioms .idioms_heading + .un {
-    margin-top: 1em;
-}
-
 .idioms .idioms_heading + * {
     margin-top: .5em;
 }
@@ -420,7 +472,7 @@ h2.shcut shcut chn {
 
 .idioms .idm-g .idm::before {
     position: absolute;
-    content: '▶︎';
+    content: '\25B6'; /* ▶︎ */
     font-size: .7em;
     line-height: calc(1em / 0.7 * var(--line-height));
     color: var(--color-red);
@@ -434,10 +486,10 @@ h2.shcut shcut chn {
 
 /* Idiom 词条 */
 .oaldpe > .idm-g {
-    padding: 1em;
-    padding-bottom: unset;
+    padding: 1em 1em 0;
     background: var(--background-color);
     border-radius: 10px 10px 0 0;
+    margin: unset;
 }
 
 .oaldpe > .idm-g + .xrefs {
@@ -455,6 +507,10 @@ h2.shcut shcut chn {
     display: none;
 }
 
+.oaldpe > .idm-g .collapse {
+    margin-bottom: unset;
+}
+
 /* Phrasal Verbs */
 .phrasal_verb_links ul.pvrefs {
     display: none; /* Hide by default */
@@ -467,7 +523,7 @@ h2.shcut shcut chn {
 
 .phrasal_verb_links ul.pvrefs li::before {
     display: inline-block;
-    content: '•';
+    content: '\2022'; /* • */
     color: var(--grey-5);
     text-align: center;
     width: 1em;
@@ -482,7 +538,6 @@ h2.shcut shcut chn {
 
 .pv-g:first-of-type {
     border-radius: 10px 10px 0 0;
-    margin-top: 1em;
 }
 
 .pv-g:last-of-type {
@@ -495,37 +550,50 @@ h2.shcut shcut chn {
 }
 
 .pvarr::before {
-    content: '⇿';
+    content: '\21FF'; /* ⇿ */
     color: var(--color-red);
 }
 
 /* 第三层 */
 /* 释义排版 */
-.li_sense {
-    display: flex;
+li.sense {
+    padding-left: 1.25em;
     margin-top: .5em;
+    position: relative;
 }
 
-.li_sense li.sense {
-    flex: 1;
+.idm-g .sense_single li.sense {
+    padding-left: unset;
 }
 
-.li_sense .li_sense_before {
+.pv-g .sense_single li.sense {
+    padding-left: unset;
+}
+
+.iteration {
+    position: absolute;
+    display: inline-block;
     font-family: var(--font-family-sans-serif);
     font-style: italic;
     font-size: .9em;
     font-weight: bold;
     color: var(--color-red);
-    padding: 2px;
-    margin-left: .2em;
-    margin-right: .25em;
+    text-align: right;
+    width: 2em;
+    left: -1em;
+    line-height: calc(1em / 0.9 * var(--line-height));
 }
 
-.idm-g .sense_single .li_sense_before {
+.iteration.single {
+    font-style: normal;
+    font-weight: normal;
+}
+
+.idm-g .sense_single .iteration {
     display: none;
 }
 
-.pv-g .sense_single .li_sense_before {
+.pv-g .sense_single .iteration {
     display: none;
 }
 
@@ -599,7 +667,6 @@ h2.shcut shcut chn {
 
 /* 固定搭配 */
 .cf {
-    display: inline;
     color: var(--color-blue);
 }
 
@@ -630,6 +697,7 @@ h2.shcut shcut chn {
 /* Reference Link */
 .xref {
     color: var(--color-blue);
+    cursor: pointer;
 }
 
 .xref:hover {
@@ -641,14 +709,26 @@ h2.shcut shcut chn {
     font-style: normal;
 }
 
+/* Mark Incorrect Examples */
+.wx {
+    font-style: italic;
+    text-decoration: line-through;
+}
+
 /* Emphasized Italic */
 .ei {
     font-style: italic;
     color: var(--color-blue);
 }
 
-.ei a.sound {
-    display: none; /* Hide the audio */
+.ei a.audio_play_button {
+    display: inline-block;
+    width: 1.25em;
+    text-align: center;
+}
+
+.ei a.audio_play_button:first-of-type {
+    margin-left: 4px;
 }
 
 .ei chn {
@@ -689,8 +769,8 @@ h2.shcut shcut chn {
 }
 
 /* 释义英文 */
-.def {
-    margin-right: 4px;
+.def::after {
+    content: ' ';
 }
 
 /* 中文翻译全局设置 */
@@ -698,10 +778,6 @@ chn {
     font-family: var(--font-family-serif), 'Source Han Serif CN';
     font-style: normal;
     font-size: .9em;
-}
-
-.oaldpe:not([trans='traditional']) chn.traditional {
-    display: none !important; /* 暂时隐藏 */
 }
 
 /* 释义中文 */
@@ -748,82 +824,46 @@ chn ai::after {
 
 /* 例句排版 */
 ul.examples > li {
-    display: flex;
+    padding-left: 20px; /* 1.25rem */
     margin-top: .3em;
     position: relative;
 }
 
-ul.examples > li > .exText {
-    padding-left: 1.5rem;
-}
-
+/* 例句菱形、例句喇叭（排版） */
 ul.examples > li::before,
-ul.examples > li > example-audio,
-ul.examples > li > example-audio-ai {
+ul.examples > li a.audio_play_button {
     position: absolute;
     display: inline-block;
     text-align: center;
-    width: 1.5rem;
+    width: 20px; /* 1.25rem */
+    left: 0;
+    top: 0;
 }
 
-/* 例句菱形、例句喇叭（排版） */
 ul.examples > li::before {
-    content: '◆';
+    content: '\25C6'; /* ◆ */
     font-family: 'Source Han Serif CN';
     font-size: .5em;
     line-height: calc(1em / 0.5 * var(--line-height));
-    visibility: hidden;
     opacity: .7;
 }
 
-ul.examples > li.audio_disabled::before {
-    visibility: unset;
-}
-
-ul.examples > li > example-audio,
-ul.examples > li > example-audio-ai {
-    height: calc(1em * var(--line-height));
-}
-
-ul.examples > li.audio_disabled > example-audio,
-ul.examples > li.audio_disabled > example-audio-ai {
-    display: none;
-}
-
 /* 例句喇叭、单词发音喇叭 */
-a.pron-uk::before, a.pron-us::before, a.audio_uk::before, a.audio_us::before,
+a.audio_play_button {
+    cursor: pointer;
+}
+
+a.audio_play_button::before,
 .oaldpe-config-gear .dictname::before {
     font-family: 'oalecd9', 'Segoe UI Symbol';
     font-style: normal;
     font-weight: normal;
-    content: '🔊';
+    content: '\1F50A'; /* 🔊 */
     opacity: .7;
 }
 
-a.audio_uk, a.audio_us, a.audio_uk::before, a.audio_us::before {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-}
-
-a.audio_uk::before, a.audio_us::before {
-    padding-right: 1em; /* Easy to click */
-}
-
-a.audio_us {
-    display: none;
-}
-
-.oaldpe[pron='uk'] a.audio_us, .oaldpe[pron='us'] a.audio_uk {
-    display: none;
-}
-
-.oaldpe[pron='uk'] a.audio_uk, .oaldpe[pron='us'] a.audio_us {
-    display: inline-block;
-}
-
 /* TTS 例句喇叭 */
-ul.examples > li > example-audio-ai::before {
+a.audio_play_button.tts::after {
     content: '';
     position: absolute;
     display: inline-block;
@@ -836,50 +876,69 @@ ul.examples > li > example-audio-ai::before {
 
 /* 例句菱形、例句喇叭、单词发音喇叭（颜色） */
 ul.examples > li::before,
-a.audio_uk::before, a.audio_us::before {
+ul.examples > li a.audio_play_button::before {
     color: var(--text-grey-color);
 }
 
 a.pron-uk::before,
 .oaldpe[pron='uk'] ul.examples > li:hover::before,
-.oaldpe[pron='uk'] ul.examples > li:hover a.audio_uk::before,
+.oaldpe[pron='uk'] ul.examples > li:hover a.pron-uk::before,
 .oaldpe[pron='uk'] .oaldpe-config-gear .dictname::before {
     color: var(--color-blue);
 }
 
 a.pron-us::before,
 .oaldpe[pron='us'] ul.examples > li:hover::before,
-.oaldpe[pron='us'] ul.examples > li:hover a.audio_us::before,
+.oaldpe[pron='us'] ul.examples > li:hover a.pron-us::before,
 .oaldpe[pron='us'] .oaldpe-config-gear .dictname::before {
     color: var(--color-red);
 }
 
+ul.examples > li a.pron-uk,
+ul.examples > li a.pron-us {
+    display: none;
+}
+
+.oaldpe[pron='uk'] ul.examples > li a.pron-uk,
+.oaldpe[pron='us'] ul.examples > li a.pron-us {
+    display: unset;
+}
+
+.oaldpe[pron='uk'] ul.examples > li[pron-uk='true']::before,
+.oaldpe[pron='us'] ul.examples > li[pron-us='true']::before {
+    display: none;
+}
+
 /* 例句样式 */
-ul.examples > li > .exText .cf {
+ul.examples > li .cf {
     margin-right: 2px;
 }
 
-ul.examples > li > .exText .cl {
+ul.examples > li .cl {
     font-style: normal;
 }
 
-ul.examples > li > .exText .cl::before {
-    content: '▲';
+ul.examples > li .cl::before {
+    content: '\25B2'; /* ▲ */
     font-size: .6em;
     color: var(--color-blue);
 }
 
 /* 例句英文 */
-ul.examples > li > .exText .x,
-ul.examples > li > .exText .unx {
+ul.examples > li .x,
+ul.examples > li .unx {
     font-style: italic;
     color: var(--text-grey-color);
 }
 
+ul.examples > li .wx {
+    color: var(--text-grey-color);
+}
+
 /* 例句中文 */
-ul.examples > li > .exText .x chn,
-ul.examples > li > .exText .unx chn,
-ul.examples > li > .exText .unx + undt chn {
+ul.examples > li .x chn,
+ul.examples > li .unx chn,
+ul.examples > li .unx + undt chn {
     display: block;
     font-style: normal;
     color: var(--text-grey-color);
@@ -904,6 +963,11 @@ ul.examples + .xrefs, ul.examples + .topic-g {
 }
 
 .sense .def .xrefs { /* America */
+    display: inline;
+    font-size: inherit;
+}
+
+.collapse .unbox .body .p .xrefs { /* president */
     display: inline;
     font-size: inherit;
 }
@@ -935,24 +999,25 @@ ul.examples + .xrefs, ul.examples + .topic-g {
 /* 词条链接 */
 .xrefs .xr-g .xh, .topic-g .topic .topic_name {
     color: var(--color-blue);
+    cursor: pointer;
 }
 
 .xrefs .xr-g:hover .xh, .topic-g .topic:hover .topic_name {
     text-decoration: underline;
-    cursor: pointer;
 }
 
 .xrefs a.Ref + .sep, .topic-g a.Ref + .sep {
     display: none;
 }
 
-.xrefs a.Ref:not(:last-of-type)::after, .topic-g a.Ref:not(:last-of-type)::after {
-    content: '•';
+.xrefs a.Ref:not(:last-of-type)::after {
+    content: ' \2022'; /* ' •' */
     color: var(--grey-5);
 }
 
-.xrefs a.Ref:not(:last-of-type)::after {
-    margin-left: .3em;
+.topic-g a.Ref:not(:last-of-type)::after {
+    content: '\2022'; /* • */
+    color: var(--grey-5);
 }
 
 .topic-g a.Ref:first-of-type .topic::before {
@@ -1016,8 +1081,9 @@ a.Ref .xs::before {
     display: block;
     font-size: .9em;
     padding: 1em;
-    border-radius: 10px;
-    border: 1px dashed var(--border-color);
+    border-width: 1px;
+    border-style: dashed;
+    border-color: var(--border-color);
     margin: .5em 0;
 }
 
@@ -1069,11 +1135,12 @@ a.Ref .xs::before {
 .idioms .un[un='help'] {
     border: unset;
     border-left: 2px solid var(--border-color);
-    border-radius: unset;
     padding: .5em 1em;
+    margin: 1em 0 .5em;
 }
 
 .idioms .un[un='help'] unx chn {
+    display: inline-block;
     color: var(--color-green);
     background: rgb(0 122 108 / 20%);
     border-radius: 3px;
@@ -1086,6 +1153,10 @@ a.Ref .xs::before {
     font-size: .9em;
     border-left: 2px solid var(--border-color);
     margin: .5em 0;
+}
+
+.entry > .top-container .webtop .collapse {
+    border-right: 2px solid var(--border-color);
 }
 
 /* 折叠块标题 Unbox Title */
@@ -1103,13 +1174,13 @@ a.Ref .xs::before {
 .collapse .unbox .box_title::before {
     font-family: 'Apple Symbols', 'Segoe UI Symbol';
     font-weight: normal;
-    content: '⊕';
+    content: '\2295'; /* ⊕ */
     margin-right: 5px;
     vertical-align: .5px;
 }
 
 .collapse .unbox.is-active .box_title::before {
-    content: '⊖';
+    content: '\2296'; /* ⊖ */
 }
 
 .collapse .unbox .box_title:hover,
@@ -1117,11 +1188,7 @@ a.Ref .xs::before {
     background-color: var(--background-color);
 }
 
-.collapse .unbox .box_title .text_title {
-    display: inline;
-}
-
-.collapse .unbox .box_title .text_title::after {
+.collapse .unbox .box_title unboxx chn::before {
     content: ' ';
 }
 
@@ -1156,7 +1223,11 @@ a.Ref .xs::before {
 }
 
 .collapse .unbox .body .unbox undt chn::before {
-    content: ' ';
+    content: '（';
+}
+
+.collapse .unbox .body .unbox undt chn::after {
+    content: '）';
 }
 
 /* 折叠块内容 Unbox Content */
@@ -1204,7 +1275,7 @@ a.Ref .xs::before {
 }
 
 .collapse .unbox .body ul.inline li:not(:last-child)::after {
-    content: '•';
+    content: '\2022'; /* • */
     color: var(--grey-5);
     padding: 0 5px;
 }
@@ -1216,7 +1287,7 @@ a.Ref .xs::before {
 }
 
 .collapse .unbox .body ul.collocs_list li::before {
-    content: '•';
+    content: '\2022'; /* • */
     color: var(--grey-5);
     padding: 0 5px;
 }
@@ -1250,9 +1321,8 @@ a.Ref .xs::before {
 
 /* 折叠块中文 */
 .collapse .unbox .body > .p > undt chn,
-.collapse .unbox .body > ul.bullet > li > undt chn,
-.collapse .unbox .body > ul.bullet > li > .item > undt chn,
-.collapse .unbox .body > .deflist > .defpara > undt chn {
+.collapse .unbox .body > .deflist > .defpara > undt chn,
+.collapse .unbox .body > ul.bullet > li > undt chn {
     display: inline-block;
     color: var(--color-green);
     background: rgb(0 122 108 / 20%);
@@ -1269,6 +1339,15 @@ a.Ref .xs::before {
 /* Collocations (词语搭配) > make-up (n.) */
 .collapse .unbox[unbox='colloc'] .box_title + * {
     padding: 1em;
+}
+
+/* 标签 */
+.collapse .unbox[unbox='colloc'] .labels {
+    font-size: .9em;
+}
+
+.collapse .unbox[unbox='colloc'] .labels labelx {
+    display: unset;
 }
 
 .collapse .unbox[unbox='colloc'] .body ul.bullet undt {
@@ -1350,12 +1429,6 @@ a.Ref .xs::before {
     display: none;
 }
 
-.collapse .unbox[unbox='grammar'] ul.examples > li > .exText .wx {
-    font-style: italic;
-    color: var(--text-grey-color);
-    text-decoration: line-through;
-}
-
 .collapse .unbox[unbox='grammar'] .body > ul.bullet > li > undt chn {
     display: inline;
     color: var(--text-grey-color);
@@ -1387,8 +1460,7 @@ a.Ref .xs::before {
 
 .collapse .unbox[unbox='homophone'] .body .phonetics {
     display: block;
-    margin-top: 2px;
-    margin-left: 2px;
+    margin-top: 4px;
     margin-bottom: 1em;
 }
 
@@ -1405,9 +1477,16 @@ a.Ref .xs::before {
     display: none;
 }
 
-.collapse .unbox[unbox='homophone'] .body ul.bullet > li .eb {
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li > * {
     font-style: normal;
+}
+
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li > .eb {
     margin-right: 2px;
+}
+
+.collapse .unbox[unbox='homophone'] .body ul.bullet > li > .xrefs {
+    color: var(--text-color);
 }
 
 /* Language Bank (用语库) > example */
@@ -1455,7 +1534,7 @@ a.Ref .xs::before {
 
 .collapse .unbox[unbox='more_about'] .body ul.bullet > li .unx::before {
     display: inline-block;
-    content: '•';
+    content: '\2022'; /* • */
     color: var(--color-blue);
     width: 1em;
     text-align: center;
@@ -1663,9 +1742,13 @@ a.Ref .xs::before {
 }
 
 .collapse .unbox[unbox='wordfinder'] .body ul.bullet > li:not(:last-child)::after {
-    content: '•';
+    content: '\2022'; /* • */
     color: var(--grey-5);
     padding: 0 5px;
+}
+
+.collapse .unbox[unbox='wordfinder'] .body .p .xrefs { /* consultant (n.) */
+    font-size: inherit;
 }
 
 /* Word Origin (词源) */
@@ -1702,13 +1785,22 @@ a.Ref .xs::before {
 
 /* 第六层 */
 /* 个性化配置图标 */
+.entry > .top-container .webtop {
+    position: relative;
+}
+
+.oaldpe > .idm-g {
+    position: relative;
+}
+
 .oaldpe-config-gear {
+    position: absolute;
     font-family: var(--font-family-sans-serif);
     font-size: 1rem;
     word-spacing: normal;
-    position: absolute;
-    right: .5rem;
-    z-index: 1;
+    right: .3rem;
+    top: .3rem;
+    z-index: 2;
 }
 
 .oaldpe-config-gear * {
@@ -1895,7 +1987,7 @@ a.Ref .xs::before {
 
 .config-group__label::before {
     display: inline-block;
-    content: '⟶';
+    content: '\27F6'; /* ⟶ */
     color: var(--color-red);
     margin-right: .25em;
     transform: translateY(-0.15em);
@@ -1963,33 +2055,42 @@ a.Ref .xs::before {
     margin-bottom: 4px;
     border: 1px solid #0069B4;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
-#ox-enlarge img {
+#ox-enlarge .fullsize,
+#ox-enlarge .thumb {
     border: none;
 }
 
-#ox-enlarge img.thumb {
-    width: 75px;
-    height: 75px;
-}
-
-#ox-enlarge.enlarged img.thumb {
+#ox-enlarge .fullsize {
     display: none;
-}
-
-#ox-enlarge img.fullsize {
-    display: none;
-}
-
-#ox-enlarge.enlarged img.fullsize {
-    display: block;
-    max-width: 100%;
     min-width: 75px;
     min-height: 75px;
 }
 
+#ox-enlarge .thumb {
+    display: block;
+    width: 75px;
+    height: 75px;
+}
+
+#ox-enlarge.enlarged {
+    width: 100%;
+}
+
+#ox-enlarge.enlarged .fullsize {
+    display: block;
+    max-width: 100%;
+}
+
+#ox-enlarge.enlarged .thumb {
+    display: none;
+}
+
 #ox-enlarge .topic {
+    display: block;
     position: relative;
 }
 

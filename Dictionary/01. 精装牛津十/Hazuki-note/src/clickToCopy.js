@@ -2,144 +2,184 @@ import { HTMLToJSON } from 'html-to-json-parser';
 
 const $ = require('jquery');
 
-(function () {
+(function init() {
+    // Attach a click-to-copy event to the element
     function addClickEventToCopyText($element, textToCopy) {
-        $element.css('cursor', 'pointer');
-        $element.off('click').on('click', function (event) { // reattach click event
+        $element.css('cursor', 'pointer').on('click', function (event) {
             event.stopPropagation();
             copyToClipboard(textToCopy);
-            $(this).css('cursor', 'default');
-            setTimeout(() => { $(this).css('cursor', 'pointer'); }, 2000);
+            $element.css('cursor', 'default');
+            setTimeout(() => { $element.css('cursor', 'pointer'); }, 2000);
         });
     }
 
-    function clean($element, selector, _options = {}) {
-        const defaultOptions = { mode: 'retain', deep: false, direct: false };
-        const options = Object.assign({}, defaultOptions, _options);
-
-        const $clone = $element.clone();
-
-        if (options.mode === 'retain') {
-            if (options.direct) {
-                $clone.children().not(selector).remove();
-            } else if (options.deep) {
-                $clone.find('*').not(selector).remove();
-            }
-        } else if (options.mode === 'remove') {
-            if (options.direct) {
-                $clone.children(selector).remove();
-            } else if (options.deep) {
-                $clone.find(selector).remove();
-            }
-        }
-
-        return $clone;
+    // HTML to JSON
+    async function jsonify($elements, modifyCallback) {
+        $elements.each(async function () {
+            const $element = $(this);
+            const $clonedElement = cloneAndModify($element, modifyCallback);
+            const json = await HTMLToJSON($clonedElement.prop('outerHTML'));
+            $element.attr('text-to-copy', jsonToPlainText(json));
+        });
     }
 
-    const formatClassAttr = (classNames) => classNames.split(' ').map(cls => `.${cls}`).join(' ');
+    function cloneAndModify($element, modifyCallback) {
+        const $clonedElement = $element.clone();
+
+        if (typeof modifyCallback === 'function') {
+            modifyCallback($clonedElement);
+        }
+
+        return $clonedElement;
+    }
 
     function jsonToPlainText(json) {
+        /* Three possible keys: type, content, attributes */
         function processNode(node) {
-            if (!node.content) { // base case: no content
-                if (node.attributes && node.attributes.class) {
-                    return `[]{${formatClassAttr(node.attributes.class)}}`;
-                }
-                return ''
+            // Key: type (result type: false | string)
+            const typeAttr = (node.type !== 'span') && `htag=${node.type}`;
+
+            // Key: attributes (result type: undefined | string)
+            const classAttr = node.attributes?.class && formatClassAttr(node.attributes.class);
+
+            // Key: content
+            const attrs = [classAttr, typeAttr].filter(Boolean).join(' ');
+
+            if (node.content) {
+                const result = node.content.map(item => {
+                    return typeof item === 'string' ? item.replace(/\[(.*?)\]/g, '$1') : processNode(item);
+                }).join('');
+                return attrs ? `[${result}]{${attrs}}` : result;
             }
 
-            let result = node.content.map(item => {
-                if (typeof item === 'string') { // return plain text directly
-                    return item.replace(/\[(.*?)\]/g, '$1');
-                }
-                return processNode(item); // recursive
-            }).join('');
-
-            // Markdown-it
-            if (node.attributes && node.attributes.class) {
-                const classAttr = `${formatClassAttr(node.attributes.class)}`;
-                const htag = node.type !== 'span' ? `htag=${node.type}` : '';
-                const attrs = [classAttr, htag].filter(Boolean).join(' ');
-                if (attrs) result = `[${result}]{${attrs}}`;
-            }
-
-            return result;
+            // Base case: no content
+            return attrs ? `[]{${attrs}}` : '';
         }
 
-        return processNode(json); // start processing from the root
+        return processNode(json);
     }
 
-    async function jsonify($element, selector, options = {}) {
-        if ($element.attr('text-to-copy')) return; // Already processed
-        const $cleanClone = clean($element, selector, options);
-        const result = await HTMLToJSON($cleanClone.prop('outerHTML'));
-        $element.attr('text-to-copy', jsonToPlainText(result));
+    // Helper functions
+    function formatClassAttr(classNames) {
+        return classNames.split(' ').map(className => `.${className}`).join(' ');
     }
 
     function wrapTextWithAttrs(text, attrs) {
-        const _attrs = Object.entries(attrs).map(([key, value]) => {
-            if (key === 'class') {
-                return formatClassAttr(value);
-            } else {
-                return `${key}="${value}"`;
-            }
+        const formattedAttrs = Object.entries(attrs).map(([key, value]) => {
+            return key === 'class' ? formatClassAttr(value) : `${key}="${value}"`;
         }).join(' ');
 
-        return `[${text}]{${_attrs}}`;
+        return `[${text}]{${formattedAttrs}}`;
     }
 
-    const createNoteCard = (note, comment) => wrapTextWithAttrs(note, { class: 'note-card', 'data-label': 'definition', 'data-comment': comment });
-    const createNoteCards = () => wrapTextWithAttrs(' ', { class: 'note-cards' });
+    function createNoteCard(note, comment) {
+        return wrapTextWithAttrs(note, {
+            class: 'note-card',
+            'data-label': 'definition',
+            'data-comment': comment
+        });
+    };
 
-    function applyConfigurations() {
-        /******** dictionary 1: oaldpe ********/
-        const $oaldpe = $('.oaldpe');
+    function createNoteCards() {
+        return wrapTextWithAttrs(' ', {
+            class: 'note-cards'
+        });
+    };
 
-        const $target = $oaldpe.find('deft');
-        $target.on('click', function () {
-            const $this = $(this);
-            const $sense = $this.closest('.sense');
+    // Dictionary 1: Oxford Advanced Learner's Dictionary
+    $('.oaldpe').each(function () {
+        const $oaldpe = $(this);
+        if ($oaldpe.attr('jsonified') === 'true') return;
+        $oaldpe.attr('jsonified', 'true');
 
-            jsonify($sense, '.examples, .collapse, .un, div#ox-enlarge, .labels', { mode: 'remove', deep: true }).then(() => {
-                const $webtop = $this.closest('.entry').find('.webtop');
-                if (!$webtop.length) {
-                    addClickEventToCopyText($this, $sense.attr('text-to-copy'));
-                    return;
-                }
+        $oaldpe.find('.oald-entry-root').each(async function () {
+            const $entry = $(this);
+            const idiomEntry = $entry.hasClass('idm-g');
 
-                jsonify($webtop, '.symbols, .headword, .pos', { direct: true }).then(() => {
-                    const $ancestor = $this.closest('.shcut-g, .idm-g, .pv-g');
+            /* Level 1: webtop */
+            const $webtop = $entry.find('.entry > .top-container .webtop');
+            await jsonify($webtop, $clonedElement => {
+                $clonedElement.children('.symbols:gt(0)').remove();
+                $clonedElement.children().not('.symbols, .headword, .pos, .grammar').remove();
+            });
 
-                    if ($ancestor.length) {
-                        const $parent = $ancestor.find('h2.shcut, .idm, .pv');
+            /* Level 2: sense group */
+            const $senseGroup = $entry.find('.shcut-g, .idm-g, .pv-g');
+            await jsonify($senseGroup.find('h2.shcut, .idm, .pv'));
 
-                        jsonify($parent, '*').then(() => {
-                            const senseText = createNoteCard($sense.attr('text-to-copy'), 'OALD');
-                            const textToCopy = `${$webtop.attr('text-to-copy')} ${$parent.attr('text-to-copy')}\n\n${senseText}`;
-                            addClickEventToCopyText($this, textToCopy);
-                        });
-                    } else {
-                        const senseText = createNoteCard($sense.attr('text-to-copy'), 'OALD');
-                        const textToCopy = `${$webtop.attr('text-to-copy')}\n\n${senseText}`;
-                        addClickEventToCopyText($this, textToCopy);
-                    }
+            if (idiomEntry) await jsonify($entry.find('.idm'));
+
+            /* Level 3: sense */
+            const $sense = $entry.find('li.sense');
+            const senseExpandSelector = '.examples, .collapse, .un';
+
+            $sense.each(async function () {
+                const $sourceElement = $(this);
+                const $senseGroup = $sourceElement.closest('.shcut-g, .idm-g, .pv-g');
+
+                const $clonedElement = cloneAndModify($sourceElement, $clonedElement => {
+                    const $iteration = $clonedElement.children('.iteration');
+                    const $senseExpand = $iteration.siblings(senseExpandSelector);
+                    const $senseDefinition = $iteration.siblings().not($senseExpand);
+
+                    $iteration.remove();
+                    $senseExpand.remove();
+                    $senseDefinition.find('div[id="ox-enlarge"]').remove();
                 });
+
+                const $deft = $sourceElement.find('deft');
+                const json = await HTMLToJSON($clonedElement.prop('outerHTML'));
+                $deft.attr('text-to-copy', jsonToPlainText(json));
+
+                const webtopText = $webtop.attr('text-to-copy');
+                const senseGroupText = $senseGroup.find('h2.shcut, .idm, .pv').attr('text-to-copy');
+                const senseText = createNoteCard($deft.attr('text-to-copy'), 'OALD');
+
+                const textToCopy = [webtopText, senseGroupText].filter(Boolean).join(' ') + '\n\n' + senseText;
+                addClickEventToCopyText($deft, textToCopy);
             });
         });
+    });
 
-        /******** dictionary 2: ode ********/
-        const $ode = $('.ode-2024');
+    // Dictionary 2: Oxford Dictionary of English
+    $('.ode-2024').each(function () {
+        const $ode = $(this);
+        if ($ode.attr('jsonified') === 'true') return;
+        $ode.attr('jsonified', 'true');
 
-        const $definitions = $ode.find('.definition.capital-letter');
-        $definitions.on('click', function () {
-            const $this = $(this);
-            const $sense = $this.closest('.senseInnerWrapper');
+        $ode.find('.entryContent[data-dictname^="ENG"]').each(function () {
+            const $entryPageContent = $(this).find('.entryPageContent');
 
-            jsonify($sense, '.transivityStatement, .definition, variantGroup, .wordForm, .reg, .languageGroup', { direct: true }).then(() => {
-                const senseText = createNoteCard($sense.attr('text-to-copy'), 'ODE');
-                addClickEventToCopyText($this, senseText + '\n\n' + createNoteCards());
+            /* sense */
+            const $sense = $entryPageContent.find('.msDict.sense, .msDict.subsense');
+            const senseExpandSelector = '.exampleGroup, .moreInformation, .sense-note';
+
+            $sense.each(async function () {
+                const $sourceElement = $(this).children('.senseInnerWrapper');
+
+                const $clonedElement = cloneAndModify($sourceElement, $clonedElement => {
+                    const $iteration = $clonedElement.children('.iteration');
+                    const $senseExpand = $iteration.siblings(senseExpandSelector);
+                    const $definitions = $iteration.siblings('.definition.capital-letter');
+
+                    $iteration.remove();
+                    $senseExpand.remove();
+
+                    // Use regex to remove a trailing ':' or '.' from the definition
+                    $definitions.each(function () {
+                        const $definition = $(this);
+                        const definitionText = $definition.text();
+                        $definition.html($definition.html().replace(definitionText, definitionText.replace(/[.:]\s*$/, '')));
+                    });
+                });
+
+                const $definition = $sourceElement.children('.definition.capital-letter');
+                const json = await HTMLToJSON($clonedElement.prop('outerHTML'));
+                $definition.attr('text-to-copy', jsonToPlainText(json));
+
+                const senseText = createNoteCard($definition.attr('text-to-copy'), 'ODE');
+                addClickEventToCopyText($definition, senseText + '\n\n' + createNoteCards());
             });
         });
-    }
-
-    setTimeout(() => { applyConfigurations(); });
+    });
 })();

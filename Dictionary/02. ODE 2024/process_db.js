@@ -1,6 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
-const async = require('async');
 const minimist = require('minimist');
 const cheerio = require('cheerio');
 
@@ -9,134 +8,118 @@ const argv = minimist(process.argv.slice(2));
 
 // Command-line options:
 // --debug      Enable debug mode
-// --word       Specify testing word(s) for debug mode (default: 'prelude')
+// --word       Specify testing word(s) for debug mode (default: ['take'])
 
 const debugMode = argv.debug || false;
-const testWords = argv.word
-    ? Array.isArray(argv.word)
-        ? argv.word
-        : [argv.word]
-    : ['prelude'];
+const testWords = [].concat(argv.word || 'take');
 
-// Concurrency settings
-const CONCURRENCY = 100;
 const BATCH_SIZE = 10000;
+
+async function runDatabaseCommand(database, command, params = []) {
+    return new Promise((resolve, reject) => {
+        database.run(command, params, (error) => (error ? reject(error) : resolve()));
+    });
+}
+
+async function queryDatabase(database, query, params = []) {
+    return new Promise((resolve, reject) => {
+        database.all(query, params, (error, rows) => (error ? reject(error) : resolve(rows)));
+    });
+}
+
+async function insertIntoDatabase(insertStmt, entry, paraphrase) {
+    return new Promise((resolve, reject) => {
+        insertStmt.run(entry, paraphrase, (error) => (error ? reject(error) : resolve()));
+    });
+}
+
+async function deleteEntriesByWords(database, words) {
+    const placeholders = words.map(() => '?').join(',');
+    const query = `DELETE FROM mdx WHERE entry IN (${placeholders})`;
+    await runDatabaseCommand(database, query, words);
+}
+
+async function getEntriesByWords(database, words) {
+    const placeholders = words.map(() => '?').join(',');
+    const query = `SELECT rowid, entry, paraphrase FROM mdx WHERE entry IN (${placeholders})`;
+    const rows = await queryDatabase(database, query, words);
+    if (!rows.length) {
+        throw new Error(`Entries not found for words: ${words.join(', ')}`);
+    }
+    return rows;
+}
+
+async function getTotalEntries(database) {
+    const row = await queryDatabase(database, `SELECT COUNT(*) as count FROM mdx`);
+    return row[0].count;
+}
+
+async function getEntriesBatch(database, offset, limit) {
+    const query = `SELECT rowid, entry, paraphrase FROM mdx ORDER BY rowid LIMIT ? OFFSET ?`;
+    return await queryDatabase(database, query, [limit, offset]);
+}
+
+async function processEntries(entries, insertStmt = null) {
+    // Process HTML content concurrently
+    const processedEntries = await Promise.all(entries.map(async (row) => {
+        const { entry, paraphrase } = row;
+        const isLink = paraphrase.startsWith('@@@LINK=');
+        const content = isLink ? paraphrase : processHTML(paraphrase);
+        return { entry, content, rowid: row.rowid, isLink };
+    }));
+
+    // Insert entries sequentially to maintain order
+    for (const { entry, content, rowid, isLink } of processedEntries) {
+        if (!content) continue;
+
+        if (debugMode) {
+            const outputFileName = `${entry}_${rowid} (${isLink ? 'link' : 'processed'}).html`;
+            fs.writeFileSync(outputFileName, content, 'utf8');
+            console.log(`Entry '${entry}' processed and saved to ${outputFileName}`);
+        } else {
+            await insertIntoDatabase(insertStmt, entry, content);
+        }
+    }
+}
 
 (async () => {
     try {
-        const db = new sqlite3.Database('ODE_2024.db', sqlite3.OPEN_READONLY);
+        const sourceDatabase = new sqlite3.Database('ODE_2024.db', sqlite3.OPEN_READONLY);
 
         if (debugMode) {
             // Debug mode: process specified test words
-            const entries = await getEntriesByWords(db, testWords);
-            db.close();
+            const entries = await getEntriesByWords(sourceDatabase, testWords);
             await processEntries(entries);
         } else {
             // Normal mode: process all entries in batches
-            const totalEntries = await getTotalEntries(db);
+            const totalEntries = await getTotalEntries(sourceDatabase);
             console.log(`Total entries to process: ${totalEntries}`);
 
-            const dbNew = new sqlite3.Database('ODE_2024_cleaned.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
+            const targetDatabase = new sqlite3.Database('ODE_2024_cleaned.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
+            await runDatabaseCommand(targetDatabase, 'DROP TABLE IF EXISTS mdx');
+            await runDatabaseCommand(targetDatabase, 'CREATE TABLE mdx (entry TEXT, paraphrase TEXT)');
 
-            await runDbCommand(dbNew, `CREATE TABLE IF NOT EXISTS mdx (entry TEXT, paraphrase TEXT)`);
-
-            const insertStmt = dbNew.prepare(`INSERT INTO mdx (entry, paraphrase) VALUES (?, ?)`);
+            const insertStmt = targetDatabase.prepare(`INSERT INTO mdx (entry, paraphrase) VALUES (?, ?)`);
 
             for (let offset = 0; offset < totalEntries; offset += BATCH_SIZE) {
-                const entries = await getEntriesBatch(db, offset, BATCH_SIZE);
+                const entries = await getEntriesBatch(sourceDatabase, offset, BATCH_SIZE);
                 console.log(`Processing entries ${offset + 1} to ${offset + entries.length}`);
 
-                await runDbCommand(dbNew, 'BEGIN TRANSACTION');
+                await runDatabaseCommand(targetDatabase, 'BEGIN TRANSACTION');
                 await processEntries(entries, insertStmt);
-                await runDbCommand(dbNew, 'COMMIT');
+                await runDatabaseCommand(targetDatabase, 'COMMIT');
             }
 
             insertStmt.finalize();
-            db.close();
-            dbNew.close();
-            console.log('Processing completed.');
+            targetDatabase.close();
         }
+
+        sourceDatabase.close();
+        console.log('Processing completed.');
     } catch (error) {
         console.error('Error:', error.message);
     }
 })();
-
-// Function to get entries by specified words
-function getEntriesByWords(db, words) {
-    const placeholders = words.map(() => '?').join(',');
-    return new Promise((resolve, reject) => {
-        db.all(
-            `SELECT rowid, entry, paraphrase FROM mdx WHERE entry IN (${placeholders})`,
-            words,
-            (err, rows) => (err ? reject(err) : rows.length > 0 ? resolve(rows) : reject(new Error(`Entries not found for words: ${words.join(', ')}`)))
-        );
-    });
-}
-
-// Function to get the total number of entries
-function getTotalEntries(db) {
-    return new Promise((resolve, reject) => {
-        db.get(`SELECT COUNT(*) as count FROM mdx`, [], (err, row) => (err ? reject(err) : resolve(row.count)));
-    });
-}
-
-// Function to get a batch of entries
-function getEntriesBatch(db, offset, limit) {
-    return new Promise((resolve, reject) => {
-        db.all(
-            `SELECT rowid, entry, paraphrase FROM mdx LIMIT ? OFFSET ?`,
-            [limit, offset],
-            (err, rows) => (err ? reject(err) : resolve(rows))
-        );
-    });
-}
-
-// Function to execute a database command
-function runDbCommand(db, command) {
-    return new Promise((resolve, reject) => {
-        db.run(command, (err) => (err ? reject(err) : resolve()));
-    });
-}
-
-// Function to process entries
-function processEntries(entries, insertStmt = null) {
-    return new Promise((resolve, reject) => {
-        async.eachLimit(
-            entries,
-            CONCURRENCY,
-            async (row) => {
-                const { entry, paraphrase } = row;
-
-                if (paraphrase.startsWith('@@@LINK=')) {
-                    // Entry Type 2: Copy as is
-                    if (debugMode) {
-                        console.log(`Entry '${entry}' is a Type 2 entry. Skipping processing.`);
-                    } else {
-                        await insertIntoDb(insertStmt, entry, paraphrase);
-                    }
-                } else {
-                    // Entry Type 1: Process the HTML
-                    const processedParaphrase = processHTML(paraphrase);
-
-                    if (debugMode) {
-                        fs.writeFileSync(`${entry}_processed.html`, processedParaphrase, 'utf8');
-                        console.log(`Processed HTML saved to ${entry}_processed.html`);
-                    } else {
-                        await insertIntoDb(insertStmt, entry, processedParaphrase);
-                    }
-                }
-            },
-            (err) => (err ? reject(err) : resolve())
-        );
-    });
-}
-
-// Function to insert data into the new database
-function insertIntoDb(insertStmt, entry, paraphrase) {
-    return new Promise((resolve, reject) => {
-        insertStmt.run(entry, paraphrase, (err) => (err ? reject(err) : resolve()));
-    });
-}
 
 // Function to process HTML content using Cheerio
 function processHTML(htmlContent) {
@@ -144,8 +127,22 @@ function processHTML(htmlContent) {
 
     cleanUpHTML($);
     reorderNavigation($);
+
+    // Filter out chinese dictionaries
+    const $navigationItem = $('.navigationItem');
+    const $entryContent = $('.entryContent');
+
+    $navigationItem.filter('[data-target="EC(英中)"], [data-target="CE(中英)"]').remove();
+    $entryContent.filter('[data-dictname="EC(英中)"], [data-dictname="CE(中英)"]').remove();
+
+    if (!$('.entryContent').length) return null;
+
     setupPron($);
     setupEntryHeader($);
+    setupSense($);
+    setupSubsense($);
+    setupPhraseSections($);
+    setupOtherSections($);
     setupRefURL($);
 
     return $.html();
@@ -166,29 +163,22 @@ function cleanUpHTML($) {
 
     // Remove horizontal rule
     $('body > hr').remove();
-
-    // Refine the navigation
-    const $navigation = $('.javascript_tittle_box');
-    $navigation.attr('class', 'navigation');
-    $container.append($navigation);
-
-    // Refine the entry content
-    const $entry = $('.main_content_main');
-    $entry.attr('class', 'entryContainer');
-    $container.append($entry);
 }
 
 function reorderNavigation($) {
-    const $navigation = $('.navigation');
-    const $entry = $('.entryContainer');
+    const $ode = $('.ode-2024');
+    const $navigation = $('.javascript_tittle_box').attr('class', 'navigation');
+    const $entryContainer = $('.main_content_main').attr('class', 'entryContainer');
 
-    const items = [
-        { original: 'ENG(UK)', display: 'British English' },
-        { original: 'SYN(UK)', display: 'British English Thesaurus' },
-        { original: 'ENG(US)', display: 'American English' },
-        { original: 'SYN(US)', display: 'American English Thesaurus' },
-        { original: 'EC(英中)', display: 'English-Chinese' },
-        { original: 'CE(中英)', display: 'Chinese-English' },
+    $ode.append($navigation).append($entryContainer);
+
+    const reorderedDicts = [
+        { dictname: 'ENG(UK)', description: 'British English' },
+        { dictname: 'SYN(UK)', description: 'British English Thesaurus' },
+        { dictname: 'ENG(US)', description: 'American English' },
+        { dictname: 'SYN(US)', description: 'American English Thesaurus' },
+        { dictname: 'EC(英中)', description: 'English-Chinese' },
+        { dictname: 'CE(中英)', description: 'Chinese-English' },
     ];
 
     const navigationMapping = {};
@@ -197,128 +187,210 @@ function reorderNavigation($) {
     $navigation.children('.each_tittle_smgs').each((index, element) => {
         const $element = $(element);
         navigationMapping[$element.text()] = $element;
-        contentMapping[$element.text()] = $entry.children('.dict_content_display').eq(index);
+        contentMapping[$element.text()] = $entryContainer.children('.dict_content_display').eq(index);
     });
 
-    let reorderedNav = [];
-    let reorderedContent = [];
+    const reorderedNav = [];
+    const reorderedContent = [];
 
-    items.forEach((item, newIndex) => {
-        const $navItem = navigationMapping[item.original];
-        const $contentBlock = contentMapping[item.original];
+    reorderedDicts.forEach((dict, index) => {
+        const $navItem = navigationMapping[dict.dictname];
+        const $content = contentMapping[dict.dictname];
 
-        if ($navItem && $contentBlock) {
+        if ($navItem && $content) {
             reorderedNav.push(
-                $('<span></span>')
-                    .addClass('navigationItem')
-                    .attr('data-index', newIndex)
-                    .attr('data-target', item.original)
-                    .text(item.display)
+                $('<span></span>').attr({
+                    class: 'navigationItem',
+                    'data-index': index,
+                    'data-target': dict.dictname
+                }).text(dict.description)
             );
 
-            $contentBlock
-                .attr('class', 'entryContent')
-                .attr('data-index', newIndex)
-                .attr('data-dictname', item.original)
-                .removeAttr('style')
-                .children('.img_LOGO').remove();
+            $content.attr({
+                class: 'entryContent',
+                'data-index': index,
+                'data-dictname': dict.dictname
+            }).removeAttr('style').children('.img_LOGO').remove();
 
-            reorderedContent.push($contentBlock);
+            reorderedContent.push($content);
         }
     });
 
     $navigation.empty().append(reorderedNav);
-    $entry.empty().append(reorderedContent);
+    $entryContainer.empty().append(reorderedContent);
 }
 
 function setupPron($) {
-    $('.entryContent[data-dictname="EC(英中)"]').find('.prx, .pr').each(function () {
-        const $ancestor = $(this);
-        const $links = $ancestor.find('a[href="href="]');
-        $links.each(function () {
-            const $a = $(this);
-            $ancestor.html($ancestor.html().replace($a.prop('outerHTML'), $a.text()));
+    const $engDicts = $('.entryContent[data-dictname^="ENG"]');
+
+    // Change pronunciations to a more readable format (macOS Dictionary)
+    $engDicts.find('.headpron, .infpron').each(function () {
+        $(this).find('*').addBack().contents().filter((_, node) => node.nodeType === 3).each(function () { // Text nodes
+            $(this).replaceWith(this.nodeValue.replace(/\/([^\/]+)\//g, '<span class="phon">| $1 |</span>'));
         });
     });
 
-    $('.headpron, .infpron, .prx, .pr').each(function () {
-        $(this).find('*').addBack().contents().filter(function () {
-            return this.nodeType === 3; // Text nodes
-        }).each(function () {
-            $(this).replaceWith(this.nodeValue.replace(/\/([^\/]+)\//g, '<span class="pron">| $1 |</span>'));
-        });
-    });
-
-    $('span.fayin').each(function () {
+    // Combine online and offline speakers into a single one
+    $engDicts.find('span.fayin').each(function () {
         const $this = $(this);
-        const onlineHref = $this.next('a').remove().attr('onclick').match(/'(.*?)'/)[1];
-        const offlineHref = $this.prev('a').remove().attr('href');
+        const $offlineSpeaker = $this.prev('a').remove();
+        const $onlineSpeaker = $this.next('a').remove();
+
+        const onlineWordPronUrl = $onlineSpeaker.attr('onclick').match(/'(.*?)'/)[1]
+            .replace('/uk_pron_ogg/', '/uk_pron/')
+            .replace('/us_pron_ogg/', '/us_pron/')
+            .replace('.ogg', '.mp3');
 
         const $newAnchor = $('<a></a>')
-            .addClass('sound')
-            .attr('data-href', onlineHref)
-            .attr('href', offlineHref);
+            .attr({ class: 'audio_play_button' })
+            .attr('href', $offlineSpeaker.attr('href'))
+            .attr('data-href', onlineWordPronUrl);
 
         $this.replaceWith($newAnchor);
     });
 
-    $('.pron').each(function () {
-        const $pron = $(this);
-        const $label = $pron.prev('.infpronLbl');
-        const $audio = $pron.next('a.sound');
+    // Wrap the pronunciation and its speaker in a container
+    $engDicts.find('.phon').each(function () {
+        const $phon = $(this);
+        const $audio = $phon.next('.audio_play_button');
         const $container = $('<span class="phonetics"></span>');
 
-        $label.remove();
-        $container.append($pron.clone()).append($audio);
-        $pron.replaceWith($container);
+        $phon.prev('.infpronLbl').remove(); /* Pronunciation: */
+        $phon.replaceWith($container);
+        $container.append($phon).append($audio);
+    });
+
+    // Adjust the position of the speaker that is in the title
+    $engDicts.find('.entryHeader').each(function () {
+        const $entryHeader = $(this);
+        const $pageTitle = $entryHeader.children('.pageTitle');
+        const $headpron = $entryHeader.children('.headpron');
+
+        const $speaker = $pageTitle.children('.audio_play_button');
+        $headpron.children('.phonetics').append($speaker);
     });
 }
 
 function setupEntryHeader($) {
-    $('.entryHeader').each(function () {
-        const $entryHeader = $(this);
-        const $pageTitle = $entryHeader.children('.pageTitle');
-        const $realTitle = $('<span class="realTitle"></span>').append($pageTitle.contents()).appendTo($pageTitle); // Put original content in a span
+    const $entryContent = $('.entryContent');
 
-        const dictname = $entryHeader.closest('.entryContent').data('dictname');
-        if (dictname === 'ENG(UK)' || dictname === 'ENG(US)') {
-            const $headpron = $entryHeader.children('.headpron').appendTo($pageTitle);
-            const $speaker = $realTitle.children('a.sound'); // weird speaker
-            $headpron.children('.phonetics').append($speaker);
-        } else if (dictname === 'EC(英中)' || dictname === 'CE(中英)') {
-            $realTitle.prepend($realTitle.children('em').remove().contents()); // Inside the realTitle, replace <em> with its content
+    $entryContent.find('.entryHeader').each(function () {
+        const $entryHeader = $(this);
+
+        // Wrap the original title in a container
+        const $pageTitle = $entryHeader.children('.pageTitle');
+        const $realTitle = $('<span class="realTitle"></span>');
+        $realTitle.append($pageTitle.contents()).appendTo($pageTitle);
+
+        // Move the pronunciation to the title
+        const $headpron = $entryHeader.children('.headpron');
+        $headpron.appendTo($pageTitle);
+
+        // Create a new container for the logo
+        const $logoarea = $('<div class="logoarea"></div>');
+        $logoarea.prependTo($entryHeader);
+    });
+}
+
+function setupSense($) {
+    const $entryContent = $('.entryContent');
+
+    // Add iteration mark to senses without one
+    $entryContent.find('.msDict.sense').each(function () {
+        const $senseInnerWrapper = $(this).children('.senseInnerWrapper');
+        if (!$senseInnerWrapper.children('.iteration').length) {
+            const $iteration = $('<span></span>').addClass('iteration').addClass('single').text('❑');
+            const $a = $senseInnerWrapper.children().first();
+            $iteration.insertAfter($a);
+        }
+    });
+}
+
+function setupSubsense($) {
+    const $entryContent = $('.entryContent');
+
+    $entryContent.find('.msDict.subsense').parent().each(function () {
+        const $subsense = $(this).children('.subsense');
+        $subsense.first().addClass('subsenseFirst');
+        $subsense.last().addClass('subsenseLast');
+    });
+}
+
+function setupPhraseSections($) {
+    const $entryContent = $('.entryContent');
+
+    $entryContent.find('.entryPageContent').each(function () {
+        const $entryPageContent = $(this);
+        const $phraseSections = $entryPageContent.children('section.phrases, section.phrasalVerbs');
+
+        if (!$phraseSections.length) return;
+        $entryPageContent.append($phraseSections); // Move phrase sections to the end
+
+        const $entryHeader = $entryPageContent.children('header.entryHeader');
+        const $jumplinks = $('<div></div>').addClass('jumplinks').appendTo($entryHeader);
+
+        $phraseSections.each(function () {
+            const $section = $(this);
+            const $heading = $section.children('h2');
+
+            const $jumpLink = $('<span></span>').attr({
+                class: 'jumplink',
+                'data-title': $heading.text()
+            }).text($heading.text());
+
+            $jumplinks.append($jumpLink);
+        });
+    });
+}
+
+function setupOtherSections($) {
+    $('section.subEntryBlock, section.etymology').each(function () {
+        const $section = $(this);
+        const $heading = $section.find('h2');
+
+        $section.attr('data-title', $heading.text());
+        if ($section.data('title').startsWith('Words that rhyme with')) {
+            const $contentToWrap = $section.children('.senseInnerWrapper').contents().not($heading);
+            $contentToWrap.wrapAll('<p class="rhyme-words"></p>');
         }
     });
 }
 
 function setupRefURL($) {
+    // Correct the URL for american english thesaurus
     $('.entryContent[data-dictname="SYN(US)"] citiao').each(function () {
         const $this = $(this);
-        const updatedText = $this.text().replace('english-thesaurus', 'american_english-thesaurus');
-        $this.text(updatedText);
+        $this.text($this.text().replace('english-thesaurus', 'american_english-thesaurus'));
     });
 
+    // Replace with a url tag
     $('.entryContent citiao').each(function () {
         const $this = $(this);
-        const link = $this.text();
-
-        const $newUrl = $('<url></url>').attr('href', link);
+        const $newUrl = $('<url></url>').attr('href', $this.text());
         $this.replaceWith($newUrl);
     });
 
     /* view synonyms */
     $('.moreInformation .entrySynList a.entrySynMore').each(function () {
         const $synMore = $(this);
-        const dictname = $synMore.closest(".entryContent").data("dictname");
+        const targetId = $synMore.attr('href').substring($synMore.attr('href').indexOf('#'));
+        const targetDictname = $synMore.closest('.entryContent').data('dictname') === 'ENG(UK)' ? 'SYN(UK)' : 'SYN(US)';
 
-        const targetId = $synMore.attr('href').split('#')[1];
-        const targetDictname = dictname === "ENG(UK)" ? "SYN(UK)" : "SYN(US)";
-
-        $synMore.attr("data-target-id", targetId);
-        $synMore.attr("data-target-dictname", targetDictname);
+        $synMore.attr('data-target-id', targetId);
+        $synMore.attr('data-target-dictname', targetDictname);
 
         const $targetDict = $(`.entryContent[data-dictname="${targetDictname}"]`);
-        const $target = $targetDict.find(`#${targetId}`);
-        $target.attr("data-id", targetId);
+        const $target = $targetDict.find(targetId).attr('data-id', targetId);
+
+        const $synMoreContainer = $synMore.parent('div');
+        $synMoreContainer.addClass('synMoreContainer');
+
+        if (!$target.length) {
+            $synMoreContainer.remove();
+        } else {
+            const $newContainer = $synMoreContainer.prev('div');
+            $newContainer.addClass('containSynMore');
+            $newContainer.append($synMoreContainer);
+        }
     });
 }

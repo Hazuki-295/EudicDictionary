@@ -1,23 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+@font-face {
+    font-family: ic;
+    src: url(assets/fonts/ic.woff2) format('woff2');
+}
 
 @font-face {
-    font-family: 'ic';
-    src: url("fonts/ic.woff2") format('woff2');
+    font-family: Mulish;
+    src: url(assets/fonts/Mulish/Mulish-VariableFont_wght.ttf) format('truetype');
+    font-style: normal;
+    font-weight: 200 1000;
 }
 
-.Hazuki-note {
-    --font-size-oald: 15px;
-    --line-height-oald: 1.4;
-    --color-oald-red: #de002d;
-    --color-oald-green: #007a6c;
-    --color-oald-blue: #0072cf;
-    --color-oald-orange: #db8c39;
+@font-face {
+    font-family: Mulish;
+    src: url(assets/fonts/Mulish/Mulish-Italic-VariableFont_wght.ttf) format('truetype');
+    font-style: italic;
+    font-weight: 200 1000;
 }
 
+/* Mimic `:root {}` */
 .Hazuki-note {
-    font-family: 'Bookerly', 'Optima', 'Source Han Serif CN', 'Source Sans Pro', sans-serif;
-    font-size: var(--font-size-oald);
-    line-height: var(--line-height-oald);
+    --color-red-oxford: #de002d;
+    --color-green-oxford: #007a6c;
+    --color-blue-oxford: #0072cf;
+    --color-orange-oxford: #db8c39;
+    --color-cream-oxford: #e9d9c4;
+    --color-purple-oxford: #8a51c0;
+    --background-color: rgb(0 136 221 / 6%);
+    --border-color: rgb(0 136 221 / 35%);
+    --background-color-purple: rgb(138 81 192 / 6%);
+    --border-color-purple: rgb(138 81 192 / 35%);
+    --background-highlight: linear-gradient(rgb(0 114 207 / 0%) 55%, rgb(0 114 207 / 15%) 55%, rgb(0 114 207 / 15%) 100%);
+    --font-family-sans-serif: 'Optima', helvetica, arial, sans-serif;
+    --font-family-serif: 'Bookerly', georgia, 'Times New Roman', serif;
+    --font-size: 15px;
+    --line-height: 1.4;
+}
+
+/* Mimic `html {}` */
+.Hazuki-note {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
     word-spacing: .1rem;
 }
 
@@ -29,24 +52,14 @@
 .Hazuki-note a {
     font-size: inherit; /* Eudic Bug Fix */
     line-height: inherit; /* Eudic Bug Fix */
+    text-decoration: none;
+    color: var(--color-blue);
 }
 
 /* 笔记框架 */
 .Hazuki-note .single-note {
-    width: 95%;
-    padding: 1em;
     color: var(--text-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-    border-radius: 12px;
-    margin: .5em auto;
-}
-
-@media (max-width: 768px) {
-    .Hazuki-note .single-note {
-        width: unset;
-        padding: .5em;
-        box-shadow: unset;
-    }
+    padding: .5em;
 }
 
 .Hazuki-note .note-block:not(:last-child) {
@@ -55,130 +68,86 @@
 
 .Hazuki-note .note-block .label {
     display: inline-block;
-    font-family: 'Mulish';
+    font-family: Mulish;
     font-size: .9em;
     color: var(--note-text);
     text-transform: capitalize;
     padding: 7.5px .8em 7.5px .5em;
     background: var(--note-bg);
-    border-left: .25em solid var(--note-border);
+    border-left: 3px solid var(--note-border);
     margin-right: .5em;
 }
 
-.Hazuki-note .note-block .label .ic::before {
-    color: inherit;
-}
-
-.Hazuki-note .red { color: var(--color-red) }
-.Hazuki-note .pink { color: var(--color-pink) }
-.Hazuki-note .orange { color: var(--color-orange) }
-.Hazuki-note .yellow { color: var(--color-yellow) }
-.Hazuki-note .green { color: var(--color-green) }
-.Hazuki-note .aqua { color: var(--color-aqua) }
-.Hazuki-note .blue { color: var(--color-blue) }
-.Hazuki-note .purple { color: var(--color-purple) }
-.Hazuki-note .grey { color: var(--color-grey) }
-
 /* 笔记来源 source */
-.Hazuki-note .note-block[label="source"] p {
+.Hazuki-note .note-block[data-label='source'] p {
     display: inline;
-    font-family: 'Mulish';
+    font-family: Mulish;
     font-size: .9em;
     line-height: 2rem;
 }
 
-.Hazuki-note .note-block[label="source"] p span.current {
-    display: inline-block;
-    color: var(--color-red);
+.Hazuki-note .note-block[data-label='source'] p span.current {
+    white-space: nowrap;
+    color: var(--color-red-oxford);
     background-color: var(--color-red-a1);
-    border-radius: .625rem;
-    padding: .25rem .625rem;
-    transition: background-color .2s ease-in-out 0s;
-    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 5px;
+    transition: background-color .2s ease-in-out;
 }
 
-.Hazuki-note .note-block[label="source"] p span.current:hover {
+.Hazuki-note .note-block[data-label='source'] p span.current:hover {
     background-color: var(--color-red-a3);
 }
 
-.Hazuki-note .note-block[label="source"] p .ic.i-angle-right {
+.Hazuki-note .note-block[data-label='source'] p .ic.i-angle-right {
     color: var(--grey-4);
 }
 
 /* 笔记原文 original text */
-.Hazuki-note .note-block[label="original text"] .md {
-    font-family: 'Optima';
+.Hazuki-note .note-block[data-label='original text'] .md {
+    font-family: var(--font-family-sans-serif);
     padding: 1em;
     margin-top: 1em;
     min-height: 1.5em;
     border-left: 4px solid #d91b3e;
-    border-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
     position: relative;
 }
 
-.Hazuki-note .note-block[label="original text"] .md::before {
-    content: "";
+.Hazuki-note .note-block[data-label='original text'] .md::before {
+    content: '';
     position: absolute;
     border: 15px solid transparent;
     border-right: 8px solid #d91b3e;
-    top: 16px;
+    top: 1em;
     left: -23px;
 }
 
 /* 笔记 notes */
-.Hazuki-note .note-block[label="notes"] .md {
-    display: inline;
+.Hazuki-note .note-block[data-label='notes'] .md {
+    margin-top: 1em;
+    padding-left: 3px;
 }
 
-.Hazuki-note .symbols {
-    display: inline-block;
-}
-
-.Hazuki-note .webtop .symbols,
-.Hazuki-note :not(.webtop) > .symbols [class^="ox5ksym_"] {
-    margin-right: .3rem;
-}
-
-.Hazuki-note .symbols :is([class^="ox3ksym_"], [class^="ox5ksym_"]) {
-    display: inline-block;
-    min-width: 2.5em;
-    white-space: pre;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 2.3em;
-}
-
-.ox3ksym_a1 { background-image: url(images/ox3000_a1.svg); }
-.ox5ksym_a1 { background-image: url(images/ox5000_a1.svg); }
-.ox3ksym_a2 { background-image: url(images/ox3000_a2.svg); }
-.ox5ksym_a2 { background-image: url(images/ox5000_a2.svg); }
-
-.ox3ksym_b1 { background-image: url(images/ox3000_b1.svg); }
-.ox5ksym_b1 { background-image: url(images/ox5000_b1.svg); }
-.ox3ksym_b2 { background-image: url(images/ox3000_b2.svg); }
-.ox5ksym_b2 { background-image: url(images/ox5000_b2.svg); }
-
-.ox3ksym_c1 { background-image: url(images/ox3000_c1.svg); }
-.ox5ksym_c1 { background-image: url(images/ox5000_c1.svg); }
-.ox3ksym_c2 { background-image: url(images/ox3000_c2.svg); }
-.ox5ksym_c2 { background-image: url(images/ox5000_c2.svg); }
-
-/* 第一层 */
-/* 词头样式 */
 .Hazuki-note .webtop {
     display: inline;
 }
 
+/* 第一层 */
+/* 词头样式 */
 .Hazuki-note h1.headword {
-    display: inline;
-    font-family: 'Bookerly' !important;
+    display: inline-block;
+    font-family: var(--font-family-serif) !important;
     font-size: 1.1em !important;
     font-weight: normal !important;
-    color: var(--color-oald-blue) !important;
+    color: var(--color-blue-oxford) !important;
+    margin: unset !important;
 }
 
 .Hazuki-note h1.headword .st {
-    color: var(--color-oald-red);
+    font-size: inherit;
+    color: var(--color-red-oxford);
 }
 
 .Hazuki-note h1.headword .hm {
@@ -187,69 +156,84 @@
 
 /* 词性样式 */
 .Hazuki-note .pos {
-    font-family: 'Bookerly';
+    font-family: var(--font-family-serif);
     font-style: italic;
     font-size: .9em;
-    color: var(--color-oald-orange);
-    margin-left: 2px;
+    color: var(--color-orange-oxford);
+    padding: 0 2px;
 }
 
-/* 第二层 */
-.Hazuki-note :is(h2.shcut, .idm, .pv) {
+/* Symbols: o3k/o5k */
+.Hazuki-note .symbols {
     display: inline-block;
 }
 
-.Hazuki-note .webtop + :is(h2.shcut, .idm, .pv) {
-    margin: 0 0 0 1.5rem;
-    position: relative;
+.Hazuki-note .symbols span[class^='ox3ksym_'], .Hazuki-note .symbols span[class^='ox3ksymsub_'],
+.Hazuki-note .symbols span[class^='ox5ksym_'], .Hazuki-note .symbols span[class^='ox5ksymsub_'] {
+    display: inline-block;
+    min-width: 2.5em;
+    min-height: 1.5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+.Hazuki-note .sense .symbols span[class^='ox5ksym_'] {
+    margin-right: 5px;
+}
+
+/* 词头排版微调 */
+.Hazuki-note .webtop > .symbols {
+    margin-right: .5em;
 }
 
 .Hazuki-note .webtop + h2.shcut {
-    vertical-align: 1.5px;
+    margin-left: .5em !important;
 }
 
-.Hazuki-note .webtop + :is(h2.shcut, .idm, .pv)::before {
-    content: "";
-    width: 1em;
-    height: 1em;
-    background-size: 1em 1em;
-    position: absolute;
-    left: -1.2rem;
-    margin: 3px 0;
+.Hazuki-note .webtop + .idm,
+.Hazuki-note .webtop + .pv {
+    margin-left: .5em;
 }
 
-/* 释义 shortcut */
+/* 第二层 */
+/* 释义 Shortcut */
 .Hazuki-note h2.shcut {
-    font-family: 'Optima' !important;
+    display: inline-block;
+    font-family: var(--font-family-sans-serif) !important;
     font-size: inherit !important;
-    color: var(--color-oald-blue) !important;
-    background: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, .15) 55%, rgba(0, 114, 207, .15) 100%);
+    color: var(--color-blue-oxford) !important;
+    background: var(--background-highlight);
+    margin: unset !important;
 }
 
-.Hazuki-note h2.shcut chn {
-    font-family: 'Source Han Serif CN';
+.Hazuki-note h2.shcut shcut chn {
     font-weight: normal;
-    margin-left: 4px;
 }
 
-/* 习语 idiom */
+.Hazuki-note h2.shcut shcut chn::before {
+    content: ' ';
+}
+
+/* Idioms, Phrasal Verbs */
 .Hazuki-note .idm {
+    display: inline-block;
     color: #004d99;
 }
 
 .Hazuki-note .idmsep {
-    color: var(--color-oald-red);
+    color: var(--color-red-oxford);
 }
 
-/* 词组 phrasal verb */
 .Hazuki-note .pv {
-    color: var(--color-oald-blue);
-    background: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, .15) 55%, rgba(0, 114, 207, .15) 100%);
+    display: inline-block;
+    color: var(--color-blue-oxford);
+    background: var(--background-highlight);
 }
 
 .Hazuki-note .pvarr::before {
-    content: "⇿";
-    color: var(--color-oald-red);
+    content: '⇿';
+    color: var(--color-red-oxford);
 }
 
 /* 第三层 */
@@ -261,15 +245,19 @@
 }
 
 .Hazuki-note .note-cards,
-.Hazuki-note :not(.note-cards) > .note-card {
-    margin-top: .8rem;
+.Hazuki-note .note-card {
+    margin: .8rem 0;
+}
+
+.Hazuki-note .note-cards .note-card {
+    margin: unset;
 }
 
 .Hazuki-note .note-card {
     display: block;
     font-size: .9em;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
     position: relative;
 }
@@ -277,11 +265,11 @@
 .Hazuki-note .note-card::before {
     content: attr(data-label);
     display: inline-block;
-    padding: 4px 10px;
     font-size: 12px;
-    border-radius: 12px;
-    color: #fff;
+    color: white;
     background-color: #8e7cc3;
+    border-radius: var(--font-size);
+    padding: 2px 10px;
     text-transform: capitalize;
     margin-bottom: .5rem;
 }
@@ -296,110 +284,110 @@
 }
 
 /* 释义样式 */
-.Hazuki-note .block {
-    display: block;
-}
-
-.Hazuki-note .unset-margin {
-    margin: unset !important;
-}
-
-.Hazuki-note .bookerly {
-    font-family: 'Bookerly';
-}
-
-.Hazuki-note .optima {
-    font-family: 'Optima';
-}
-
-.Hazuki-note .bold {
-    font-weight: bold;
-}
-
-/* emphasized bold */
-.Hazuki-note .eb {
-    font-weight: normal;
-    color: var(--color-oald-blue);
-}
-
-/* emphasized italic */
-.Hazuki-note .ei {
-    font-style: italic;
-    color: var(--color-oald-blue);
-}
-
-.Hazuki-note .newline {
-    display: block;
-    margin-bottom: .8rem;
-}
-
-.Hazuki-note .sep::before {
-    display: inline-block;
-    content: "•";
-    color: var(--grey-4);
-}
-
-.Hazuki-note :is(.variants, .grammar),
-.Hazuki-note :is(.variantGroup, .transivityStatement, .reg, .languageGroup) {
+.Hazuki-note .variants, .Hazuki-note .grammar, .Hazuki-note .labels, .Hazuki-note .use {
+    display: inline;
     font-size: .9em;
-    line-height: calc(1em / 0.9 * var(--line-height-oald));
 }
 
 /* 变体 */
-.Hazuki-note .variants {
-    display: inline;
+.Hazuki-note .variants .v-g {
+    color: var(--color-blue-oxford);
 }
 
-.Hazuki-note .variants[type="alt"]::before {
-    content: "[";
+.Hazuki-note .sense .variants::before {
+    content: '[';
 }
 
-.Hazuki-note .variants[type="alt"]::after {
-    content: "]";
+.Hazuki-note .sense .variants::after {
+    content: ']';
 }
 
-.Hazuki-note :is(.variants .v-g),
-.Hazuki-note :is(.variantGroup .variant, .wordForm) {
-    font-weight: normal;
-    color: var(--color-oald-blue);
+/* 变体 (ode) */
+.Hazuki-note .variantGroup {
+    font-size: .9em;
+}
+
+.Hazuki-note .variantGroup .variant {
+    color: var(--color-blue-oxford);
+}
+
+.Hazuki-note strong.wordForm {
+    font-size: .9em;
 }
 
 /* 语法 */
-.Hazuki-note :is(.grammar, .transivityStatement) {
-    font-style: normal;
+.Hazuki-note .grammar {
     color: seagreen;
 }
 
-.Hazuki-note :is(.grammar, .transivityStatement)::before {
-    content: "[";
+.Hazuki-note .grammar::before {
+    content: '[';
 }
 
-.Hazuki-note :is(.grammar, .transivityStatement)::after {
-    content: "]";
+.Hazuki-note .grammar::after {
+    content: ']';
 }
 
-/* 语体风格，语域 */
-.Hazuki-note .reg {
+/* 及物性说明 (ode) */
+.Hazuki-note .transivityStatement {
+    font-style: normal;
+    font-size: .9em;
+    color: var(--color-green-oxford);
+}
+
+.Hazuki-note .transivityStatement::before {
+    content: '[';
+}
+
+.Hazuki-note .transivityStatement::after {
+    content: ']';
+}
+
+/* 标签 */
+.Hazuki-note .labels {
+    color: #9f5350;
+}
+
+.Hazuki-note .labels labelx chn::before {
+    content: ' ';
+}
+
+/* 语域、语体风格 (ode) */
+.Hazuki-note em.languageGroup {
     font-style: italic;
-    color: #e3533a;
-}
-
-.Hazuki-note .languageGroup {
-    font-style: italic;
+    font-size: .9em;
     color: #27a058;
+}
+
+.Hazuki-note .reg {
+    font-size: .85em;
+    color: #e3533a;
+    background-color: #f9e8e2;
+    padding: 1px .5em;
+}
+
+/* 用法 */
+.Hazuki-note .use {
+    color: var(--text-grey-color);
 }
 
 /* 固定搭配 */
 .Hazuki-note .cf {
-    color: var(--color-oald-blue);
+    color: var(--color-blue-oxford);
 }
 
-/* non-defining vocabulary */
+/* Non-defining Vocabulary */
 .Hazuki-note .ndv {
     font-style: italic;
-    color: var(--color-oald-green);
+    color: var(--color-green-oxford);
+    cursor: pointer;
 }
 
+.Hazuki-note .ndv:hover {
+    text-decoration: underline;
+}
+
+/* 相关词汇 (ode) */
 .Hazuki-note a.crossRef {
     color: #3c9ae3;
     transition: color .3s;
@@ -407,107 +395,131 @@
 
 .Hazuki-note a.crossRef:hover {
     color: #f15a24;
+    text-decoration: underline;
+}
+
+/* Emphasized Italic */
+.Hazuki-note .ei {
+    font-style: italic;
+    color: var(--color-blue-oxford);
+}
+
+/* Emphasized Bold */
+.Hazuki-note .eb {
+    font-weight: normal;
+    color: var(--color-blue-oxford);
+}
+
+/* 标签元素 (ode) */
+.Hazuki-note .definition strong {
+    font-weight: normal;
+    color: var(--color-blue-oxford);
 }
 
 /* 释义英文 */
-.Hazuki-note .def {
-    margin-right: 4px;
+.Hazuki-note .def::after {
+    content: ' ';
 }
 
-.Hazuki-note .definition strong {
-    font-weight: normal;
-    color: var(--color-oald-blue);
+/* 中文翻译全局设置 */
+.Hazuki-note chn {
+    font-family: var(--font-family-serif), 'Source Han Serif CN';
+    font-style: normal;
+    font-size: .9em;
 }
 
 /* 释义中文 */
-.Hazuki-note chn {
+.Hazuki-note deft chn, .Hazuki-note dtxtx chn {
     display: inline-block;
-    font-size: .9em;
-    color: var(--color-oald-green);
-    background: rgba(0, 122, 108, .2);
+    color: var(--color-green-oxford);
+    background: rgb(0 122 108 / 20%);
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 0 2px !important;
 }
 
-.Hazuki-note h2.shcut chn {
-    color: inherit;
-    background: unset;
-    padding: unset;
-}
-
-.Hazuki-note .dis-g chn {
-    margin-left: 4px;
+.Hazuki-note dtxtx chn {
+    margin-left: 4px !important;
 }
 
 /* 第四层 */
-.Hazuki-note :is(.xrefs, .topic-g) {
+/* 相关词条、Topics */
+.Hazuki-note .xrefs, .Hazuki-note .topic-g {
     display: block;
     font-size: .85em;
-    line-height: calc(1em / 0.85 * var(--line-height-oald));
-    margin-top: .5rem;
+    line-height: calc(1em / 0.85 * var(--line-height));
 }
 
-.Hazuki-note .prefix {
+.Hazuki-note .xrefs .prefix, .Hazuki-note .topic-g .prefix {
     display: inline-block;
-    font-family: 'Optima';
-    font-weight: 600;
+    font-family: var(--font-family-sans-serif);
+    font-weight: bold;
     font-size: 15px;
     font-variant: small-caps;
     color: white;
     height: 16px;
     line-height: 15px;
     border-radius: 4px 0 0 4px;
-    background-color: var(--color-oald-blue);
+    background-color: var(--color-blue-oxford);
     padding: 0 2px 0 5px;
     margin-right: 5px;
     position: relative;
 }
 
-.Hazuki-note .topic-g .prefix {
-    margin-right: .6em;
-}
-
-.Hazuki-note .prefix::after {
+.Hazuki-note .xrefs .prefix::after, .Hazuki-note .topic-g .prefix::after {
     position: absolute;
-    content: "";
+    content: '';
     left: 100%;
     border: 8px solid transparent;
-    border-left: 6px solid var(--color-oald-blue);
+    border-left: 6px solid var(--color-blue-oxford);
 }
 
 /* 词条链接 */
-.Hazuki-note .Ref {
-    color: var(--color-oald-blue);
+.Hazuki-note .xrefs .xr-g .xh, .Hazuki-note .topic-g .topic .topic_name {
+    color: var(--color-blue-oxford);
 }
 
-.Hazuki-note .xrefs a.Ref:not(:last-of-type) .xr-g::after,
-.Hazuki-note .topic-g a.Ref:not(:last-of-type) .topic::after {
-    content: "•";
-    color: var(--grey-4);
-}
-
-.Hazuki-note .xrefs a.Ref:not(:last-of-type) .xr-g::after {
-    margin-left: .3em;
-}
-
-.Hazuki-note :is(.xrefs, .topic-g) a.Ref + .sep {
+.Hazuki-note .xrefs a.Ref + .sep, .Hazuki-note .topic-g a.Ref + .sep {
     display: none;
 }
 
+.Hazuki-note .xrefs a.Ref:not(:last-of-type)::after {
+    content: ' •';
+    color: var(--grey-5);
+}
+
+.Hazuki-note .topic-g a.Ref:not(:last-of-type)::after {
+    content: '•';
+    color: var(--grey-5);
+}
+
+.Hazuki-note .topic-g a.Ref:first-of-type .topic::before {
+    content: ' ';
+}
+
+/* CEFR */
 .Hazuki-note .topic .topic_cefr {
-    display: none;
+    display: inline-block;
+    font-size: 8px;
+    color: white;
+    background: #223a68;
+    border-radius: 4px;
+    padding: 0 2px;
+    margin: 0 5px;
+    text-transform: uppercase;
+    line-height: 1.75;
+    vertical-align: 1px;
 }
 
 /* 笔记标签 tags */
 .Hazuki-note .tags {
-    line-height: 2;
     font-size: .75rem;
+    line-height: 2;
     margin-top: 1.5rem;
 }
 
 .Hazuki-note .tags .note-tag {
-    font-family: 'Mulish';
     display: inline-block;
+    font-family: 'Mulish';
     color: var(--note-text);
     background: var(--note-bg);
     padding: 0 .5rem 0 .3125rem;
@@ -521,66 +533,171 @@
 
 /* 图标 */
 .Hazuki-note .ic {
-    font-family: "ic";
+    display: inline-block;
+    font-family: 'ic';
     font-style: normal;
     text-align: center;
-    display: inline-block;
+    line-height: 1;
     width: 1.25em;
     margin: 0 .25em;
-    line-height: 1;
 }
 
-.i-home:before { content: "\e8ed"; }
-.i-feather:before { content: "\efbd"; }
-.i-sakura:before { content: "\e695"; }
-.i-tag:before { content: "\e759"; }
-.i-angle-right:before { content: "\ef1f"; }
+.Hazuki-note .i-home::before { content: '\e8ed'; }
+.Hazuki-note .i-feather::before { content: '\efbd'; }
+.Hazuki-note .i-sakura::before { content: '\e695'; }
+.Hazuki-note .i-tag::before { content: '\e759'; }
+.Hazuki-note .i-angle-right::before { content: '\ef1f'; }
 
 /* Markdown */
+.Hazuki-note .md {
+    --margin-unit: var(--font-size);
+}
+
+/* Headings */
 .Hazuki-note .md :is(h1, h2, h3, h4, h5, h6) {
-    font-family: 'Mulish', 'PingFang SC';
+    font-family: Mulish, 'Source Han Serif CN', sans-serif;
     font-style: normal;
     font-weight: bold;
+    line-height: 1.5;
+    margin: 0 0 .9375rem;
+}
+
+.Hazuki-note .md h1 { font-size: 1.5em; }
+.Hazuki-note .md h2 { font-size: 1.375em; }
+.Hazuki-note .md h3 { font-size: 1.25em; }
+.Hazuki-note .md h4 { font-size: 1.125em; }
+.Hazuki-note .md h5 { font-size: 1em; }
+.Hazuki-note .md h6 { font-size: .875em; }
+
+/* markdown-it-toc-and-anchor */
+.Hazuki-note .md :is(h1, h2, h3, h4, h5, h6) {
+    --padding-left: 1.2em;
+    padding: 0 0 0 var(--padding-left);
+    position: relative;
+}
+
+.Hazuki-note .md a.anchor {
+    float: right;
+    color: var(--grey-4);
+    margin-left: .625rem;
+    transition: color .2s ease-in-out 0s;
+}
+
+.Hazuki-note .md a.anchor::before,
+.Hazuki-note .md a.anchor::after {
+    position: absolute;
+    font-weight: normal;
+    left: 0;
+    transition: color .2s ease-out 0s;
+}
+
+.Hazuki-note .md a.anchor::before {
+    content: 'H';
+    font-size: .75em;
+    top: .4em;
+}
+
+.Hazuki-note .md a.anchor::after {
+    font-size: .5em;
+    width: calc(1em / 0.5 * 0.9);
+    text-align: right;
+    top: 1.2em;
+}
+
+.Hazuki-note .md h1 a.anchor::after { content: '1' }
+.Hazuki-note .md h2 a.anchor::after { content: '2' }
+.Hazuki-note .md h3 a.anchor::after { content: '3' }
+.Hazuki-note .md h4 a.anchor::after { content: '4' }
+.Hazuki-note .md h5 a.anchor::after { content: '5' }
+.Hazuki-note .md h6 a.anchor::after { content: '6' }
+
+.Hazuki-note .md a.anchor:hover {
+    color: inherit;
+}
+
+.Hazuki-note .md a.anchor:hover::before,
+.Hazuki-note .md a.anchor:hover::after {
     color: var(--primary-color);
 }
 
-.Hazuki-note .md :is(h1, h2, h3, h4, h5, h6, p, blockquote) {
-    margin: 0 0 .8rem;
+.Hazuki-note .md h1::after { /* horizontal line */
+    content: '';
+    display: block;
+    height: .0625rem;
+    background-color: var(--grey-3);
+    margin-top: .3125rem;
+    margin-left: calc(var(--padding-left) * -1);
 }
 
-.Hazuki-note .md > :last-child,
-.Hazuki-note .md blockquote > :last-child {
+/* color */
+.Hazuki-note .md .red { color: var(--color-red); }
+.Hazuki-note .md .pink { color: var(--color-pink); }
+.Hazuki-note .md .orange { color: var(--color-orange); }
+.Hazuki-note .md .yellow { color: var(--color-yellow); }
+.Hazuki-note .md .green { color: var(--color-green); }
+.Hazuki-note .md .aqua { color: var(--color-aqua); }
+.Hazuki-note .md .blue { color: var(--color-blue); }
+.Hazuki-note .md .purple { color: var(--color-purple); }
+.Hazuki-note .md .grey { color: var(--color-grey); }
+
+/* code */
+.Hazuki-note .md code {
+    color: var(--primary-color);
+    border-radius: .3rem;
+    border: .0625rem solid rgba(0, 0, 0, .1);
+    background-color: var(--grey-0);
+    padding: .2rem .3rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word
+}
+
+/* markdown-it-mark */
+.Hazuki-note .md mark { color: #b8860b; background-color: #fff4d6; }
+.Hazuki-note .md mark.red { color: #e9546b; background-color: var(--color-red-a1); }
+.Hazuki-note .md mark.green { color: #2e8b57; background-color: #e6f4ea; }
+.Hazuki-note .md mark.blue { color: #3794ff; background-color: #e3efff; }
+.Hazuki-note .md mark.purple { color: #8a51c0; background-color: #f2f0f7; }
+
+/* markdown-it-ins */
+.Hazuki-note .md ins {
+    --line-color: var(--note-hover, var(--primary-color));
+    text-decoration: none;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.Hazuki-note .md .bold { font-weight: bold; }
+.Hazuki-note .md .optima { font-family: 'Optima'; }
+.Hazuki-note .md .bookerly { font-family: 'Bookerly'; }
+
+.Hazuki-note .md .block { display: block; }
+.Hazuki-note .md .unset-margin { margin: unset !important; }
+
+.Hazuki-note .md .newline { display: block; margin-bottom: .8rem; }
+.Hazuki-note .md .sep::before { display: inline-block; content: '•'; color: var(--grey-4); }
+.Hazuki-note .md hr { border: none; border-top: 1px solid var(--grey-4); margin: 1.5em 0; }
+
+.Hazuki-note .md p {
+    margin: 0 0 var(--margin-unit);
+}
+
+.Hazuki-note .md p:last-child {
     margin-bottom: unset;
 }
 
-.Hazuki-note .md h1 { font-size: 1.5em }
-.Hazuki-note .md h2 { font-size: 1.375em }
-.Hazuki-note .md h3 { font-size: 1.25em }
-.Hazuki-note .md h4 { font-size: 1.125em }
-.Hazuki-note .md h5 { font-size: 1em }
-.Hazuki-note .md h6 { font-size: .875em }
-
 .Hazuki-note .md blockquote {
+    font-family: var(--font-family-sans-serif);
     font-size: .9em;
-    border-left: 3px solid rgba(0, 136, 221, .35);
-    padding: .5rem;
+    padding: 10px 20px;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 3px;
+    margin: 1.25rem 0;
 }
 
 .Hazuki-note .md blockquote.card-style {
     border-left: unset;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
     padding: 20px;
-}
-
-.Hazuki-note hr {
-    margin: .5em 0;
-    border: .5px dashed rgb(170, 170, 255);
-}
-
-.Hazuki-note .md .highlighted {
-    color: #3794FF;
-    background-color: #e3efff;
 }
 
 /* ordered list (ol), unordered list (ul) */
@@ -595,22 +712,17 @@
 
 /* list item (li) */
 .Hazuki-note .md li {
-    font-size: inherit; /* Eudic Bug Fix */
     list-style: none;
+    font-size: inherit; /* Eudic Bug Fix */
     margin: .25em 0;
     position: relative;
 }
 
 .Hazuki-note .md ul > li::before {
-    content: "";
     position: absolute;
-    width: .4em;
-    height: .4em;
-    background: var(--primary-color);
-    border-radius: 50%;
-    top: 50%;
+    content: '•';
     left: -1em;
-    transform: translateY(-50%);
+    color: var(--primary-color);
 }
 
 /* quiz */
@@ -638,22 +750,22 @@
 }
 
 .Hazuki-note .md ol > li.quiz ul.options li.wrong::before {
-    color: var(--color-red);
+    color: var(--color-red-oxford);
 }
 
 .Hazuki-note .md ol > li.quiz ul.options li.wrong::after {
-    content: "\f109";
-    color: var(--color-red);
+    content: '\f109';
+    color: var(--color-red-oxford);
     animation: fadeIn .5s;
 }
 
 .Hazuki-note .md ol > li.quiz > ul.options li.right::before {
-    color: var(--color-green);
+    color: var(--color-green-oxford);
 }
 
 .Hazuki-note .md ol > li.quiz > ul.options li.right::after {
-    content: "\ef65";
-    color: var(--color-green);
+    content: '\ef65';
+    color: var(--color-green-oxford);
     animation: fadeIn .5s;
 }
 
@@ -662,18 +774,18 @@
     to { opacity: 1; }
 }
 
-.Hazuki-note .md ol > li.quiz ul.options li:first-child::before { content: "A." }
-.Hazuki-note .md ol > li.quiz ul.options li:nth-child(2)::before { content: "B." }
-.Hazuki-note .md ol > li.quiz ul.options li:nth-child(3)::before { content: "C." }
-.Hazuki-note .md ol > li.quiz ul.options li:nth-child(4)::before { content: "D." }
-.Hazuki-note .md ol > li.quiz ul.options li:nth-child(5)::before { content: "E." }
+.Hazuki-note .md ol > li.quiz ul.options li:first-child::before { content: 'A.' }
+.Hazuki-note .md ol > li.quiz ul.options li:nth-child(2)::before { content: 'B.' }
+.Hazuki-note .md ol > li.quiz ul.options li:nth-child(3)::before { content: 'C.' }
+.Hazuki-note .md ol > li.quiz ul.options li:nth-child(4)::before { content: 'D.' }
+.Hazuki-note .md ol > li.quiz ul.options li:nth-child(5)::before { content: 'E.' }
 
 .Hazuki-note .md ol > li.quiz > p {
     margin: unset;
 }
 
 .Hazuki-note .md ol > li.quiz > p:first-child::before {
-    content: "[" attr(data-type) "]";
+    content: '[' attr(data-type) ']';
     font-size: .8em;
     color: var(--grey-4);
     margin: 0 .3125rem;
@@ -685,6 +797,169 @@
 
 .Hazuki-note .md ol > li.quiz.show-answer blockquote {
     display: block;
+}
+
+/* markdown-it-container */
+.Hazuki-note .md .note {
+    border-radius: .1875rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    position: relative;
+    background: var(--note-bg, var(--grey-2));
+    color: var(--grey-6);
+    border-left: .25rem solid var(--note-border, var(--grey-4));
+    font-size: .875em;
+    padding-left: 2.5rem;
+    --primary-color: var(--note-text)
+}
+
+.Hazuki-note .md .note::before {
+    position: absolute;
+    left: .5rem;
+    top: calc(50% - 1.5rem);
+    font-family: ic;
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: var(--note-text, var(--grey-6))
+}
+
+.Hazuki-note .md .note.no-icon {
+    padding-left: 1rem
+}
+
+.Hazuki-note .md .note.no-icon::before {
+    content: none;
+}
+
+.Hazuki-note .md .note.default::before { content: '\ef23'; }
+.Hazuki-note .md .note.success::before { content: '\ef66'; }
+.Hazuki-note .md .note.warning::before { content: '\efb5'; }
+.Hazuki-note .md .note.info::before { content: '\f02b'; }
+.Hazuki-note .md .note.danger::before { content: '\f050'; }
+.Hazuki-note .md .note.primary::before { content: '\f082'; }
+
+.Hazuki-note ::-webkit-details-marker {
+    display: none
+}
+
+.Hazuki-note details > summary:first-of-type {
+    list-style-type: none
+}
+
+.Hazuki-note details summary {
+    outline: 0;
+    cursor: pointer;
+    padding: .625rem;
+    background: var(--note-bg, none);
+    border-radius: .25rem;
+    transition: all .4s ease
+}
+
+.Hazuki-note details summary::before {
+    font-family: ic;
+    font-weight: 400;
+    color: var(--grey-4);
+    margin-right: .5rem
+}
+
+.Hazuki-note details > div {
+    padding: .625rem
+}
+
+.Hazuki-note details.danger,
+.Hazuki-note details.info,
+.Hazuki-note details.primary,
+.Hazuki-note details.success,
+.Hazuki-note details.warning {
+    margin: 0 0 .8rem
+}
+
+.Hazuki-note details.danger summary,
+.Hazuki-note details.info summary,
+.Hazuki-note details.primary summary,
+.Hazuki-note details.success summary,
+.Hazuki-note details.warning summary {
+    color: var(--note-text)
+}
+
+.Hazuki-note details.danger summary::before,
+.Hazuki-note details.info summary::before,
+.Hazuki-note details.primary summary::before,
+.Hazuki-note details.success summary::before,
+.Hazuki-note details.warning summary::before {
+    color: var(--note-text)
+}
+
+.Hazuki-note details[open] {
+    background: var(--note-bg, none);
+    border-radius: .25rem;
+    color: var(--grey-6)
+}
+
+.Hazuki-note details[open] summary {
+    background: var(--note-hover, var(--grey-2));
+    border-radius: .25rem
+}
+
+.Hazuki-note details[open] summary::before {
+    color: var(--primary-color)
+}
+
+.Hazuki-note details[open] > div {
+    margin: 0 0 .8rem
+}
+
+.Hazuki-note details[open].danger,
+.Hazuki-note details[open].info,
+.Hazuki-note details[open].primary,
+.Hazuki-note details[open].success,
+.Hazuki-note details[open].warning {
+    color: var(--note-text)
+}
+
+.Hazuki-note details[open].danger > summary,
+.Hazuki-note details[open].info > summary,
+.Hazuki-note details[open].primary > summary,
+.Hazuki-note details[open].success > summary,
+.Hazuki-note details[open].warning > summary {
+    color: #fff;
+    border-radius: .25rem .25rem 0 0
+}
+
+.Hazuki-note details[open].danger > summary::before,
+.Hazuki-note details[open].info > summary::before,
+.Hazuki-note details[open].primary > summary::before,
+.Hazuki-note details[open].success > summary::before,
+.Hazuki-note details[open].warning > summary::before {
+    color: #fff
+}
+
+.Hazuki-note details[open] summary::before {
+    content: '\ef1a'
+}
+
+.Hazuki-note details summary::before {
+    content: '\ef1f'
+}
+
+.Hazuki-note details[open] > div {
+    animation: fadeIn .5s
+}
+
+.Hazuki-note .md .note ul li::before,
+.Hazuki-note .md details ul li::before {
+    color: var(--note-text)
+}
+
+.Hazuki-note .md .note ol > li::before,
+.Hazuki-note .md details ol > li::before {
+    background: var(--note-text, var(--primary-color)) !important;
+    width: .8rem;
+    height: .8rem;
+    font-size: .45rem;
+    line-height: .8rem;
+    top: .4rem;
+    left: -1.2rem
 }
 
 /* Swiper */
@@ -765,7 +1040,7 @@
 
 .vertical-view .swiper-slide::after {
     content: attr(aria-label);
-    font-size: calc(var(--font-size-oald) * 0.8);
+    font-size: calc(var(--font-size) * 0.8);
     color: rgb(170, 170, 255);
     position: absolute;
     bottom: 1.5em;
@@ -799,7 +1074,7 @@
     --color-green: #67a78a; /* Modified */
     --color-aqua: #3e999f;
     --color-blue: #35a3ff; /* Modified */
-    --color-purple: #9d5b8b;
+    --color-purple: #8a51c0; /* Modified */
     --color-grey: #869194;
     --color-red-a1: rgba(233, 84, 107, 0.1);
     --color-red-a3: rgba(233, 84, 107, 0.3);
@@ -860,9 +1135,9 @@
         --color-pink: rgba(241, 139, 179, 0.8);
         --color-orange: rgba(240, 163, 135, 0.8);
         --color-yellow: #ffe175;
-        --color-green: var(--color-oald-green); /* Modified */
+        --color-green: var(--color-green); /* Modified */
         --color-aqua: #97d3d6;
-        --color-blue: var(--color-oald-blue); /* Modified */
+        --color-blue: var(--color-blue); /* Modified */
         --color-purple: #cfacc5;
         --color-grey: #c3c8ca;
         --text-color: var(--grey-6); /* Modified */
@@ -905,10 +1180,8 @@
     }
 
     .Hazuki-note {
-        --color-oald-red: #e9546b;
-        --color-oald-green: #007a6c;
-        --color-oald-blue: #1681c2;
-        --color-oald-orange: rgba(219, 140, 57, 0.8);
+        --color-red-oxford: #e9546b;
+        --color-blue-oxford: #1681c2;
     }
 
     .Hazuki-note ::selection {
@@ -921,6 +1194,50 @@
 }
 
 /* Base64 */
-.Hazuki-note .webtop + :is(h2.shcut, .idm, .pv)::before {
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjQsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjUwMHB4IiBoZWlnaHQ9IjUwMHB4IiB2aWV3Qm94PSIwIDAgNTAwIDUwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNTAwIDUwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgPg0KPHBhdGggZmlsbD0iIzNjOWFlMyIgZD0iTTQ3NSAyOTFxMCAtNyAtNyAtMTRsLTEwNCAtMTAxbDI1IC0xNDN2LTZxMCAtNiAtMyAtMTB0LTkgLTRxLTUgMCAtMTEgM2wtMTI4IDY4bC0xMjkgLTY4cS02IC0zIC0xMSAtM3EtNiAwIC05IDR0LTMgMTBxMCAyIDEgNmwyNCAxNDNsLTEwNCAxMDFxLTcgOCAtNyAxNHEwIDEwIDE2IDEzbDE0MyAyMWw2NSAxMzBxNSAxMSAxNCAxMXE4IDAgMTQgLTExbDY0IC0xMzBsMTQzIC0yMXExNiAtMyAxNiAtMTN2MHoiIHRyYW5zZm9ybT0icm90YXRlKDE4MCwyNTAsMjUwKSIvPg0KPC9zdmc+DQo=');
+.Hazuki-note .ox3ksym_a1, .Hazuki-note .ox3ksymsub_a1 {
+    background-image: url(assets/images/ox3000_a1.svg);
+}
+
+.Hazuki-note .ox3ksym_a2, .Hazuki-note .ox3ksymsub_a2 {
+    background-image: url(assets/images/ox3000_a2.svg);
+}
+
+.Hazuki-note .ox3ksym_b1, .Hazuki-note .ox3ksymsub_b1 {
+    background-image: url(assets/images/ox3000_b1.svg);
+}
+
+.Hazuki-note .ox3ksym_b2, .Hazuki-note .ox3ksymsub_b2 {
+    background-image: url(assets/images/ox3000_b2.svg);
+}
+
+.Hazuki-note .ox3ksym_c1, .Hazuki-note .ox3ksymsub_c1 {
+    background-image: url(assets/images/ox3000_c1.svg);
+}
+
+.Hazuki-note .ox3ksym_c2, .Hazuki-note .ox3ksymsub_c2 {
+    background-image: url(assets/images/ox3000_c2.svg);
+}
+
+.Hazuki-note .ox5ksym_a1, .Hazuki-note .ox5ksymsub_a1 {
+    background-image: url(assets/images/ox5000_a1.svg);
+}
+
+.Hazuki-note .ox5ksym_a2, .Hazuki-note .ox5ksymsub_a2 {
+    background-image: url(assets/images/ox5000_a2.svg);
+}
+
+.Hazuki-note .ox5ksym_b1, .Hazuki-note .ox5ksymsub_b1 {
+    background-image: url(assets/images/ox5000_b1.svg);
+}
+
+.Hazuki-note .ox5ksym_b2, .Hazuki-note .ox5ksymsub_b2 {
+    background-image: url(assets/images/ox5000_b2.svg);
+}
+
+.Hazuki-note .ox5ksym_c1, .Hazuki-note .ox5ksymsub_c1 {
+    background-image: url(assets/images/ox5000_c1.svg);
+}
+
+.Hazuki-note .ox5ksym_c2, .Hazuki-note .ox5ksymsub_c2 {
+    background-image: url(assets/images/ox5000_c2.svg);
 }
