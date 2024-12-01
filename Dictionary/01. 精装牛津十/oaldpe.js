@@ -588,7 +588,7 @@ $(function main() {
                 const $pos = $this.children('.pos');
                 const $headword = $this.children('.headword');
                 const $span = $('<span>').appendTo($navbar);
-                $span.text($pos.text() || $headword.text());
+                $span.text($pos.text() || $headword.attr('headword') || $headword.text());
             });
 
             // Additional span for "All" and default active state setup

@@ -6,9 +6,9 @@
 !Hazuki-note/**/
 
 # Track specific essential files in this subdirectory
-!Hazuki-note/src/clickToCopy.js
-!Hazuki-note/src/notes.css
-!Hazuki-note/src/notes.js
+!Hazuki-note/src/css/notes.styl
+!Hazuki-note/src/js/clickToCopy.js
+!Hazuki-note/src/js/notes.js
 !Hazuki-note/webpack.config.js
 !config.html
 !Makefile

@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        notes: './src/notes.js',
-        clickToCopy: './src/clickToCopy.js',
+        notes: './src/js/notes.js',
+        clickToCopy: './src/js/clickToCopy.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -11,7 +11,7 @@ module.exports = {
     },
     mode: 'development',
     resolve: {
-        extensions: ['.js', '.mjs', '.json'], 
+        extensions: ['.js', '.mjs', '.json'],
     },
     module: {
         rules: [
@@ -20,12 +20,19 @@ module.exports = {
                 use: ['style-loader', 'css-loader'],
             },
             {
+                test: /\.styl$/,
+                use: ['style-loader', 'css-loader', 'stylus-loader'],
+            },
+            {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: 'asset/inline',
             },
             {
                 test: /\.(woff2|ttf)$/i,
-                type: 'asset/inline',
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/fonts/[name][ext]'
+                },
             },
         ],
     },

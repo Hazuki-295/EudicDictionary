@@ -2,7 +2,7 @@ import Swiper from 'swiper/bundle';
 import 'swiper/css/bundle';
 
 import markdownit from 'markdown-it';
-import './notes.css';
+import '../css/notes.styl';
 
 const $ = require('jquery');
 
@@ -40,7 +40,7 @@ const $ = require('jquery');
     });
 
     // Markdown-it plugins
-    const md = markdownit({ html: true })
+    const md = markdownit({ html: true, breaks: true })
         .use(require('markdown-it-attrs'))
         .use(require('markdown-it-bracketed-spans'))
         .use(require('markdown-it-ins'))
