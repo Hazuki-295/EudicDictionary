@@ -105,7 +105,7 @@ const $ = require('jquery');
 
         const sourceParts = source.split('>').map(part => `<span>${part.trim()}</span>`);
         const formattedSource = sourceParts.join('<i class="ic i-angle-right"></i>');
-        const $source = $(md.render(formattedSource)).appendTo($sourceBlock);
+        const $source = $(md.render(formattedSource)).addClass('breadcrumb').appendTo($sourceBlock);
         $source.find('span').last().addClass('current');
 
         /* 笔记原文 original text */
@@ -114,7 +114,7 @@ const $ = require('jquery');
         if (wordPhrase) {
             const regex = new RegExp(`\\b${wordPhrase}\\b`, 'gi');
             originalText = originalText.replace(regex, match => {
-                return `[${match}]{.bold .blue}`;
+                return `**${match}**{.blue}`;
             });
         }
 
@@ -131,6 +131,10 @@ const $ = require('jquery');
                 class: 'md notes',
                 html: md.render(replaceWithSpans(notes))
             }).appendTo($notesBlock);
+
+            const $label = $notesBlock.children('.label');
+            const $firstParagraph = $notesBlock.children('.md').children('p').first();
+            $firstParagraph.prepend($label);
         }
 
         /* 笔记标签 tags */
@@ -143,7 +147,7 @@ const $ = require('jquery');
                 if (text) {
                     const randomClass = classes[Math.floor(Math.random() * classes.length)];
                     $('<span>', {
-                        class: `note-tag ${randomClass}`,
+                        class: `tag ${randomClass}`,
                         text: text,
                     }).prepend($('<i>', { class: 'ic i-tag' })).appendTo($tagContainer);
                 }

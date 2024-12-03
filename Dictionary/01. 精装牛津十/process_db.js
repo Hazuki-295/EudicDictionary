@@ -139,14 +139,15 @@ function processHTML(htmlContent) {
     cleanUpHTML($);
     setupEntryHeader($);
     setupSense($);
-    setupImg($);
+    setupPhraseSections($);
+    setupImage($);
 
     return $.html();
 }
 
 function cleanUpHTML($) {
     // Add a container element
-    const $container = $('<oaldpe></oaldpe>').addClass('oaldpe');
+    const $container = $('<oaldpe>').addClass('oaldpe');
     $container.append($('body').contents()).appendTo('body');
 
     // Clean up styles and scripts
@@ -169,7 +170,7 @@ function setupEntryHeader($) {
         const $ox3k_ox5k = $symbols.children('a[href*="oxford3000-5000"]');
 
         if ($ox3k_ox5k.length) {
-            const $container = $('<div></div>').addClass('symbols');
+            const $container = $('<div>').addClass('symbols');
             $container.append($ox3k_ox5k).prependTo($webtop);
 
             if (!$symbols.children().length) {
@@ -190,7 +191,7 @@ function setupEntryHeader($) {
 function setupSense($) {
     $('li.sense').each(function () {
         const $sense = $(this);
-        const $iteration = $('<span></span>').addClass('iteration').prependTo($sense);
+        const $iteration = $('<span>').addClass('iteration').prependTo($sense);
 
         $sense.attr('sensenum')
             ? $iteration.text($sense.attr('sensenum'))
@@ -198,7 +199,18 @@ function setupSense($) {
     });
 }
 
-function setupImg($) {
+function setupPhraseSections($) {
+    $('.idioms, .phrasal_verb_links').each(function () {
+        const $section = $(this);
+        const $heading = $section.is('.idioms') ? $section.children('.idioms_heading') : $section.children('.unbox');
+        const $jumpLink = $section.closest('.entry').find(`.jumplink[name="${$heading.text()}"]`).parent('a.Ref');
+
+        $jumpLink.attr('id', `${$jumpLink.children('.jumplink').attr('href')}_jumplink`);
+        $('<a>').addClass('jumplink_back').attr('href', `#${$jumpLink.attr('id')}`).appendTo($heading);
+    });
+}
+
+function setupImage($) {
     $('div[id="ox-enlarge"]').each(function () {
         const $imgContainer = $(this);
 

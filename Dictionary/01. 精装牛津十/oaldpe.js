@@ -54,84 +54,92 @@ var oaldpeConfig = {
     // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
     officialExPronOpt: 1,
 
-    // 【配置项13：无官方例句发音时，是否启用在线 TTS 发音】（需要高版本浏览器内核。发音图标带下划线）
+    // 【配置项13：是否删除无在线发音的官方例句发音】（删除 oaldpe.3.mdd 文件时，该部分例句无法发音，可转而使用 TTS 发音）
+    // 选项（默认为false）：false=不删除，true=删除
+    removeNoOnlineExPron: false,
+
+    // 【配置项14：无官方例句发音时，是否启用在线 TTS 发音】（需要高版本浏览器内核。发音图标带下划线）
     // 选项（默认为true）：false=否，true=是
     enableOnlineTTS: true,
 
-    // 【配置项14：TTS 英音发音配置】
+    // 【配置项15：TTS 英音发音配置】
     // 选项（默认为英音男1）：英音男1，英音男2，英音女1，英音女2，英音女3
     britishTTS: '英音男1',
 
-    // 【配置项15：TTS 美音发音配置】
+    // 【配置项16：TTS 美音发音配置】
     // 选项（默认为美音女4）：美音男1，美音男2，美音男3，美音男4，美音男5，美音女1，美音女2，美音女3，美音女4
     americanTTS: '美音女4',
 
     /******** 内容精简，显示控制 ********/
-    // 【配置项16：是否简化词性】（如 verb 简化为 v.）
+    // 【配置项17：是否简化词性】（如 verb 简化为 v.）
     // 选项（默认为false）：false=不简化，true=简化
     simplifyPos: false,
 
-    // 【配置项17：是否简化语法】（如 [transitive] 简化为 [t]）
+    // 【配置项18：是否简化语法】（如 [transitive] 简化为 [t]）
     // 选项（默认为false）：false=不简化，true=简化
     simplifyGrammar: false,
 
-    // 【配置项18：是否简化非例句中的 something/somebody 为 sth./sb.】
+    // 【配置项19：是否简化非例句中的 something/somebody 为 sth./sb.】
     // 选项（默认为true）：false=不简化，true=简化
     simplifySthSb: true,
 
-    // 【配置项19：例句前的固定搭配使用代字号】（如把 take sth with you 替换为 ~ sth with you）
+    // 【配置项20：例句前的固定搭配使用代字号】（如把 take sth with you 替换为 ~ sth with you）
     // 选项（默认为false）：false=不使用，true=使用
     usePlaceholder: false,
 
-    // 【配置项20：给固定搭配添加荧光笔下划线】
+    // 【配置项21：给固定搭配添加荧光笔下划线】
     // 选项（默认为false）：false=不添加，true=添加
     phrasesAddUnderline: false,
 
     /******** 折叠控制 ********/
-    // 【配置项21：是否展开释义】
+    // 【配置项22：是否展开释义】
     // 选项（默认为true）：false=否，true=是
     unfoldSense: true,
 
-    // 【配置项22：是否展开折叠块】（浅蓝色折叠区，如 Extra Examples 更多例句）
+    // 【配置项23：是否展开折叠块】（浅蓝色折叠区，如 Extra Examples 更多例句）
     // 选项（默认为false）：false=不展开，true=展开
     unfoldUnbox: false,
 
-    // 【配置项23：是否展开 Phrase Sections】（习语 Idioms、词组 Phrasal Verbs）
+    // 【配置项24：是否展开 Phrase Sections】（习语 Idioms、词组 Phrasal Verbs）
     // 选项（默认为false）：false=不展开，true=展开
     unfoldPhraseSections: false,
 
-    // 【配置项24：点击 Idioms、Phrasal Verbs 跳转后，自动展开内容】
+    // 【配置项25：点击 Idioms、Phrasal Verbs 跳转后，自动展开内容】
     // 选项（默认为true）：false=不展开，true=展开
     jumpsUnfold: true,
 
-    // 【配置项25：点击小火箭返回后，自动折叠内容】
+    // 【配置项26：点击小火箭返回后，自动折叠内容】
     // 选项（默认为true）：false=不折叠，true=折叠
     leavesFold: true,
 
+    // 【配置项27：是否使用普通锚跳，无滚动动画】（兼容 Android DictTango 瀑布流）
+    // 选项（默认为false）：false=否，true=是
+    instantHashNavigation: false,
+
     /******** 欧路词典相关 ********/
-    // 【配置项26：是否在手机 Eudic 里使用更大的屏宽】
+    // 【配置项28：是否在手机 Eudic 里使用更大的屏宽】
     // 选项（默认为true）：false=否，true=是
     widerScreenEudic: true,
 
-    // 【配置项27：是否移除 Eudic 单词界面词头】（词典自带发音、生词等级等）
+    // 【配置项29：是否移除 Eudic 单词界面词头】（词典自带发音、生词等级等）
     // 选项（默认为true）：false=不移除，true=移除
     removeEudicHeader: true,
 
-    // 【配置项28：是否自动折叠 Eudic 学习笔记】
+    // 【配置项30：是否自动折叠 Eudic 学习笔记】
     // 选项（默认为false）：false=不自动折叠，true=自动折叠
     autoFoldEudicNote: false,
 
     /******** 其他功能 ********/
-    // 【配置项29：是否自动跟随系统深色模式】
+    // 【配置项31：是否自动跟随系统深色模式】
     // 选项（默认为true）：false=否，true=是
     autoDarkMode: true,
 
-    // 【配置项30：是否启用 Eruda Console】（用于词典应用调试）
+    // 【配置项32：是否启用 Eruda Console】（用于词典应用调试）
     // 选项（默认为true）：false=否，true=是
     enableErudaConsole: true,
 
     /******** 其他自定义配置（仅支持通过此js文件修改） ********/
-    // 【配置项31：自动展开折叠块开关】（浅蓝色折叠区，仅在【是否展开折叠块】为 false 时生效）
+    // 【配置项33：自动展开折叠块开关】（浅蓝色折叠区，仅在【是否展开折叠块】为 false 时生效）
     // 选项（默认仅展开词源）：false=不展开，true=展开
     autoUnfoldUnbox: {
         'british_american': false, // British/American (英式 / 美式)
@@ -961,6 +969,11 @@ $(function main() {
                 $oaldpe.attr('online-example-pron', 'true');
             }
 
+            // 删除无在线发音的官方例句发音
+            if (oaldpeConfig.removeNoOnlineExPron) {
+                $oaldpe.find('.audio_play_button').filter('.app-ext').remove();
+            }
+
             $oaldpe.find('.audio_play_button').filter('.app, .app-ext').each(function () {
                 const $audio = $(this);
 
@@ -1130,10 +1143,11 @@ $(function main() {
                 const $section = $(this);
                 const $heading = $section.is('.idioms') ? $section.children('.idioms_heading') : $section.children('.unbox');
                 const $content = $section.children().not($heading);
-                const $jumpLink = $section.closest('.entry').find(`.jumplink[name="${$heading.text()}"]`);
-                const $backLink = $('<span>', { class: $section.is('.idioms') ? 'idioms_back' : 'phrasal_back' }).appendTo($heading);
+                const $jumpLink = $section.closest('.entry').find(`.jumplink[name="${$heading.text()}"]`).parent('a.Ref');
+                const $backLink = $heading.children('.jumplink_back');
 
-                $heading.on('click', function () {
+                $heading.on('click', function (event) {
+                    if ($(event.target).is('.jumplink_back')) return;
                     $section.hasClass('expanded')
                         ? $content.css('display', 'block').fadeOut('fast')
                         : $content.css('display', 'block').hide().fadeIn('fast');
@@ -1146,21 +1160,35 @@ $(function main() {
                 }
 
                 $jumpLink.on('click', function (event) {
-                    event.preventDefault();
-                    scrollToTarget($section, undefined, function () {
+                    const callback = () => {
                         if (oaldpeConfig.jumpsUnfold && !$section.hasClass('expanded')) {
                             $heading.trigger('click');
                         }
-                    });
+                    };
+
+                    if (oaldpeConfig.instantHashNavigation) {
+                        setTimeout(callback, 500)
+                        return;
+                    }
+
+                    event.preventDefault();
+                    scrollToTarget($section, undefined, callback);
                 });
 
                 $backLink.on('click', function (event) {
-                    event.stopPropagation();
-                    scrollToTarget($jumpLink, undefined, function () {
+                    const callback = () => {
                         if (oaldpeConfig.leavesFold && $section.hasClass('expanded')) {
                             $heading.trigger('click');
                         }
-                    });
+                    };
+
+                    if (oaldpeConfig.instantHashNavigation) {
+                        setTimeout(callback, 500)
+                        return;
+                    }
+
+                    event.preventDefault();
+                    scrollToTarget($jumpLink, undefined, callback);
                 });
             });
         }
@@ -1262,11 +1290,7 @@ $(function main() {
             const $expCustomNote = $('#expCustomNote');
             const $customeNoteText = $expCustomNote.find('#customeNoteText');
             try {
-                window.noteDataArray = JSON.parse($customeNoteText.text()).map(innerDict =>
-                    Object.fromEntries(Object.entries(innerDict).map(([key, value]) =>
-                        [key, value.replace(/\\n/g, '\n').replace(/\\"/g, '\"')]
-                    ))
-                );
+                window.noteDataArray = JSON.parse($customeNoteText.text());
             } catch { return; }
             $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
 
@@ -1355,7 +1379,7 @@ $(function main() {
                         event.stopPropagation();
                         event.preventDefault();
 
-                        let inputText = $audioContainer.clone().find('chn').remove().end().text()
+                        let inputText = $audioContainer.clone().find('chn, script').remove().end().text()
                             .replace(/somebody\/something/g, 'somebody or something')
                             .replace(/&/g, 'and').replace(/\u200B/g, '')
                             .replace(/\(.*?\)/g, '');

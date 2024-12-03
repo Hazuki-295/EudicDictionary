@@ -6,6 +6,13 @@
 !Hazuki-note/**/
 
 # Track specific essential files in this subdirectory
+!Hazuki-note/src/css/colors.styl
+!Hazuki-note/src/css/conflict.styl
+!Hazuki-note/src/css/markdown.styl
+!Hazuki-note/src/css/mixins.styl
+!Hazuki-note/src/css/note-frame.styl
+!Hazuki-note/src/css/note-oaldpe.styl
+!Hazuki-note/src/css/note-ode.styl
 !Hazuki-note/src/css/notes.styl
 !Hazuki-note/src/js/clickToCopy.js
 !Hazuki-note/src/js/notes.js
