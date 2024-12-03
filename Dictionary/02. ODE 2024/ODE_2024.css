@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 @font-face {
     font-family: Bookerly;
     src: local('Bookerly-Regular'), url(fonts/Bookerly/Bookerly-Regular.ttf) format('truetype');
@@ -336,7 +338,7 @@ a.audio_play_button::before {
     font-family: 'oalecd9', 'Segoe UI Symbol';
     font-style: normal;
     font-weight: normal;
-    content: '\1F50A'; /* 🔊 */
+    content: '🔊';
     opacity: .7;
 }
 
