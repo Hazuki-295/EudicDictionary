@@ -29,10 +29,7 @@ module.exports = {
             },
             {
                 test: /\.(woff2|ttf)$/i,
-                type: 'asset/resource',
-                generator: {
-                    filename: 'assets/fonts/[name][ext]'
-                },
+                type: 'asset/inline',
             },
         ],
     },
