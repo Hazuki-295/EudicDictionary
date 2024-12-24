@@ -1530,7 +1530,7 @@ a.Ref .xs::before {
     display: none;
 }
 
-.collapse .unbox[unbox='more_about'] .body ul.bullet > li .unx::before {
+.collapse .unbox[unbox='more_about'] .body ul.bullet > li .unx:not(ul.examples .unx)::before {
     display: inline-block;
     content: '•';
     color: var(--color-blue);
