@@ -1,7 +1,7 @@
-const sqlite3 = require('sqlite3').verbose();
+const cheerio = require('cheerio');
 const fs = require('fs');
 const minimist = require('minimist');
-const cheerio = require('cheerio');
+const sqlite3 = require('sqlite3').verbose();
 
 // Parse command-line arguments
 const argv = minimist(process.argv.slice(2));
@@ -13,7 +13,7 @@ const argv = minimist(process.argv.slice(2));
 const debugMode = argv.debug || false;
 const testWords = [].concat(argv.word || 'take');
 
-const BATCH_SIZE = 100000;
+const BATCH_SIZE = 10000;
 
 async function runDatabaseCommand(database, command, params = []) {
     return new Promise((resolve, reject) => {
@@ -35,28 +35,25 @@ async function insertIntoDatabase(insertStmt, entry, paraphrase) {
 
 async function deleteEntriesByWords(database, words) {
     const placeholders = words.map(() => '?').join(',');
-    const query = `DELETE FROM mdx WHERE entry IN (${placeholders})`;
+    const query = `
+        DELETE FROM mdx 
+        WHERE entry IN (${placeholders})
+    `;
     await runDatabaseCommand(database, query, words);
 }
 
 async function getEntriesByWords(database, words) {
     const placeholders = words.map(() => '?').join(',');
-    const query = `SELECT rowid, entry, paraphrase FROM mdx WHERE entry IN (${placeholders})`;
+    const query = `
+        SELECT rowid, entry, paraphrase 
+        FROM mdx 
+        WHERE entry IN (${placeholders})
+    `;
     const rows = await queryDatabase(database, query, words);
     if (!rows.length) {
         throw new Error(`Entries not found for words: ${words.join(', ')}`);
     }
     return rows;
-}
-
-async function getTotalEntries(database) {
-    const row = await queryDatabase(database, `SELECT COUNT(*) as count FROM mdx`);
-    return row[0].count;
-}
-
-async function getEntriesBatch(database, offset, limit) {
-    const query = `SELECT rowid, entry, paraphrase FROM mdx ORDER BY rowid LIMIT ? OFFSET ?`;
-    return await queryDatabase(database, query, [limit, offset]);
 }
 
 async function processEntries(entries, insertStmt = null) {
@@ -89,9 +86,12 @@ async function processEntries(entries, insertStmt = null) {
             const entries = await getEntriesByWords(sourceDatabase, testWords);
             await processEntries(entries);
         } else {
-            // Normal mode: process all entries in batches
-            const totalEntries = await getTotalEntries(sourceDatabase);
-            console.log(`Total entries to process: ${totalEntries}`);
+            // Normal mode: process all entries in two passes
+            const totalEntries = (await queryDatabase(sourceDatabase, `
+                SELECT COUNT(*) as count 
+                FROM mdx
+            `))[0].count;
+            console.log(`Total entries in the database: ${totalEntries}`);
 
             const targetDatabase = new sqlite3.Database('oaldpe_cleaned.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
             await runDatabaseCommand(targetDatabase, 'DROP TABLE IF EXISTS mdx');
@@ -99,25 +99,54 @@ async function processEntries(entries, insertStmt = null) {
 
             const insertStmt = targetDatabase.prepare(`INSERT INTO mdx (entry, paraphrase) VALUES (?, ?)`);
 
-            for (let offset = 0; offset < totalEntries; offset += BATCH_SIZE) {
-                const entries = await getEntriesBatch(sourceDatabase, offset, BATCH_SIZE);
-                console.log(`Processing entries ${offset + 1} to ${offset + entries.length}`);
+            // Phase 1: Process 'HTML' entries in batches
+            console.log('Processing HTML entries in batches...');
+            const totalHtmlEntries = (await queryDatabase(sourceDatabase, `
+                SELECT COUNT(*) as count 
+                FROM mdx 
+                WHERE NOT paraphrase LIKE '@@@LINK=%'
+            `))[0].count;
+            console.log(`Total HTML entries to process: ${totalHtmlEntries}`);
+
+            for (let offset = 0; offset < totalHtmlEntries; offset += BATCH_SIZE) {
+                console.log(`Processing HTML entries batch: ${offset + 1} to ${Math.min(offset + BATCH_SIZE, totalHtmlEntries)}`);
+
+                const htmlBatch = await queryDatabase(sourceDatabase, `
+                    SELECT rowid, entry, paraphrase 
+                    FROM mdx 
+                    WHERE NOT paraphrase LIKE '@@@LINK=%'
+                    ORDER BY rowid 
+                    LIMIT ? OFFSET ?
+                `, [BATCH_SIZE, offset]);
 
                 await runDatabaseCommand(targetDatabase, 'BEGIN TRANSACTION');
-                await processEntries(entries, insertStmt);
+                await processEntries(htmlBatch, insertStmt);
                 await runDatabaseCommand(targetDatabase, 'COMMIT');
             }
+            console.log('HTML entries processed.');
 
-            // Delete specific entries
+            // Phase 2: Process all 'link' entries in a single step
+            console.log('Processing link entries...');
+            const linkEntries = await queryDatabase(sourceDatabase, `
+                SELECT rowid, entry, paraphrase 
+                FROM mdx 
+                WHERE paraphrase LIKE '@@@LINK=%'
+                ORDER BY rowid
+            `);
+
+            await runDatabaseCommand(targetDatabase, 'BEGIN TRANSACTION');
+            await processEntries(linkEntries, insertStmt);
+            await runDatabaseCommand(targetDatabase, 'COMMIT');
+            console.log('Link entries processed.');
+
+            // Additional cleanup and insertion steps
             await deleteEntriesByWords(targetDatabase, ['oaldconfig', 'oaldcfg']);
 
-            // Insert 'oaldpeconfig' entry
             const configContent = fs.readFileSync('./config.min.html', 'utf8');
             await insertIntoDatabase(insertStmt, 'oaldpeconfig', configContent);
 
-            // Insert link entries that point to 'oaldpeconfig'
-            const linkEntries = ['oaldpecfg', 'oaldcfg', 'opcfg', 'oaldconfig', 'opconfig', 'opc'];
-            for (const entry of linkEntries) {
+            const linkEntriesConfig = ['oaldpecfg', 'oaldcfg', 'opcfg', 'oaldconfig', 'opconfig', 'opc'];
+            for (const entry of linkEntriesConfig) {
                 await insertIntoDatabase(insertStmt, entry, '@@@LINK=oaldpeconfig');
             }
 
