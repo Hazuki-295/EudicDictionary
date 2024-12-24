@@ -145,7 +145,7 @@ async function processEntries(entries, insertStmt = null) {
             const configContent = fs.readFileSync('./config.min.html', 'utf8');
             await insertIntoDatabase(insertStmt, 'oaldpeconfig', configContent);
 
-            const linkEntriesConfig = ['oaldpecfg', 'oaldcfg', 'opcfg', 'oaldconfig', 'opconfig', 'opc'];
+            const linkEntriesConfig = ['oaldpecfg', 'oaldpehelp', 'oaldconfig', 'oaldcfg', 'oaldhelp'];
             for (const entry of linkEntriesConfig) {
                 await insertIntoDatabase(insertStmt, entry, '@@@LINK=oaldpeconfig');
             }
@@ -190,6 +190,18 @@ function cleanUpHTML($) {
     // Remove root class to prevent conflicts
     const $rootElements = $('.leon-oald');
     $rootElements.removeClass('leon-oald').addClass('oald-entry-root');
+
+    // Create a pseudo-footer section to hold elements that might be altered
+    const $pseudoFooter = $('<div>').addClass('pseudo-footer').css('display', 'none').appendTo($container);
+
+    const resourcePlaceholders = [
+        { tag: 'a', class: 'entry-link-placeholder', attributes: { href: 'entry://placeholder' } }
+    ];
+
+    resourcePlaceholders.forEach(resource => {
+        const $resourceElement = $(`<${resource.tag}>`).addClass(resource.class).attr(resource.attributes);
+        $pseudoFooter.append($resourceElement);
+    });
 }
 
 function setupEntryHeader($) {

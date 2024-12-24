@@ -1,186 +1,766 @@
-/* ********用户自定义配置区开始******** */
-// 可直接在词典里搜索以下任意词条，进入配置界面，常用配置无需修改此 js 文件。
-// 'oaldpeconfig', 'oaldpecfg', 'oaldcfg', 'opcfg', 'oaldconfig', 'opconfig', 'opc'
+// 可以直接在【词典软件】里搜索以下任意词条，进入配置界面：
+// 推荐使用：1. 欧路词典 Eudic (全平台), 2. GoldenDict-ng (电脑端)
+// oaldpeconfig, oaldpecfg, oaldpehelp, oaldconfig, oaldcfg, oaldhelp
 
+/* ********用户自定义配置区开始******** */
 var oaldpeConfig = {
     /******** 中文翻译相关 ********/
-    // 【配置项1：中文翻译选项】（点击 “O10” 小图标，可显示/隐藏中文翻译）
-    // 选项（默认为1）：0-全部隐藏，1-全部显示，2-仅隐藏例句中文，3-仅显示例句中文，4-仅隐藏释义中文，5-仅显示释义中文
-    showTranslation: 1,
+    chineseTranslation: {
+        groupTitle: '中文翻译相关', // 配置组标题
 
-    // 【配置项2：是否使用繁体中文翻译】
-    // 选项（默认为0）：0-简体，1-繁体（香港），2-繁体（台湾），3-繁体（台湾，带词组转换）
-    showTraditional: 0,
+        // 【配置项1：中文翻译选项】
+        showTranslation: {
+            selectedValue: 1,    // 默认显示所有中文翻译
+            title: '中文翻译选项', // 配置项标题
+            type: 'dropdown',    // 在配置界面下，该选项为下拉框选择
+            options: [
+                { value: 0, label: '全部隐藏' }, // 隐藏所有中文翻译
+                { value: 1, label: '全部显示' }, // 显示所有中文翻译
+                { value: 2, label: '仅隐藏例句中文' }, // 隐藏例句中的中文翻译
+                { value: 3, label: '仅显示例句中文' }, // 仅显示例句中的中文翻译
+                { value: 4, label: '仅隐藏释义中文' }, // 隐藏释义中的中文翻译
+                { value: 5, label: '仅显示释义中文' }  // 仅显示释义中的中文翻译
+            ],
+            description: '设置初始状态下，中文翻译的显示/隐藏。', // 配置项描述
+            callout: [
+                { type: 'tip', content: ['单击右上角的 O10 小图标，可显示/隐藏所有中文翻译。', '默认隐藏部分中文翻译时，可搭配点译功能使用。'] } // 相关提示
+            ]
+        },
 
-    // 【配置项3：是否启用英文点译功能】（单句显示/隐藏中文）
-    // 选项（默认为false）：false=否，true=是
-    touchToTranslate: false,
+        // 【配置项2：启用英文点译功能】
+        touchToTranslate: {
+            selectedValue: false, // 默认为不启用
+            title: '启用英文点译功能',
+            type: 'checkbox' // 在配置界面下，该选项为复选框（checkbox）开关
+        },
 
-    // 【配置项4：是否例句中文独占一行】
-    // 选项（默认为true）：false=否，true=是
-    examplesChineseBeAlone: true,
+        // 【配置项3：是否使用简繁转换】
+        showTraditional: {
+            selectedValue: 0, // 默认为简体中文
+            title: '是否使用简繁转换',
+            type: 'dropdown',
+            options: [
+                { value: 0, label: '简体（不使用简繁转换）' }, // 简体中文翻译
+                { value: 1, label: '繁体（香港）' }, // 香港繁体中文翻译
+                { value: 2, label: '繁体（台湾）' }, // 台湾繁体中文翻译
+                { value: 3, label: '繁体（台湾，带词组转换）' } // 台湾繁体中文翻译（带词组转换）
+            ]
+        },
+
+        // 【配置项4：离线图片翻译选项】
+        imgTranslationOpt: {
+            selectedValue: 3, // 默认为根据其他设置自动选择
+            title: '离线图片翻译选项',
+            type: 'dropdown',
+            options: [
+                { value: 0, label: '不使用翻译' }, // 原版英文图片
+                { value: 1, label: '简体中文翻译' }, // 港版 app 简体中文翻译
+                { value: 2, label: '港版繁体翻译' }, // 港版 app 繁体中文翻译
+                { value: 3, label: '根据其他设置自动选择' } // 根据配置项【中文翻译选项】和配置项【是否使用简繁转换】自动选择
+            ],
+            callout: [
+                { type: 'warning', content: '当【在线图片】启用时，图片翻译无效。' } // 注意事项
+            ]
+        },
+
+        // 【配置项5：翻译来源：默认高亮区分非官方翻译】
+        highlightUnofficial: {
+            selectedValue: false, // 默认为不高亮区分，统一样式
+            title: '翻译来源：默认高亮区分非官方翻译',
+            type: 'checkbox',
+            description: '设置初始状态下，是否使用不同的样式区分翻译来源。',
+            callout: [
+                { type: 'info', content: ['默认为不高亮区分，统一样式，减少阅读干扰。', '中文翻译来源详见帮助界面 FAQ。'] } // 附加说明
+            ]
+        }
+    },
 
     /******** 词性导航栏 ********/
-    // 【配置项5：是否显示词性导航栏】
-    // 选项（默认为true）：false=不显示，true=显示
-    showNavbar: true,
+    posNavbar: {
+        groupTitle: '词性导航栏',
 
-    // 【配置项6：是否选中词性导航栏 All】（当【是否显示词性导航栏】设置为 false 时，始终显示所有词性，此设置无效）
-    // 选项（默认为false）：false=否，true=是
-    selectNavbarAll: false,
+        // 【配置项1：启用词性导航栏】
+        showNavbar: {
+            selectedValue: true, // 默认为启用
+            title: '启用词性导航栏',
+            type: 'checkbox',
+            description: '控制是否启用词性导航栏，便于在多词性词条中快速切换。'
+        },
 
-    /******** 单词、例句发音，图片显示 ********/
-    // 【配置项7：是否显示音节划分】（点击单词可切换音节划分）
-    // 选项（默认为false）：false=不显示，true=显示
-    showSyllable: false,
+        // 【配置项2：是否选中词性导航栏 All】
+        selectNavbarAll: {
+            selectedValue: false, // 默认为不选中
+            title: '是否选中词性导航栏 All',
+            type: 'checkbox',
+            description: '设置初始状态下，是否选中词性导航栏 All。'
+        }
+    },
 
-    // 【配置项8：是否启用在线单词发音】（如果为 true，则可删除 oaldpe.1.mdd 文件）
-    // 选项（默认为false）：false=否，true=是
-    onlineWordPron: false,
+    /******** 内容精简 ********/
+    contentSimplification: {
+        groupTitle: '内容精简',
 
-    // 【配置项9：是否启用在线图片】（如果为 true，则可删除 oaldpe.2.mdd 文件。注：在线图片无中文翻译）
-    // 选项（默认为false）：false=否，true=是
-    onlineImage: false,
+        // 【配置项1：简化词性表示】
+        simplifyPos: {
+            selectedValue: false, // 默认不简化
+            title: '简化词性表示',
+            type: 'checkbox',
+            description: '控制是否将词性表示简化（例如将 verb 简化为 v.）。'
+        },
 
-    // 【配置项10：离线图片翻译选项】（当【是否启用在线图片】设置为 true 时，图片翻译无效）
-    // 选项（默认为3）：0-不使用翻译，1-简体中文翻译，2-港版繁体翻译，3-根据配置项【中文翻译选项】和配置项【是否使用繁体中文翻译】自动选择
-    imgTranslationOpt: 3,
+        // 【配置项2：简化语法标签】
+        simplifyGrammar: {
+            selectedValue: false, // 默认不简化
+            title: '简化语法标签',
+            type: 'checkbox',
+            description: '控制是否将语法标签简化（例如将 [transitive] 简化为 [T]）。'
+        },
 
-    // 【配置项11：是否默认英音例句发音】（点击 “O10” 小图标中的词典铭牌进行切换）
-    // 选项（默认为false）：false=美音，true=英音
-    defaultBritishExPron: false,
+        // 【配置项3：简化固定搭配中的 sth./sb.】
+        simplifySthSb: {
+            selectedValue: true, // 默认简化
+            title: '简化固定搭配中的 sth./sb.',
+            type: 'checkbox',
+            description: '控制是否将固定搭配中的 something/somebody 简化为 sth./sb.。'
+        },
 
-    // 【配置项12：官方例句发音选项】（如果为 1 或 2，则可删除 oaldpe.3.mdd 文件）
-    // 选项（默认为1）：0-启用官方离线例句发音，1-启用官方在线例句发音，2-不启用官方例句发音
-    officialExPronOpt: 1,
+        // 【配置项4：在固定搭配中使用代字号】
+        usePlaceholder: {
+            selectedValue: false, // 默认不使用
+            title: '在固定搭配中使用代字号',
+            type: 'checkbox',
+            description: '控制是否将固定搭配中的关键词替换为代字号（例如将 take sth. with you 替换为 ~ sth. with you）。'
+        },
+    },
 
-    // 【配置项13：是否删除无在线发音的官方例句发音】（删除 oaldpe.3.mdd 文件时，该部分例句无法发音，可转而使用 TTS 发音）
-    // 选项（默认为false）：false=不删除，true=删除
-    removeNoOnlineExPron: false,
+    /******** 显示控制 ********/
+    contentDisplay: {
+        groupTitle: '显示控制',
 
-    // 【配置项14：无官方例句发音时，是否启用在线 TTS 发音】（需要高版本浏览器内核。发音图标带下划线）
-    // 选项（默认为true）：false=否，true=是
-    enableOnlineTTS: true,
+        // 【配置项1：是否默认显示音节划分】
+        showSyllable: {
+            selectedValue: false, // 默认为不显示
+            title: '是否默认显示音节划分',
+            type: 'checkbox',
+            description: '设置初始状态下，是否显示多音节单词的音节划分。',
+            callout: [
+                { type: 'tip', content: '点击词头，可以切换音节划分的显示与否。' }
+            ]
+        },
 
-    // 【配置项15：TTS 英音发音配置】
-    // 选项（默认为英音男1）：英音男1，英音男2，英音女1，英音女2，英音女3
-    britishTTS: '英音男1',
+        // 【配置项2：是否默认英音例句发音】
+        defaultBritishExPron: {
+            selectedValue: false, // 默认为美音发音
+            title: '是否默认英音例句发音',
+            type: 'checkbox',
+            description: '例句发音只显示一个喇叭，设置初始状态下为英音或美音。',
+            callout: [
+                { type: 'info', content: ['可以在 O10 小图标展开的界面中：', '(1) 切换当前例句发音（即时生效）', '(2) 设置默认例句发音（下次查询起生效）'] }
+            ]
+        },
 
-    // 【配置项16：TTS 美音发音配置】
-    // 选项（默认为美音女4）：美音男1，美音男2，美音男3，美音男4，美音男5，美音女1，美音女2，美音女3，美音女4
-    americanTTS: '美音女4',
+        // 【配置项3：固定搭配荧光笔下划线】
+        phrasesAddUnderline: {
+            selectedValue: false, // 默认不添加
+            title: '固定搭配荧光笔下划线',
+            type: 'checkbox',
+            description: '控制是否为固定搭配添加荧光笔下划线以突出显示。'
+        },
 
-    /******** 内容精简，显示控制 ********/
-    // 【配置项17：是否简化词性】（如 verb 简化为 v.）
-    // 选项（默认为false）：false=不简化，true=简化
-    simplifyPos: false,
+        // 【配置项4：例句中文独占一行】
+        examplesChineseBeAlone: {
+            selectedValue: true, // 默认为例句中文独占一行
+            title: '例句中文独占一行',
+            type: 'checkbox',
+            description: '控制是否在例句英文后换行，例句中文独占一行显示。'
+        }
+    },
 
-    // 【配置项18：是否简化语法】（如 [transitive] 简化为 [t]）
-    // 选项（默认为false）：false=不简化，true=简化
-    simplifyGrammar: false,
+    /******** 在线资源 ********/
+    onlineResources: {
+        groupTitle: '在线资源',
 
-    // 【配置项19：是否简化非例句中的 something/somebody 为 sth./sb.】
-    // 选项（默认为true）：false=不简化，true=简化
-    simplifySthSb: true,
+        // 【配置项1：在线单词发音】
+        onlineWordPron: {
+            selectedValue: false, // 默认为不启用
+            title: '在线单词发音',
+            type: 'checkbox',
+            description: '启用后，可以删除 oaldpe.1.mdd 文件。'
+        },
 
-    // 【配置项20：例句前的固定搭配使用代字号】（如把 take sth with you 替换为 ~ sth with you）
-    // 选项（默认为false）：false=不使用，true=使用
-    usePlaceholder: false,
+        // 【配置项2：在线图片】
+        onlineImage: {
+            selectedValue: false, // 默认为不启用
+            title: '在线图片',
+            type: 'checkbox',
+            description: '启用后，可以删除 oaldpe.2.mdd 文件。',
+            callout: [
+                { type: 'info', content: '在线图片无中文翻译。' }
+            ]
+        },
 
-    // 【配置项21：给固定搭配添加荧光笔下划线】
-    // 选项（默认为false）：false=不添加，true=添加
-    phrasesAddUnderline: false,
+        // 【配置项3：官方例句发音选项】
+        officialExPronOpt: {
+            selectedValue: 1, // 默认为官方例句在线发音
+            title: '官方例句发音选项',
+            type: 'dropdown',
+            options: [
+                { value: 0, label: '不启用官方例句发音' },
+                { value: 1, label: '在线发音' }, // 联网在线发音
+                { value: 2, label: '离线发音' }  // 离线发音文件
+            ],
+            description: '如果启用在线发音（或不启用官方例句发音），可以删除 oaldpe.3.mdd 文件。',
+            callout: [
+                { type: 'success', content: ['默认启用在线发音，音质较好。', '离线发音可作为无 Wi-Fi 或无网络环境下的备选方案。'] }
+            ]
+        },
+
+        // 【配置项4：是否删除无在线发音的官方例句发音】
+        removeNoOnlineExPron: {
+            selectedValue: false, // 默认为不删除
+            title: '是否删除无在线发音的官方例句发音',
+            type: 'checkbox',
+            description: '删除 oaldpe.3.mdd 文件时，该部分例句无法发音，可转而使用 TTS 发音。'
+        },
+
+        // 【配置项5：无官方例句发音时，是否启用在线 TTS 发音】
+        enableOnlineTTS: {
+            selectedValue: true, // 默认为启用
+            title: '无官方例句发音时，是否启用在线 TTS 发音',
+            type: 'checkbox',
+            description: '例句发音为 TTS 发音时，发音图标带下划线。'
+        },
+
+        // 【配置项6：TTS 英音发音配置】
+        britishTTS: {
+            selectedValue: '英音男1', // 默认使用英音男1
+            title: 'TTS 英音发音配置',
+            type: 'dropdown',
+            options: [
+                { value: '英音男1', label: '英音男1' },
+                { value: '英音男2', label: '英音男2' },
+                { value: '英音女1', label: '英音女1' },
+                { value: '英音女2', label: '英音女2' },
+                { value: '英音女3', label: '英音女3' }
+            ]
+        },
+
+        // 【配置项7：TTS 美音发音配置】
+        americanTTS: {
+            selectedValue: '美音女4', // 默认使用美音女4
+            title: 'TTS 美音发音配置',
+            type: 'dropdown',
+            options: [
+                { value: '美音男1', label: '美音男1' },
+                { value: '美音男2', label: '美音男2' },
+                { value: '美音男3', label: '美音男3' },
+                { value: '美音男4', label: '美音男4' },
+                { value: '美音男5', label: '美音男5' },
+                { value: '美音女1', label: '美音女1' },
+                { value: '美音女2', label: '美音女2' },
+                { value: '美音女3', label: '美音女3' },
+                { value: '美音女4', label: '美音女4' }
+            ]
+        }
+    },
 
     /******** 折叠控制 ********/
-    // 【配置项22：是否展开释义】
-    // 选项（默认为true）：false=否，true=是
-    unfoldSense: true,
+    collapseControl: {
+        groupTitle: '折叠控制',
 
-    // 【配置项23：是否展开折叠块】（浅蓝色折叠区，如 Extra Examples 更多例句）
-    // 选项（默认为false）：false=不展开，true=展开
-    unfoldUnbox: false,
+        // 【配置项1：是否默认展开释义】
+        unfoldSense: {
+            selectedValue: true, // 默认展开
+            title: '是否默认展开释义',
+            type: 'checkbox',
+            description: '设置初始状态下，所有释义的展开/折叠状态。',
+            callout: [
+                { type: 'tip', content: ['点击释义前的序号，可以展开/折叠单项释义。', '双击右上角的 O10 小图标，可以展开/折叠所有释义。'] }
+            ]
+        },
 
-    // 【配置项24：是否展开 Phrase Sections】（习语 Idioms、词组 Phrasal Verbs）
-    // 选项（默认为false）：false=不展开，true=展开
-    unfoldPhraseSections: false,
+        // 【配置项2：是否默认展开折叠块】
+        unfoldUnbox: {
+            selectedValue: false, // 默认不展开
+            title: '是否默认展开折叠块',
+            type: 'checkbox',
+            description: '设置初始状态下，所有折叠块（浅蓝色折叠区，Extra Examples 更多例句等）的展开/折叠状态。'
+        },
 
-    // 【配置项25：点击 Idioms、Phrasal Verbs 跳转后，自动展开内容】
-    // 选项（默认为true）：false=不展开，true=展开
-    jumpsUnfold: true,
+        // 【配置项3：默认展开特定折叠块】
+        autoUnfoldUnbox: {
+            selectedValue: { // 默认仅展开词源
+                british_american: { value: false, label: 'British/American 英式 / 美式' },
+                colloc: { value: false, label: 'Collocations 词语搭配' },
+                cult: { value: false, label: 'Culture 文化' },
+                express: { value: false, label: 'Express Yourself 情景表达' },
+                extra_examples: { value: false, label: 'Extra Examples 更多例句' },
+                grammar: { value: false, label: 'Grammar Point 语法说明' },
+                homophone: { value: false, label: 'Homophones 同音词' },
+                langbank: { value: false, label: 'Language Bank 用语库' },
+                mlt: { value: false, label: 'More Like This 同类词语学习' },
+                more_about: { value: false, label: 'More About 补充说明' },
+                snippet: { value: false, label: 'Oxford Collocations Dictionary 牛津搭配词典' },
+                synonyms: { value: false, label: 'Synonyms 同义词辨析' },
+                verbforms: { value: false, label: 'Verb Forms 动词形式' },
+                vocab: { value: false, label: 'Vocabulary Building 词汇扩充' },
+                which_word: { value: false, label: 'Which Word? 词语辨析' },
+                wordfamily: { value: false, label: 'Word Family 词族' },
+                wordfinder: { value: false, label: 'Wordfinder 联想词' },
+                wordorigin: { value: true, label: 'Word Origin 词源' }
+            },
+            title: '默认展开特定折叠块',
+            type: 'nested-checkboxes',
+            description: '设置初始状态下，特定折叠块的展开/折叠状态。',
+            callout: [
+                { type: 'warning', content: '当【是否默认展开折叠块】为 true 时，所有折叠块默认展开，此设置无效。' }
+            ]
+        },
 
-    // 【配置项26：点击小火箭返回后，自动折叠内容】
-    // 选项（默认为true）：false=不折叠，true=折叠
-    leavesFold: true,
+        // 【配置项4：是否默认展开 Idioms 和 Phrasal Verbs】
+        unfoldPhraseSections: {
+            selectedValue: false, // 默认不展开
+            title: '是否默认展开 Idioms 和 Phrasal Verbs',
+            type: 'checkbox',
+            description: '设置初始状态下，习语 Idioms 和词组 Phrasal Verbs 区域是否展开。'
+        },
 
-    // 【配置项27：是否使用普通锚跳，无滚动动画】（兼容 Android DictTango 瀑布流）
-    // 选项（默认为false）：false=否，true=是
-    instantHashNavigation: false,
+        // 【配置项5：跳转后自动展开内容】
+        jumpsUnfold: {
+            selectedValue: true, // 默认跳转后自动展开
+            title: '跳转后自动展开内容',
+            type: 'checkbox',
+            description: '控制点击 Idioms 或 Phrasal Verbs 跳转后，是否自动展开内容。'
+        },
 
-    /******** 欧路词典相关 ********/
-    // 【配置项28：是否在手机 Eudic 里使用更大的屏宽】
-    // 选项（默认为true）：false=否，true=是
-    widerScreenEudic: true,
+        // 【配置项6：返回后自动折叠内容】
+        leavesFold: {
+            selectedValue: true, // 默认返回后自动折叠
+            title: '返回后自动折叠内容',
+            type: 'checkbox',
+            description: '控制点击小火箭返回后，是否自动折叠内容。'
+        },
+    },
 
-    // 【配置项29：是否移除 Eudic 单词界面词头】（词典自带发音、生词等级等）
-    // 选项（默认为true）：false=不移除，true=移除
-    removeEudicHeader: true,
+    /******** 词典软件相关 ********/
+    dictionaryAppRelated: {
+        groupTitle: '词典软件相关',
 
-    // 【配置项30：是否自动折叠 Eudic 学习笔记】
-    // 选项（默认为false）：false=不自动折叠，true=自动折叠
-    autoFoldEudicNote: false,
+        // 【配置项1：欧路词典：使用更大的屏宽】
+        widerScreenEudic: {
+            selectedValue: true, // 默认使用更大的屏宽
+            title: '欧路词典：使用更大的屏宽',
+            type: 'checkbox',
+            description: '是否在欧路词典（手机端）中使用更大的屏宽，以在屏幕上显示更多内容。'
+        },
+
+        // 【配置项2：欧路词典：移除单词界面词头】
+        removeEudicHeader: {
+            selectedValue: true, // 默认移除
+            title: '欧路词典：移除单词界面词头',
+            type: 'checkbox',
+            description: '是否移除欧路词典（手机端 + iPad）单词界面上方的词头区域，包括欧路词典自带发音、生词等级等。'
+        },
+
+        // 【配置项3：欧路词典：自动折叠学习笔记】
+        autoFoldEudicNote: {
+            selectedValue: false, // 默认不折叠
+            title: '欧路词典：自动折叠学习笔记',
+            type: 'checkbox',
+            description: '初始状态下，自动将欧路词典（手机端 + iPad）的学习笔记折叠。'
+        },
+
+        // 【配置项4：DictTango：使用锚点跳转】
+        instantHashNavigation: {
+            selectedValue: false, // 默认不使用
+            title: 'DictTango：使用锚点跳转',
+            type: 'checkbox',
+            description: '是否使用锚点跳转（无滚动动画），兼容 DictTango Android 瀑布流。'
+        }
+    },
 
     /******** 其他功能 ********/
-    // 【配置项31：是否自动跟随系统深色模式】
-    // 选项（默认为true）：false=否，true=是
-    autoDarkMode: true,
+    otherFeatures: {
+        groupTitle: '其他功能',
 
-    // 【配置项32：是否启用 Eruda Console】（用于词典应用调试）
-    // 选项（默认为true）：false=否，true=是
-    enableErudaConsole: true,
+        // 【配置项1：自动跟随系统深色模式】
+        autoDarkMode: {
+            selectedValue: true, // 默认启用
+            title: '自动跟随系统深色模式',
+            type: 'checkbox',
+            description: '是否自动根据系统设置启用深色模式。'
+        },
 
-    /******** 其他自定义配置（仅支持通过此js文件修改） ********/
-    // 【配置项33：自动展开折叠块开关】（浅蓝色折叠区，仅在【是否展开折叠块】为 false 时生效）
-    // 选项（默认仅展开词源）：false=不展开，true=展开
-    autoUnfoldUnbox: {
-        'british_american': false, // British/American (英式 / 美式)
-        'colloc': false,           // Collocations (词语搭配)
-        'cult': false,             // Culture (文化)
-        'express': false,          // Express Yourself (情景表达)
-        'extra_examples': false,   // Extra Examples (更多例句)
-        'grammar': false,          // Grammar Point (语法说明)
-        'homophone': false,        // Homophones (同音词)
-        'langbank': false,         // Language Bank (用语库)
-        'mlt': false,              // More Like This (同类词语学习)
-        'more_about': false,       // More About (补充说明)
-        'snippet': false,          // Oxford Collocations Dictionary (牛津搭配词典)
-        'synonyms': false,         // Synonyms (同义词辨析)
-        'verbforms': false,        // Verb Forms (动词形式)
-        'vocab': false,            // Vocabulary Building (词汇扩充)
-        'which_word': false,       // Which Word? (词语辨析)
-        'wordfamily': false,       // Word Family (词族)
-        'wordfinder': false,       // Wordfinder (联想词)
-        'wordorigin': true,        // Word Origin (词源)
-    },
+        // 【配置项2：启用 Eruda Console】
+        enableErudaConsole: {
+            selectedValue: false, // 默认不启用
+            title: '启用 Eruda Console',
+            type: 'checkbox',
+            description: '是否启用 Eruda 控制台，用于词典应用调试。'
+        }
+    }
 };
 /* ********用户自定义配置区结束******** */
 
+// region Init
 $.ajaxSetup({ cache: true });
 
-$(function main() {
-    const SRC_FILE = 'oaldpe.js';
-    const SRC_PATH = isPreview() ? '/api/static' : $(`script[src*="${SRC_FILE}"]`).attr('src').replace(/\/[^/]*$/, '');
+window.copyToClipboard = function (text) {
+    const $temp = $('<textarea>').val(text).appendTo('body').select();
+    document.execCommand('copy');
+    $temp.remove();
+};
 
+var oaldpeInit = {
+    // User agent and platform
+    USER_AGENT: navigator.userAgent.toLowerCase(),
+    isEudic: function () {
+        return this.USER_AGENT.includes('eudic');
+    },
+    isEudicMobile: function () {
+        return this.isEudic() && (this.USER_AGENT.includes('android') || this.USER_AGENT.includes('iphone'));
+    },
+    isEudicAPP: function () {
+        return this.isEudic() && (this.USER_AGENT.includes('android') || this.USER_AGENT.includes('iphone') || this.USER_AGENT.includes('ipad'));
+    },
+    isGoldenDict: function () {
+        return this.USER_AGENT.includes('goldendict');
+    },
+    isMacosIpadSim: function () {
+        return this.USER_AGENT.includes('ipad') && navigator.maxTouchPoints === 0;
+    },
+    isPreview: function () {
+        try {
+            return window.self !== window.top && parent.document.querySelector('#k_iframe');
+        } catch { return false; }
+    },
+
+    // Environment variables
+    SRC_FILE: 'oaldpe.js',
+    resolveFilePath: function (relativePath) {
+        const scriptUrl = $(`script[src*="${this.SRC_FILE}"]`).attr('src');
+        return scriptUrl.slice(0, scriptUrl.lastIndexOf('/') + 1) + relativePath;
+    },
+    LOCAL_STORAGE_PREFIX: 'OALDPE_',
+    LOCAL_STORAGE_AVAILABLE: (() => {
+        try {
+            localStorage.setItem('__test__', '__test__');
+            localStorage.removeItem('__test__');
+            return true;
+        } catch { return false; }
+    })(),
+
+    // Helper functions
+    clear: function (callback) {
+        if (!this.LOCAL_STORAGE_AVAILABLE) return;
+
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith(this.LOCAL_STORAGE_PREFIX)) {
+                localStorage.removeItem(key);
+            }
+        });
+
+        if (typeof callback === 'function') callback();
+    },
+
+    setItem: function (settingItemKey, settingItem, callback) {
+        if (!this.LOCAL_STORAGE_AVAILABLE) return;
+
+        const localStoragekey = this.LOCAL_STORAGE_PREFIX + settingItemKey;
+        const localStorageValue = settingItem.type === 'nested-checkboxes'
+            ? JSON.stringify(Object.fromEntries(Object.entries(settingItem.selectedValue).map(([key, { value }]) => [key, value])))
+            : JSON.stringify(settingItem.selectedValue);
+
+        localStorage.setItem(localStoragekey, localStorageValue);
+
+        if (typeof callback === 'function') callback();
+    },
+
+    createCheckboxContainer: function (checkboxConfig) {
+        const $checkboxContainer = $('<span>', { class: 'checkbox-container' });
+        $checkboxContainer.attr('option-false', checkboxConfig.options?.[0] || 'Off');
+        $checkboxContainer.attr('option-true', checkboxConfig.options?.[1] || 'On');
+
+        const $checkbox = $('<input>', { type: 'checkbox' });
+        $checkboxContainer.append($checkbox);
+
+        // Initialize the checkbox state
+        const isChecked = checkboxConfig.initialState || false;
+        $checkbox.prop('checked', isChecked);
+
+        // Initialize the container class
+        $checkboxContainer.toggleClass('checked', isChecked);
+
+        // Update the container class when the checkbox changes
+        $checkbox.on('change', function () {
+            $checkboxContainer.toggleClass('checked', $checkbox.prop('checked'));
+        });
+
+        // Execute the callback function if it exists
+        if (typeof checkboxConfig.checkboxCallback === 'function') {
+            checkboxConfig.checkboxCallback($checkbox);
+        }
+
+        // Assign the ID attribute to locate the checkbox
+        if (checkboxConfig.id) {
+            $checkbox.attr('id', checkboxConfig.id);
+        }
+
+        return $checkboxContainer;
+    },
+
+    createCallout: function (calloutConfig) {
+        const $callout = $('<div>', { class: 'callout', 'data-callout': calloutConfig.type });
+        $callout.append($('<div>', {
+            class: 'callout-title',
+            text: calloutConfig.title || calloutConfig.type
+        }));
+
+        if (calloutConfig.content) {
+            const $calloutContent = $('<div>', { class: 'callout-content' }).appendTo($callout);
+
+            [].concat(calloutConfig.content).forEach(item => {
+                if (typeof item === 'string') {
+                    $calloutContent.append($('<p>', { text: item }));
+                } else if (item instanceof jQuery) {
+                    $calloutContent.append(item);
+                }
+            });
+        }
+
+        return $callout;
+    }
+};
+
+(function oaldpeConfigInit() {
+    const oaldpeConfigDuplicate = JSON.parse(JSON.stringify(oaldpeConfig)); // Deep copy
+
+    oaldpeConfigUpdate();
+
+    oaldpeConfigEvent();
+
+    const scriptsPromise = loadExternalScripts();
+
+    function oaldpeConfigUpdate() {
+        if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) return;
+
+        Object.entries(oaldpeConfig).forEach(([configGroupKey, configGroup]) => {
+            Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
+                const localStorageKey = oaldpeInit.LOCAL_STORAGE_PREFIX + settingItemKey;
+                const localStorageValue = localStorage.getItem(localStorageKey);
+
+                if (localStorageValue !== null) {
+                    const selectedValue = JSON.parse(localStorageValue);
+                    if (settingItem.type === 'dropdown' || settingItem.type === 'checkbox') {
+                        oaldpeConfig[configGroupKey][settingItemKey].selectedValue = selectedValue;
+                    } else if (settingItem.type === 'nested-checkboxes') {
+                        Object.keys(selectedValue).forEach(key => {
+                            oaldpeConfig[configGroupKey][settingItemKey].selectedValue[key].value = selectedValue[key];
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    function oaldpeConfigEvent() {
+        const $configContainer = $('.oaldpe-config');
+        if (!$configContainer.length) return;
+
+        // Initial setup
+        const $configNavbar = $('<div>', { id: 'oaldpe-config-navbar' }).appendTo($configContainer);
+        const $configContent = $('<div>', { id: 'oaldpe-config-content' }).appendTo($configContainer);
+
+        /* Construct configuration panel */
+        const $configPanel = $('<div>', { id: 'oaldpe-config-panel' }).appendTo($configContent);
+        const $configPanelTitle = $('<div>', { class: 'page-title', text: 'Configuration' }).appendTo($configPanel);
+
+        // Reset button
+        $('<span>').addClass('reset-button').appendTo($configPanelTitle).on('click', function () {
+            const $resetButton = $(this);
+
+            oaldpeConfig = JSON.parse(JSON.stringify(oaldpeConfigDuplicate));
+            constructConfigPanel();
+
+            oaldpeInit.clear(() => {
+                $resetButton.addClass('reset-success');
+                setTimeout(() => $resetButton.removeClass('reset-success'), 2000);
+            });
+        });
+
+        // Print the warning message if local storage is not available
+        if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) {
+            const warningMessage = oaldpeInit.createCallout({
+                type: 'danger', title: 'Error',
+                content: [
+                    `检测到当前环境不支持通过配置界面设置，请直接修改 ${oaldpeInit.SRC_FILE} 文件中的配置项。`,
+                    '推荐使用词典软件：', '(1) 欧路词典 Eudic (全平台)', '(2) GoldenDict-ng (电脑端)'
+                ]
+            });
+            warningMessage.addClass('local-storage-warning');
+            $configPanel.append(warningMessage);
+        }
+
+        constructConfigPanel();
+
+        function constructConfigPanel() {
+            // Clear up if constructed before
+            $configPanel.children('.oaldpe-config-group').remove();
+
+            // Construct the configuration panel based on the 'oaldpeConfig' object
+            Object.values(oaldpeConfig).forEach(configGroup => {
+                const $group = $('<ol>', { class: 'oaldpe-config-group' });
+
+                // Hidden message to show the success of saving settings
+                const $hiddenMessage = oaldpeInit.createCallout({ type: 'success', title: '保存成功' });
+                $hiddenMessage.addClass('hidden-message');
+                $group.append($hiddenMessage);
+
+                const showHiddenMessage = (delay = 1000) => {
+                    $hiddenMessage.fadeIn(function () {
+                        setTimeout(() => $hiddenMessage.fadeOut(), delay);
+                    });
+                };
+
+                Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
+                    if (settingItemKey === 'groupTitle') {
+                        $group.append($('<div>', { class: 'group-title', text: configGroup['groupTitle'] }));
+                        return;
+                    }
+
+                    // Create a UI element for each setting item
+                    const $settingItem = $('<li>', { class: 'setting-item', 'data-type': settingItem.type }).appendTo($group);
+
+                    // 1. Main content of the setting item
+                    const $configItem = $('<div>', { class: 'config-item' }).appendTo($settingItem);
+
+                    // Title and description
+                    const $settingItemInfo = $('<div>', { class: 'setting-item-info' }).appendTo($configItem);
+                    $settingItemInfo.append($('<div>', { class: 'setting-item-title', text: settingItem['title'] }));
+                    if (settingItem.description) {
+                        $settingItemInfo.append($('<div>', { class: 'setting-item-description', text: settingItem['description'] }));
+                    }
+
+                    // Create the control element based on the setting type
+                    const $settingItemControl = $('<div>', { class: 'setting-item-control' }).appendTo($configItem);
+                    if (settingItem.type === 'dropdown') {
+                        const $select = $('<select>').appendTo($settingItemControl);
+                        settingItem.options.forEach(option => {
+                            $select.append($('<option>').val(option.value).text(option.label)
+                                .prop('selected', option.value === settingItem.selectedValue)
+                            );
+                        });
+                        $select.on('change', function () {
+                            settingItem.selectedValue = parseInt($select.val());
+                            oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                        });
+                    } else if (settingItem.type === 'checkbox') {
+                        const $checkboxContainer = oaldpeInit.createCheckboxContainer({
+                            initialState: settingItem.selectedValue, checkboxCallback: $checkbox => {
+                                $checkbox.on('change', function () {
+                                    settingItem.selectedValue = $checkbox.prop('checked');
+                                    oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                                });
+                            }
+                        });
+                        $checkboxContainer.appendTo($settingItemControl);
+                    } else if (settingItem.type === 'nested-checkboxes') {
+                        const $nestedContainer = $('<ul>', { class: 'nested-checkboxes' }).appendTo($settingItemControl);
+                        Object.entries(settingItem.selectedValue).forEach(([key, { value, label }]) => {
+                            const $nested = $('<li>', { class: 'nested-item' });
+                            const $checkboxContainer = oaldpeInit.createCheckboxContainer({
+                                initialState: value, checkboxCallback: $checkbox => {
+                                    $checkbox.on('change', function () {
+                                        settingItem.selectedValue[key].value = $checkbox.prop('checked');
+                                        oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                                    });
+                                }
+                            });
+                            $nested.append($('<span>', { class: 'nested-item-label', text: label })).append($checkboxContainer);
+                            $nested.appendTo($nestedContainer);
+                        });
+                    }
+
+                    // 2. Callout
+                    settingItem.callout?.forEach(calloutConfig => {
+                        $settingItem.append(oaldpeInit.createCallout(calloutConfig));
+                    });
+                });
+
+                $configPanel.append($group);
+            });
+        }
+
+        /* Construct help center */
+        const $configHelp = $configContainer.children('#oaldpe-config-help').appendTo($configContent);
+        $configHelp.prepend($('<div>', { class: 'page-title', text: 'HELP' }));
+
+        // Page Navigation
+        $configNavbar.append([
+            $('<span>', { class: 'nav-item', text: 'Configuration', 'data-target': 'oaldpe-config-panel' }),
+            $('<span>', { class: 'nav-item', text: 'Help', 'data-target': 'oaldpe-config-help' })
+        ]);
+        $configNavbar.children().first().addClass('active');
+        $configNavbar.on('click', 'span', function () {
+            const $clickedSpan = $(this);
+            if ($clickedSpan.hasClass('active')) return;
+
+            $clickedSpan.addClass('active');
+            $clickedSpan.siblings().removeClass('active');
+
+            const animationDuration = 100;
+            const $target = $configContent.children(`#${$clickedSpan.data('target')}`);
+            $target.siblings().fadeOut(animationDuration, function () {
+                $target.fadeIn(animationDuration);
+            });
+        });
+    }
+
+    async function loadExternalScripts() {
+        async function loadScript(localPath, cdnUrl, globalVar) {
+            if (typeof window[globalVar] === 'undefined') {
+                const resolvedLocalPath = oaldpeInit.resolveFilePath(localPath);
+                try {
+                    await $.getScript(resolvedLocalPath);
+                    if (typeof window[globalVar] === 'undefined') throw new Error();
+                } catch (error) {
+                    console.log(`Failed to load the local script '${resolvedLocalPath}', attempting to load from the CDN: ${cdnUrl}`);
+                    await $.getScript(cdnUrl);
+                }
+            }
+        }
+
+        if (oaldpeConfig.otherFeatures.enableErudaConsole.selectedValue) {
+            await loadScript('eruda', 'https://cdn.jsdelivr.net/npm/eruda', 'eruda');
+
+            eruda.init({
+                defaults: {
+                    displaySize: 40,
+                    theme: 'Atom One Light'
+                }
+            });
+        }
+
+        if (oaldpeConfig.chineseTranslation.showTraditional.selectedValue) {
+            await loadScript('full.min.js', 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js', 'OpenCC');
+        }
+
+        if (oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) {
+            await loadScript('crypto-js.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js', 'CryptoJS');
+        }
+    }
+
+    return scriptsPromise;
+}()).then(main);
+
+function main() {
     const OALDPE_PREFIX_WORD_UK = 'https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/';
     const OALDPE_PREFIX_WORD_US = 'https://www.oxfordlearnersdictionaries.com/media/english/us_pron/';
     const OALDPE_PREFIX_EXAMPLE = 'https://oxford-x-file.oss-cn-hangzhou.aliyuncs.com/audio/xgs/xgs_audio/';
     const OALDPE_PREFIX_FULL_IMAGE = 'https://www.oxfordlearnersdictionaries.com/us/media/english/fullsize/';
     const OALDPE_PREFIX_THUMB_IMAGE = 'https://www.oxfordlearnersdictionaries.com/us/media/english/thumb/';
 
-    const OALDPE_BRITISH_TTS_OPTION = ['英音男1', '英音男2', '英音女1', '英音女2', '英音女3'];
-    const OALDPE_AMERICAN_TTS_OPTION = ['美音男1', '美音男2', '美音男3', '美音男4', '美音男5', '美音女1', '美音女2', '美音女3', '美音女4'];
-
-    const OALDPE_PREFIX_LOCALSTORAGE = 'OALDPE_'
-
+    // 词性替换表
     const OALDPE_POS = {
         'noun': 'n.',
         'adjective': 'adj.',
@@ -239,6 +819,7 @@ $(function main() {
         'adverb, noun': 'adv., n.',
     }
 
+    // 语法标签替换表
     const OALDPE_GRAMMAR = {
         '[uncountable]': '[U]',
         '[only before noun]': '[only bf N]',
@@ -298,155 +879,6 @@ $(function main() {
         '[transitive, intransitive, usually passive]': '[T, I, usu psv]',
     }
 
-    const oaldpeConfigDuplicate = Object.assign({}, oaldpeConfig);
-
-    const isLocalStorageAvailable = (function () {
-        try {
-            localStorage.setItem('__test__', '__test__');
-            localStorage.removeItem('__test__');
-            return true;
-        } catch { return false; }
-    })();
-
-    updateConfigFromLocalStorage();
-
-    oaldpeConfigEvent();
-
-    function updateConfigFromLocalStorage() {
-        if (!isLocalStorageAvailable) return;
-
-        Object.keys(localStorage).forEach(key => {
-            if (!key.startsWith(OALDPE_PREFIX_LOCALSTORAGE)) return;
-            const localStorageValue = localStorage.getItem(key);
-
-            const oaldpeConfigKey = key.replace(OALDPE_PREFIX_LOCALSTORAGE, '');
-            const oaldpeConfigValue = oaldpeConfig[oaldpeConfigKey];
-
-            /* convert from localStorage string to oaldpeConfig type */
-            if (oaldpeConfigKey === 'britishTTS') {
-                oaldpeConfig[oaldpeConfigKey] = OALDPE_BRITISH_TTS_OPTION[parseInt(localStorageValue)];
-            } else if (oaldpeConfigKey === 'americanTTS') {
-                oaldpeConfig[oaldpeConfigKey] = OALDPE_AMERICAN_TTS_OPTION[parseInt(localStorageValue)];
-            } else if (typeof oaldpeConfigValue === 'number') {
-                oaldpeConfig[oaldpeConfigKey] = parseInt(localStorageValue);
-            } else if (typeof oaldpeConfigValue === 'boolean') {
-                oaldpeConfig[oaldpeConfigKey] = localStorageValue === '1';
-            }
-        });
-    }
-
-    function updateConfigToUI() {
-        Object.keys(oaldpeConfig).forEach(oaldpeConfigKey => {
-            const oaldpeConfigValue = oaldpeConfig[oaldpeConfigKey];
-            const $select = $(`#oaldpe-config .config-item[id="${oaldpeConfigKey}"] > .select`);
-
-            /* convert from oaldpeConfig type to index number */
-            if (oaldpeConfigKey === 'britishTTS') {
-                $select.attr('cfg-selected', OALDPE_BRITISH_TTS_OPTION.indexOf(oaldpeConfigValue));
-            } else if (oaldpeConfigKey === 'americanTTS') {
-                $select.attr('cfg-selected', OALDPE_AMERICAN_TTS_OPTION.indexOf(oaldpeConfigValue));
-            } else if (typeof oaldpeConfigValue === 'number') {
-                $select.attr('cfg-selected', oaldpeConfigValue);
-            } else if (typeof oaldpeConfigValue === 'boolean') {
-                $select.attr('cfg-selected', oaldpeConfigValue ? 1 : 0);
-            }
-        });
-    }
-
-    function oaldpeConfigEvent() {
-        if (!$('#oaldpe-config').length) return;
-
-        updateConfigToUI(); // 初始化配置
-
-        const $allSelect = $('#oaldpe-config .config-item > .select').each(function () {
-            const $select = $(this);
-            const $options = $select.children('.option');
-            const selectedIndex = $select.attr('cfg-selected');
-
-            const fullHeight = $select.height();
-            const selectedHeight = $options.eq(selectedIndex).outerHeight();
-
-            $select.on('click', function (event) {
-                event.stopPropagation();
-                const $target = $(event.target);
-                if ($select.hasClass('unfolded')) {
-                    if ($target.hasClass('option')) $select.attr('cfg-selected', $target.index());
-                    $select.animate({ height: selectedHeight }, {
-                        duration: 300,
-                        complete: function () {
-                            $options.each(function (index) {
-                                $(this).toggle(index.toString() === $select.attr('cfg-selected'));
-                            });
-                        }
-                    });
-                } else {
-                    $options.show();
-                    $select.animate({ height: fullHeight }, { duration: 300 });
-                }
-                $select.toggleClass('unfolded');
-            });
-
-            // 高亮选项
-            $options.hover(
-                function () { $(this).addClass('highlighted'); },
-                function () { $(this).removeClass('highlighted'); }
-            );
-        });
-
-        // 初始化选项
-        $allSelect.addClass('unfolded').trigger('click');
-
-        // 点击其他地方收起
-        $(document).on('click', function (event) {
-            if (!$(event.target).closest('.select').length) {
-                $allSelect.filter('.unfolded').trigger('click');
-            }
-        });
-
-        if (!isLocalStorageAvailable) {
-            $('#oaldpe-config .head-title')
-                .append('（已禁用，请直接修改 JS 文件）')
-                .css('color', 'red');
-
-            $('#oaldpe-config button')
-                .prop('disabled', true)
-                .css('background-color', '#999')
-                .css('cursor', 'unset');
-
-            return;
-        }
-
-        $('#oaldpe-config button[type="submit"]').on('click', function () { // 保存配置
-            $allSelect.addClass('unfolded').trigger('click');
-
-            $allSelect.each(function () {
-                const $select = $(this);
-                const oaldpeConfigKey = $select.parent('.config-item').attr('id');
-                const value = $select.attr('cfg-selected');
-                localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + oaldpeConfigKey, value);
-            });
-
-            const $button = $(this);
-            $button.text('保存配置完毕！');
-            setTimeout(function () { $button.text('保存配置'); }, 1000);
-        });
-
-        $('#oaldpe-config button[type="reset"]').on('click', function () { // 重置配置
-            $allSelect.addClass('unfolded').trigger('click');
-
-            Object.keys(localStorage)
-                .filter(key => key.startsWith(OALDPE_PREFIX_LOCALSTORAGE))
-                .forEach(key => localStorage.removeItem(key));
-
-            oaldpeConfig = oaldpeConfigDuplicate;
-            updateConfigToUI();
-
-            const $button = $(this);
-            $button.text('重置配置完毕！');
-            setTimeout(function () { $button.text('重置配置'); }, 1000);
-        });
-    }
-
     $('.oaldpe').each(function () {
         const $oaldpe = $(this);
         if ($oaldpe.attr('script-loaded') === 'true') return;
@@ -461,8 +893,6 @@ $(function main() {
         setupConfigGear();
 
         setupNavigation();
-
-        setupErudaConsole();
 
         detectDarkModeEnabled();
 
@@ -483,7 +913,7 @@ $(function main() {
                 if (syllable) {
                     $headword.css('cursor', 'pointer').on('click', toggleSyllable);
 
-                    if (oaldpeConfig.showSyllable) {
+                    if (oaldpeConfig.contentDisplay.showSyllable.selectedValue) {
                         toggleSyllable();
                     }
                 }
@@ -502,10 +932,10 @@ $(function main() {
                         ])
                     )
                     .append($('<div>', { class: 'dictarts', text: '—— Artworks from OXFORD' }))
-                )
-                .append($('<div>', { class: 'oaldpe-config-gear__head__icon' }));
+                );
+            const $configGearIcon = $('<div>', { class: 'oaldpe-config-gear__icon' });
             const $configGearBody = $('<div>', { class: 'oaldpe-config-gear__body' });
-            $configGear.append($configGearHead, $configGearBody);
+            $configGear.append($configGearHead, $configGearIcon, $configGearBody);
 
             if ($webtop.length) {
                 $webtop.first().prepend($configGear);
@@ -514,77 +944,141 @@ $(function main() {
                 $container.first().prepend($configGear);
             }
 
-            const configItems = [
-                { label: 'Autofold Eudic Note', oaldpeConfigKey: 'autoFoldEudicNote', options: ['on', 'off'] },
-                { label: 'Online Example Pron', oaldpeConfigKey: 'officialExPronOpt', options: ['on', 'off'] },
-                { label: 'Default Example Pron', oaldpeConfigKey: 'defaultBritishExPron', options: ['BrE', 'NAmE'] },
-                { label: 'Eruda Console', prefix: 'Eruda', options: ['show', 'input', 'hide'] },
+            const configGroups = [
+                {
+                    groupTitle: 'Translation',
+                    settingItems: [
+                        {
+                            label: 'Highlight Unofficial',
+                            checkboxConfig: {
+                                id: 'highlight-unofficial',
+                                initialState: oaldpeConfig.chineseTranslation.highlightUnofficial.selectedValue,
+                                checkboxCallback: $checkbox => {
+                                    // Initial setup
+                                    $oaldpe.attr('highlight-unofficial', $checkbox.prop('checked'));
+
+                                    // Listen for changes
+                                    $checkbox.on('change', function () {
+                                        $oaldpe.attr('highlight-unofficial', $checkbox.prop('checked'));
+                                    });
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    groupTitle: 'Eudic Related',
+                    settingItems: [
+                        {
+                            label: 'Autofold Custom Note',
+                            checkboxConfig: {
+                                initialState: oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote.selectedValue,
+                                checkboxCallback: $checkbox => {
+                                    $checkbox.on('change', function () {
+                                        oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote.selectedValue = $checkbox.prop('checked');
+                                        oaldpeInit.setItem('autoFoldEudicNote', oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote);
+                                    });
+                                }
+                            }
+                        },
+                    ]
+                },
+                {
+                    groupTitle: 'Example Pronunciation',
+                    settingItems: [
+                        {
+                            label: 'Online (official)',
+                            checkboxConfig: {
+                                initialState: oaldpeConfig.onlineResources.officialExPronOpt.selectedValue,
+                                checkboxCallback: $checkbox => {
+                                    $checkbox.on('change', function () {
+                                        oaldpeConfig.onlineResources.officialExPronOpt.selectedValue = $checkbox.prop('checked');
+                                        oaldpeInit.setItem('officialExPronOpt', oaldpeConfig.onlineResources.officialExPronOpt);
+                                    });
+                                }
+                            }
+                        },
+                        {
+                            label: 'Current Accent',
+                            checkboxConfig: {
+                                options: ['NAmE', 'BrE'],
+                                initialState: oaldpeConfig.contentDisplay.defaultBritishExPron.selectedValue,
+                                checkboxCallback: $checkbox => {
+                                    // Initial setup
+                                    $oaldpe.attr('pron', $checkbox.prop('checked') ? 'uk' : 'us');
+
+                                    // Listen for changes
+                                    $checkbox.on('change', function () {
+                                        $oaldpe.attr('pron', $checkbox.prop('checked') ? 'uk' : 'us');
+                                    });
+
+                                    // Also toggle the checkbox when clicking the brand
+                                    $configGear.find('.oaldpe-config-gear__head__brand').on('click', function () {
+                                        $checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
+                                    });
+                                }
+                            }
+                        },
+                        {
+                            label: 'Default Accent',
+                            checkboxConfig: {
+                                options: ['NAmE', 'BrE'],
+                                initialState: oaldpeConfig.contentDisplay.defaultBritishExPron.selectedValue,
+                                checkboxCallback: $checkbox => {
+                                    $checkbox.on('change', function () {
+                                        oaldpeConfig.contentDisplay.defaultBritishExPron.selectedValue = $checkbox.prop('checked');
+                                        oaldpeInit.setItem('defaultBritishExPron', oaldpeConfig.contentDisplay.defaultBritishExPron);
+                                    });
+                                }
+                            }
+                        }
+                    ]
+                }
             ];
 
-            configItems.forEach(item => {
-                if (item.oaldpeConfigKey === 'autoFoldEudicNote' && !isEudic()) return;
-                if (item.oaldpeConfigKey === 'officialExPronOpt' && oaldpeConfig.officialExPronOpt === 2) return;
-                if (item.oaldpeConfigKey === 'defaultBritishExPron' && oaldpeConfig.officialExPronOpt === 2) return;
-                if (item.prefix === 'Eruda' && !oaldpeConfig.enableErudaConsole) return;
+            configGroups.forEach(group => {
+                // Check conditions and skip rendering
+                if (group.groupTitle === 'Eudic Related' && !oaldpeInit.isEudicAPP()) return;
+                if (group.groupTitle === 'Example Pronunciation' && (!oaldpeConfig.onlineResources.officialExPronOpt.selectedValue && !oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue)) return;
 
-                const $configGroup = $('<div>', { class: 'config-group' });
-                const $label = $('<div>', { class: 'config-group__label', text: item.label });
-                const $options = $('<div>', { class: 'config-group__options' });
+                const $configGroup = $('<ul>', { class: 'config-group' });
+                $configGroup.append($('<div>', { class: 'config-group-title', text: group.groupTitle }));
 
-                item.options.forEach(option => {
-                    const optionId = `${item.oaldpeConfigKey ? item.oaldpeConfigKey : item.prefix}_${option}`;
-                    $options.append($('<span>', { id: optionId, text: option }));
+                group.settingItems.forEach(settingItem => {
+                    // Check conditions and skip rendering
+                    if (group.groupTitle === 'Example Pronunciation') {
+                        if (settingItem.label === 'Online (official)' && !oaldpeConfig.onlineResources.officialExPronOpt.selectedValue) return;
+                    }
+
+                    const $settingItem = $('<li>', { class: 'setting-item' });
+
+                    $settingItem.append($('<div>', { class: 'config-item' })
+                        .append($('<div>', { class: 'setting-item-info' })
+                            .append($('<div>', { class: 'setting-item-title', text: settingItem.label }))
+                        )
+                        .append($('<div>', { class: 'setting-item-control' })
+                            .append(oaldpeInit.createCheckboxContainer(settingItem.checkboxConfig))
+                        ));
+
+                    $configGroup.append($settingItem);
                 });
 
-                $configGroup.append($label).append($options);
                 $configGearBody.append($configGroup);
             });
 
-            function handleConfig(oaldpeConfigKey, initActiveClass, booleanTrueEquvalent) {
-                const $options = $configGearBody.find(`[id^="${oaldpeConfigKey}_"]`);
-                const $initActiveElement = $options.filter(`#${oaldpeConfigKey}_${initActiveClass}`);
+            // Create an entry link that points to the configuration panel ('oaldpeconfig')
+            const $configEntryContainer = $('<div>', { class: 'config-entry-container' });
+            const $configEntry = $('<a>', {
+                class: 'Ref', text: 'Configuration',
+                href: $oaldpe.find('.pseudo-footer .entry-link-placeholder').attr('href')?.replace('placeholder', 'oaldpeconfig')
+            });
 
-                $initActiveElement.addClass('active');
-
-                $options.on('click', function () {
-                    const $option = $(this);
-
-                    $option.addClass('active');
-                    $option.siblings().removeClass('active');
-
-                    const booleanValue = $option.attr('id') === `${oaldpeConfigKey}_${booleanTrueEquvalent}`;
-                    if (isLocalStorageAvailable) {
-                        localStorage.setItem(OALDPE_PREFIX_LOCALSTORAGE + oaldpeConfigKey, booleanValue ? '1' : '0');
-                    }
-
-                    // Take effect immediately
-                    if (oaldpeConfigKey === 'officialExPronOpt') {
-                        $oaldpe.attr('online-example-pron', booleanValue ? 'true' : 'false');
-                    }
-                });
-            }
-
-            // Autofold Eudic Note
-            if (isEudic()) {
-                handleConfig('autoFoldEudicNote', oaldpeConfig.autoFoldEudicNote ? 'on' : 'off', 'on');
-            }
-
-            if (oaldpeConfig.officialExPronOpt !== 2) {
-                // Online Example Pron
-                handleConfig('officialExPronOpt', oaldpeConfig.officialExPronOpt ? 'on' : 'off', 'on');
-
-                // Default Example Pron
-                $oaldpe.attr('pron', oaldpeConfig.defaultBritishExPron ? 'uk' : 'us');
-                $configGear.find('.oaldpe-config-gear__head__brand').on('click', function () {
-                    const currentPron = $oaldpe.attr('pron');
-                    $oaldpe.attr('pron', currentPron === 'uk' ? 'us' : 'uk');
-                });
-                handleConfig('defaultBritishExPron', oaldpeConfig.defaultBritishExPron ? 'BrE' : 'NAmE', 'BrE');
-            }
+            $configEntryContainer.append($configEntry);
+            $configGearBody.append($configEntryContainer);
         }
 
         function setupNavigation() {
-            if (!oaldpeConfig.showNavbar || $oald.length <= 1) {
+            if (!oaldpeConfig.posNavbar.showNavbar.selectedValue || $oald.length <= 1) {
                 $oald.addClass('visible');
                 return;
             }
@@ -605,7 +1099,7 @@ $(function main() {
             const $spanAll = $('<span>').text('All').appendTo($navbar);
             const $navbarSpan = $navbar.children('span');
 
-            if (oaldpeConfig.selectNavbarAll) {
+            if (oaldpeConfig.posNavbar.selectNavbarAll.selectedValue) {
                 $spanAll.addClass('active');
                 $oald.addClass('visible');
             } else {
@@ -633,40 +1127,15 @@ $(function main() {
             });
         }
 
-        async function setupErudaConsole() {
-            if (!oaldpeConfig.enableErudaConsole) return;
-            try {
-                await $.getScript(`${SRC_PATH}/eruda`);
-                if (typeof eruda === 'undefined') throw new Error();
-            } catch {
-                await $.getScript('https://cdn.jsdelivr.net/npm/eruda');
-            }
-            eruda.init({
-                defaults: {
-                    displaySize: 40,
-                    theme: 'Atom One Light'
-                }
-            });
-
-            $('#Eruda_show').click(() => eruda.show());
-            $('#Eruda_hide').click(() => eruda.hide());
-            $('#Eruda_input').click(function () {
-                eruda.show();
-                eruda.show('console');
-            });
-
-            $('div[id="eruda"]').each((_, element) => element.shadowRoot.querySelector('.eruda-entry-btn').style.display = 'none');
-        }
-
         function detectDarkModeEnabled() {
-            if (!oaldpeConfig.autoDarkMode) return;
+            if (!oaldpeConfig.otherFeatures.autoDarkMode.selectedValue) return;
 
-            if (!isGoldenDict() && !isEudic()) {
+            if (!oaldpeInit.isGoldenDict() && !oaldpeInit.isEudic()) {
                 const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
                 const handleThemeChange = (event) => {
                     const isDarkMode = event.matches;
                     $oaldpe.attr('data-theme', isDarkMode ? 'dark' : 'light');
-                    if (isPreview()) $('body').css('background-color', isDarkMode ? 'rgb(26, 26, 26)' : '');
+                    if (oaldpeInit.isPreview()) $('body').css('background-color', isDarkMode ? 'rgb(26, 26, 26)' : '');
                 };
 
                 handleThemeChange(darkModeMediaQuery); // Initial check
@@ -675,7 +1144,7 @@ $(function main() {
                 return;
             }
 
-            if (isGoldenDict()) {
+            if (oaldpeInit.isGoldenDict()) {
                 $oaldpe.attr('data-theme', $('html').attr('data-darkreader-scheme') === 'dark' ? 'dark' : 'light');
                 return;
             }
@@ -731,6 +1200,44 @@ $(function main() {
         const $exampleChn = $allExample.find('chn'); // 例句中文
         const $definitionChn = $allSenseDefinition.find('chn'); // 释义中文
 
+        // 翻译来源标签
+        const sourceDescription = {
+            'ai': 'Google 机翻',
+            'leon': 'leon406 翻译',
+            'oald': '原双解版翻译参考'
+        };
+
+        // 是否存在非官方翻译（除 AI 机翻外）
+        var hasUnofficialTranslation = false;
+
+        const chnMapping = $chn.map(function () {
+            const $this = $(this);
+            const $target = $this.children().length ? $this.children().first() : $this;
+
+            if ($this.children().length) {
+                $this.attr('data-source', $target.prop("tagName").toLowerCase());
+                $this.attr('title', sourceDescription[$this.data('source')]);
+
+                if ($this.data('source') !== 'ai') {
+                    hasUnofficialTranslation = true;
+                }
+
+                if (!$this.is($definitionChn) && $this.data('source') !== 'ai') {
+                    $this.append($('<span>', { class: 'question-circle', text: '?' }));
+                }
+            }
+
+            return { $chn: $this, $target: $target }
+        }).get();
+
+        const $allChnTarget = $(chnMapping.map(mapping => mapping.$target.get()).flat());
+
+        if (!hasUnofficialTranslation) {
+            const $checkbox = $oaldpe.find('#highlight-unofficial');
+            $checkbox.prop('disabled', true);
+            $checkbox.parent().addClass('disabled');
+        }
+
         // region 中文翻译相关
         fnExamplesChineseBeAlone();
 
@@ -745,7 +1252,7 @@ $(function main() {
         replaceFullWidthCharsInChn();
 
         function fnExamplesChineseBeAlone() {
-            if (!oaldpeConfig.examplesChineseBeAlone) {
+            if (!oaldpeConfig.contentDisplay.examplesChineseBeAlone.selectedValue) {
                 $exampleChn.css('display', 'inline');
                 $exampleChn.parent().css('margin-left', '4px');
             }
@@ -755,7 +1262,6 @@ $(function main() {
             $oaldpe.find('.fullsize, .thumb').each(function () {
                 const $img = $(this);
                 const src = $img.data('src');
-
                 const [baseName, extension] = src.split('.');
 
                 $img.attr({
@@ -767,32 +1273,35 @@ $(function main() {
         }
 
         function fnShowTranslation() {
-            const option = oaldpeConfig.showTranslation;
-            (option === 0) && $chn.hide(); // 全部隐藏
+            const option = oaldpeConfig.chineseTranslation.showTranslation.selectedValue;
+            (option === 0) && $chn.hide();    // 全部隐藏
             // (option === 1) && $chn.show(); // 全部显示
-            (option === 2) && $exampleChn.hide(); // 仅隐藏例句中文
-            (option === 3) && $chn.not($exampleChn).hide(); // 仅显示例句中文
-            (option === 4) && $definitionChn.hide(); // 仅隐藏释义中文
+            (option === 2) && $exampleChn.hide();              // 仅隐藏例句中文
+            (option === 3) && $chn.not($exampleChn).hide();    // 仅显示例句中文
+            (option === 4) && $definitionChn.hide();           // 仅隐藏释义中文
             (option === 5) && $chn.not($definitionChn).hide(); // 仅显示释义中文
 
             fnImgTranslationOpt();
         }
 
         function chineseToggle() {
-            oaldpeConfig.showTranslation = oaldpeConfig.showTranslation === 0 ? 1 : 0;
+            // Flip the selected value
+            oaldpeConfig.chineseTranslation.showTranslation.selectedValue = oaldpeConfig.chineseTranslation.showTranslation.selectedValue === 0 ? 1 : 0;
 
-            const option = oaldpeConfig.showTranslation;
+            const option = oaldpeConfig.chineseTranslation.showTranslation.selectedValue;
             (option === 0) && $chn.fadeOut('fast'); // 全部隐藏
             (option === 1) && $chn.fadeIn('fast');  // 全部显示
 
-            fnImgTranslationOpt();
+            if (!oaldpeConfig.onlineResources.onlineImage.selectedValue) {
+                fnImgTranslationOpt();
+            }
         }
 
         function fnImgTranslationOpt() {
             // 图片翻译：0-不使用翻译 1-简体中文翻译 2-港版繁体翻译 3-自动选择
-            const option = oaldpeConfig.imgTranslationOpt === 3
-                ? (oaldpeConfig.showTranslation ? (oaldpeConfig.showTraditional ? 2 : 1) : 0)
-                : oaldpeConfig.imgTranslationOpt;
+            const option = oaldpeConfig.chineseTranslation.imgTranslationOpt.selectedValue === 3
+                ? (oaldpeConfig.chineseTranslation.showTranslation.selectedValue ? (oaldpeConfig.chineseTranslation.showTraditional.selectedValue ? 2 : 1) : 0)
+                : oaldpeConfig.chineseTranslation.imgTranslationOpt.selectedValue;
 
             $oaldpe.find('.fullsize, .thumb').each(function () {
                 const $img = $(this);
@@ -801,27 +1310,19 @@ $(function main() {
         }
 
         async function fnShowTraditional() {
-            if (oaldpeConfig.showTraditional !== 0) {
-                try {
-                    await $.getScript(`${SRC_PATH}/full.min.js`);
-                    if (typeof OpenCC === 'undefined') throw new Error();
-                } catch {
-                    await $.getScript('https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js');
-                }
-
-                const zhConvertLang = ['hk', 'tw', 'twp'][oaldpeConfig.showTraditional - 1];
+            if (oaldpeConfig.chineseTranslation.showTraditional.selectedValue) {
+                const zhConvertLang = ['hk', 'tw', 'twp'][oaldpeConfig.chineseTranslation.showTraditional.selectedValue - 1];
                 const converter = OpenCC.Converter({ from: 'cn', to: zhConvertLang });
 
-                $chn.each(function () {
-                    const $this = $(this);
-                    const $target = $this.children().length ? $this.children().first() : $this;
+                $allChnTarget.each(function () {
+                    const $target = $(this);
                     $target.text(converter($target.text()));
                 });
             }
         }
 
         function fnTouchToTranslate() {
-            if (!oaldpeConfig.touchToTranslate) return;
+            if (!oaldpeConfig.chineseTranslation.touchToTranslate.selectedValue) return;
 
             // 释义中文
             senseMapping.forEach(({ $sense, $senseDefinition }) => {
@@ -840,7 +1341,7 @@ $(function main() {
                 const $example = $(this);
                 const $labelChn = $example.children('.labels').find('chn');
                 const $exampleChn = $example.find('.x, .unx, .unx + undt').find('chn');
-                oaldpeConfig.examplesChineseBeAlone ? $exampleChn.slideToggle('fast') : $exampleChn.fadeToggle('fast');
+                oaldpeConfig.contentDisplay.examplesChineseBeAlone.selectedValue ? $exampleChn.slideToggle('fast') : $exampleChn.fadeToggle('fast');
                 $labelChn.fadeToggle('fast');
             });
 
@@ -889,9 +1390,8 @@ $(function main() {
         function replaceFullWidthCharsInChn() {
             const replacements = { '／': '/' };
 
-            $chn.each(function () {
-                const $this = $(this);
-                const $target = $this.children().length ? $this.children().first() : $this;
+            $allChnTarget.each(function () {
+                const $target = $(this);
                 $target.text($target.text().replace(/／/g, replacements['／']));
             });
         }
@@ -931,7 +1431,7 @@ $(function main() {
                 const $phon = $audio.next('.phon');
                 $phon.on('click', () => $audio[0].click());
 
-                if (oaldpeConfig.onlineWordPron) {
+                if (oaldpeConfig.onlineResources.onlineWordPron.selectedValue) {
                     $audio.attr('data-href', getOnlineWordPronUrl($audio.attr('href')));
                     $audio.on('click', function (event) {
                         event.stopPropagation();
@@ -950,7 +1450,7 @@ $(function main() {
 
                 $imgContainer.find('.fullsize, .thumb').each(function () {
                     const $img = $(this);
-                    if (oaldpeConfig.onlineImage) {
+                    if (oaldpeConfig.onlineResources.onlineImage.selectedValue) {
                         $img.attr('src', getOnlineImageUrl($img.data('src')));
                     }
                 });
@@ -964,15 +1464,15 @@ $(function main() {
 
         function setupExamplePron() {
             // 不启用官方例句发音
-            if (oaldpeConfig.officialExPronOpt === 2) return;
+            if (!oaldpeConfig.onlineResources.officialExPronOpt.selectedValue) return;
 
             // 启用官方例句在线发音
-            if (oaldpeConfig.officialExPronOpt === 1) {
+            if (oaldpeConfig.onlineResources.officialExPronOpt.selectedValue === 1) {
                 $oaldpe.attr('online-example-pron', 'true');
             }
 
             // 删除无在线发音的官方例句发音
-            if (oaldpeConfig.removeNoOnlineExPron) {
+            if (oaldpeConfig.onlineResources.removeNoOnlineExPron.selectedValue) {
                 $oaldpe.find('.audio_play_button').filter('.app-ext').remove();
             }
 
@@ -1016,25 +1516,29 @@ $(function main() {
         fnPhrasesAddUnderline();
 
         function fnSimplifyPos() {
-            if (oaldpeConfig.simplifyPos) {
+            if (oaldpeConfig.contentSimplification.simplifyPos.selectedValue) {
                 $oaldpe.find('.pos').each(function () {
                     const $this = $(this);
-                    $this.text(OALDPE_POS[$this.text()]);
+                    const originalText = $this.text();
+                    $this.text(OALDPE_POS[originalText]);
+                    $this.attr('title', originalText);
                 });
             }
         }
 
         function fnSimplifyGrammar() {
-            if (oaldpeConfig.simplifyGrammar) {
+            if (oaldpeConfig.contentSimplification.simplifyGrammar.selectedValue) {
                 $oaldpe.find('.grammar').each(function () {
                     const $this = $(this);
-                    $this.text(OALDPE_GRAMMAR[$this.text()]);
+                    const originalText = $this.text();
+                    $this.text(OALDPE_GRAMMAR[originalText]);
+                    $this.attr('title', originalText);
                 });
             }
         }
 
         function fnSimplifySthSb() {
-            if (oaldpeConfig.simplifySthSb) {
+            if (oaldpeConfig.contentSimplification.simplifySthSb.selectedValue) {
                 const replacements = { 'something': 'sth.', 'somebody': 'sb.' };
 
                 $oaldpe.find('.cf, .idm').contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).each(function () {
@@ -1044,7 +1548,7 @@ $(function main() {
         }
 
         function fnUsePlaceholder() {
-            if (oaldpeConfig.usePlaceholder) {
+            if (oaldpeConfig.contentSimplification.usePlaceholder.selectedValue) {
                 $oaldpe.find('.oald').each(function () {
                     const $oald = $(this);
                     const $webtop = $oald.find('.entry > .top-container .webtop');
@@ -1057,7 +1561,7 @@ $(function main() {
         }
 
         function fnPhrasesAddUnderline() {
-            if (oaldpeConfig.phrasesAddUnderline) {
+            if (oaldpeConfig.contentDisplay.phrasesAddUnderline.selectedValue) {
                 $oaldpe.find('.cf').addClass('underline');
             }
         }
@@ -1091,13 +1595,13 @@ $(function main() {
                     $senseExpand.slideToggle('fast');
                 });
 
-                if (!oaldpeConfig.unfoldSense) {
+                if (!oaldpeConfig.collapseControl.unfoldSense.selectedValue) {
                     $iteration.addClass('folded');
                     $senseExpand.hide();
                 }
             });
 
-            if (!oaldpeConfig.unfoldSense) {
+            if (!oaldpeConfig.collapseControl.unfoldSense.selectedValue) {
                 $oaldpe.attr('concise', 'true');
             }
 
@@ -1123,11 +1627,11 @@ $(function main() {
                     $unbox.toggleClass('is-active');
                 });
 
-                if (oaldpeConfig.unfoldUnbox || oaldpeConfig.autoUnfoldUnbox[$unbox.attr('unbox')]) {
+                if (oaldpeConfig.collapseControl.unfoldUnbox.selectedValue || oaldpeConfig.collapseControl.autoUnfoldUnbox.selectedValue[$unbox.attr('unbox')].value) {
                     $content.css('display', 'block');
                     $unbox.addClass('is-active');
 
-                    if (oaldpeConfig.touchToTranslate) { // Consistent with touchToTranslate
+                    if (oaldpeConfig.chineseTranslation.touchToTranslate.selectedValue) { // Consistent with touchToTranslate
                         $boxTitle.find('chn').show();
                     }
                 }
@@ -1156,19 +1660,19 @@ $(function main() {
                     $section.toggleClass('expanded');
                 });
 
-                if (oaldpeConfig.unfoldPhraseSections) {
+                if (oaldpeConfig.collapseControl.unfoldPhraseSections.selectedValue) {
                     $content.css('display', 'block');
                     $section.addClass('expanded');
                 }
 
                 $jumpLink.on('click', function (event) {
                     const callback = () => {
-                        if (oaldpeConfig.jumpsUnfold && !$section.hasClass('expanded')) {
+                        if (oaldpeConfig.collapseControl.jumpsUnfold.selectedValue && !$section.hasClass('expanded')) {
                             $heading.trigger('click');
                         }
                     };
 
-                    if (oaldpeConfig.instantHashNavigation) {
+                    if (oaldpeConfig.dictionaryAppRelated.instantHashNavigation.selectedValue) {
                         setTimeout(callback, 500)
                         return;
                     }
@@ -1179,12 +1683,12 @@ $(function main() {
 
                 $backLink.on('click', function (event) {
                     const callback = () => {
-                        if (oaldpeConfig.leavesFold && $section.hasClass('expanded')) {
+                        if (oaldpeConfig.collapseControl.leavesFold.selectedValue && $section.hasClass('expanded')) {
                             $heading.trigger('click');
                         }
                     };
 
-                    if (oaldpeConfig.instantHashNavigation) {
+                    if (oaldpeConfig.dictionaryAppRelated.instantHashNavigation.selectedValue) {
                         setTimeout(callback, 500)
                         return;
                     }
@@ -1202,7 +1706,7 @@ $(function main() {
             const $phraseSectionHeading = $oaldpe.find('.idioms > .idioms_heading, .phrasal_verb_links > .unbox');
 
             let clickTimer;
-            const $gear_icon = $oaldpe.find('.oaldpe-config-gear__head__icon');
+            const $gear_icon = $oaldpe.find('.oaldpe-config-gear__icon');
 
             $gear_icon.on('click', function () {
                 clearTimeout(clickTimer);
@@ -1242,27 +1746,27 @@ $(function main() {
         setupEudicConfigurations();
 
         function Eudic_overflowVisible() {
-            if (isEudic()) {
+            if (oaldpeInit.isEudic()) {
                 const $ancestor = $oaldpe.closest('.explain_wrap_styleless');
                 $ancestor.css('overflow', 'visible');
             }
         }
 
         function Eudic_widerScreen() {
-            if (oaldpeConfig.widerScreenEudic && isEudicAPP()) {
+            if (oaldpeInit.isEudicMobile() && oaldpeConfig.dictionaryAppRelated.widerScreenEudic.selectedValue) {
                 const $parent = $oaldpe.parent('.expDiv');
                 $parent.css('padding', '5px 8px 5px 5px');
             }
         }
 
         function Eudic_removeHeader() {
-            if (oaldpeConfig.removeEudicHeader && isEudic()) {
+            if (oaldpeInit.isEudicAPP() && oaldpeConfig.dictionaryAppRelated.removeEudicHeader.selectedValue) {
                 $('#wordInfoHead').remove();
             }
         }
 
         function Eudic_autoFoldCustomNote() {
-            if (oaldpeConfig.autoFoldEudicNote && isEudic()) {
+            if (oaldpeInit.isEudicAPP() && oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote.selectedValue) {
                 Promise.resolve().then(() => observeCustomNoteAdded(() => {
                     const $expHead = $('#expCustomNote .expHead');
                     if (!$expHead.hasClass('Folded')) {
@@ -1297,7 +1801,7 @@ $(function main() {
             $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
 
             async function constructNotes() {
-                await $.getScript(`${SRC_PATH}/Hazuki-note/dist/notes.bundle.js`);
+                await $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/notes.bundle.js'));
 
                 // Move the image container to the inside of the flex container
                 const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
@@ -1327,12 +1831,12 @@ $(function main() {
         }
 
         async function setupEudicConfigurations() {
-            if (!isEudic()) return;
+            if (!oaldpeInit.isEudic()) return;
 
             Promise.resolve().then(() => observeCustomNoteAdded(modifyCustomNote));
 
-            if (isMacosIpadSim()) {
-                await $.getScript(`${SRC_PATH}/Hazuki-note/dist/clickToCopy.bundle.js`);
+            if (oaldpeInit.isMacosIpadSim()) {
+                await $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/clickToCopy.bundle.js'));
             }
         }
 
@@ -1355,14 +1859,7 @@ $(function main() {
         };
 
         (async function initTTS() {
-            if (!oaldpeConfig.enableOnlineTTS) return;
-
-            try {
-                await $.getScript(`${SRC_PATH}/crypto-js.min.js`);
-                if (typeof CryptoJS === 'undefined') throw new Error();
-            } catch {
-                await $.getScript('https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js');
-            }
+            if (!oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) return;
 
             const ttsService = createEdgeTTS();
 
@@ -1394,12 +1891,12 @@ $(function main() {
                 }
 
                 if (!$pron_uk.length) {
-                    createAudioElement('pron-uk', ttsConfig[oaldpeConfig.britishTTS]);
+                    createAudioElement('pron-uk', ttsConfig[oaldpeConfig.onlineResources.britishTTS.selectedValue]);
                     $example.attr('pron-uk', 'true');
                 }
 
                 if (!$pron_us.length) {
-                    createAudioElement('pron-us', ttsConfig[oaldpeConfig.americanTTS]);
+                    createAudioElement('pron-us', ttsConfig[oaldpeConfig.onlineResources.americanTTS.selectedValue]);
                     $example.attr('pron-us', 'true');
                 }
             });
@@ -1535,37 +2032,4 @@ $(function main() {
             return { playText };
         }
     });
-
-    // region Helper functions
-    window.copyToClipboard = function (text) {
-        const $temp = $('<textarea>').val(text).appendTo('body').select();
-        document.execCommand('copy');
-        $temp.remove();
-    };
-
-    function isEudic() {
-        var ua = navigator.userAgent.toLowerCase();
-        return ua.indexOf('eudic') > -1;
-    }
-
-    function isEudicAPP() {
-        var ua = navigator.userAgent.toLowerCase();
-        return (ua.indexOf('eudic') > -1) && (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1);
-    }
-
-    function isGoldenDict() {
-        var ua = navigator.userAgent.toLowerCase();
-        return ua.indexOf('goldendict') > -1;
-    }
-
-    function isMacosIpadSim() {
-        var ua = navigator.userAgent.toLowerCase();
-        return ua.indexOf('ipad') > -1 && navigator.maxTouchPoints === 0;
-    }
-
-    function isPreview() {
-        try {
-            return window.self !== window.top && parent.document.querySelector('#k_iframe');
-        } catch { return false; }
-    }
-});
+}
