@@ -21,6 +21,7 @@
 !Makefile
 !oaldpe.css
 !oaldpe.js
+!oaldzh.css
 !process_db.js
 
 # Track the subdirectory .gitignore file

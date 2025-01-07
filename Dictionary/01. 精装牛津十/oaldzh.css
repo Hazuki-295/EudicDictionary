@@ -1,0 +1,147 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: Bookerly;
+    src: local('Bookerly-Regular'), url(fonts/Bookerly/Bookerly-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: Bookerly;
+    src: local('Bookerly-Italic'), url(fonts/Bookerly/Bookerly-RegularItalic.ttf) format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Han Serif CN';
+    src: local('SourceHanSerifCN-Regular'), url(fonts/SourceHanSerifCN/SourceHanSerifCN-Regular.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Source Han Serif CN';
+    src: local('SourceHanSerifCN-Bold'), url(fonts/SourceHanSerifCN/SourceHanSerifCN-Bold.otf) format('opentype');
+    font-weight: bold;
+}
+
+.leon-zh-en {
+    font-family: 'Bookerly', 'Source Han Serif CN', georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.leon-zh-en {
+    padding: 1em;
+}
+
+.leon-zh-en .headw {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin: .5em 0;
+}
+
+.leon-zh-en .headw::before {
+    content: '〔 ';
+}
+
+.leon-zh-en .headw::after {
+    content: ' 〕';
+}
+
+.leon-zh-en ul {
+    padding: unset;
+    margin: unset;
+    margin-inline-start: 1.25em;
+}
+
+.leon-zh-en li {
+    list-style: none;
+    margin-bottom: .5em;
+}
+
+.leon-zh-en a {
+    font-size: inherit; /* Eudic Bug Fix */
+    line-height: inherit; /* Eudic Bug Fix */
+    text-decoration: none;
+}
+
+.leon-zh-en .zh {
+    font-size: .9em;
+}
+
+/* 释义反查 */
+.leon-zh-en:not(.examples) .headw {
+    color: #e9546b;
+}
+
+.leon-zh-en:not(.examples) li {
+    counter-increment: list-counter;
+    position: relative;
+}
+
+.leon-zh-en:not(.examples) li::before {
+    position: absolute;
+    display: inline-block;
+    content: counter(list-counter);
+    font-family: 'Optima', helvetica, arial, sans-serif;
+    font-style: italic;
+    font-size: .9em;
+    font-weight: bold;
+    color: #de002d;
+    text-align: right;
+    width: 1em;
+    left: -1.5em;
+    line-height: calc(1em / 0.9 * 1.4);
+}
+
+.leon-zh-en:not(.examples) a {
+    color: #0072cf;
+    margin-right: .5em;
+}
+
+.leon-zh-en:not(.examples) a:hover {
+    text-decoration: underline;
+}
+
+.leon-zh-en:not(.examples) .zh {
+    color: #007a6c;
+    background: rgb(0 122 108 / 20%);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+/* 例句反查 */
+.leon-zh-en.examples .headw {
+    color: #0072cf;
+}
+
+.leon-zh-en.examples a {
+    font-style: italic;
+    color: #666;
+    position: relative;
+}
+
+.leon-zh-en.examples a::before {
+    position: absolute;
+    left: -1.6em;
+    content: '◆';
+    font-style: normal;
+    font-size: .5em;
+    line-height: calc(1em / 0.5 * 1.4);
+    opacity: .7;
+}
+
+.leon-zh-en.examples a::after {
+    content: ' (' attr(title) ')';
+    font-size: .9em;
+    font-style: normal;
+    color: #0072cf;
+}
+
+.leon-zh-en.examples .zh {
+    display: block;
+    color: #666;
+}
+
+.leon-zh-en.examples .zh .highlight {
+    color: #e9546b;
+}

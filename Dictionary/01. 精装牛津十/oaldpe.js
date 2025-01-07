@@ -137,10 +137,10 @@ var oaldpeConfig = {
     contentDisplay: {
         groupTitle: '显示控制',
 
-        // 【配置项1：是否默认显示音节划分】
+        // 【配置项1：默认显示音节划分】
         showSyllable: {
             selectedValue: false, // 默认为不显示
-            title: '是否默认显示音节划分',
+            title: '默认显示音节划分',
             type: 'checkbox',
             description: '设置初始状态下，是否显示多音节单词的音节划分。',
             callout: [
@@ -148,10 +148,10 @@ var oaldpeConfig = {
             ]
         },
 
-        // 【配置项2：是否默认英音例句发音】
+        // 【配置项2：默认英音例句发音】
         defaultBritishExPron: {
             selectedValue: false, // 默认为美音发音
-            title: '是否默认英音例句发音',
+            title: '默认英音例句发音',
             type: 'checkbox',
             description: '例句发音只显示一个喇叭，设置初始状态下为英音或美音。',
             callout: [
@@ -220,7 +220,7 @@ var oaldpeConfig = {
             selectedValue: false, // 默认为不删除
             title: '是否删除无在线发音的官方例句发音',
             type: 'checkbox',
-            description: '删除 oaldpe.3.mdd 文件时，该部分例句无法发音，可转而使用 TTS 发音。'
+            description: '删除 oaldpe.3.mdd 文件时，若仍需要使用在线发音，请同时开启此选项，因为该部分例句无在线发音。可转而使用 TTS 发音。',
         },
 
         // 【配置项5：无官方例句发音时，是否启用在线 TTS 发音】
@@ -268,10 +268,10 @@ var oaldpeConfig = {
     collapseControl: {
         groupTitle: '折叠控制',
 
-        // 【配置项1：是否默认展开释义】
+        // 【配置项1：默认展开释义】
         unfoldSense: {
             selectedValue: true, // 默认展开
-            title: '是否默认展开释义',
+            title: '默认展开释义',
             type: 'checkbox',
             description: '设置初始状态下，所有释义的展开/折叠状态。',
             callout: [
@@ -279,10 +279,10 @@ var oaldpeConfig = {
             ]
         },
 
-        // 【配置项2：是否默认展开折叠块】
+        // 【配置项2：默认展开折叠块】
         unfoldUnbox: {
             selectedValue: false, // 默认不展开
-            title: '是否默认展开折叠块',
+            title: '默认展开折叠块',
             type: 'checkbox',
             description: '设置初始状态下，所有折叠块（浅蓝色折叠区，Extra Examples 更多例句等）的展开/折叠状态。'
         },
@@ -313,14 +313,14 @@ var oaldpeConfig = {
             type: 'nested-checkboxes',
             description: '设置初始状态下，特定折叠块的展开/折叠状态。',
             callout: [
-                { type: 'warning', content: '当【是否默认展开折叠块】为 true 时，所有折叠块默认展开，此设置无效。' }
+                { type: 'warning', content: '当【默认展开折叠块】为 true 时，所有折叠块默认展开，此设置无效。' }
             ]
         },
 
-        // 【配置项4：是否默认展开 Idioms 和 Phrasal Verbs】
+        // 【配置项4：默认展开 Idioms 和 Phrasal Verbs】
         unfoldPhraseSections: {
             selectedValue: false, // 默认不展开
-            title: '是否默认展开 Idioms 和 Phrasal Verbs',
+            title: '默认展开 Idioms 和 Phrasal Verbs',
             type: 'checkbox',
             description: '设置初始状态下，习语 Idioms 和词组 Phrasal Verbs 区域是否展开。'
         },
@@ -526,7 +526,7 @@ var oaldpeInit = {
                     $calloutContent.append(item);
                 }
             });
-        }
+        } else { $callout.addClass('callout-empty'); }
 
         return $callout;
     }
@@ -601,6 +601,18 @@ var oaldpeInit = {
             $configPanel.append(warningMessage);
         }
 
+        // Hidden message to show the success of user actions
+        const $hiddenMessage = oaldpeInit.createCallout({ type: 'success' });
+        $hiddenMessage.addClass('hidden-message');
+
+        const showHiddenMessage = ($container, title = 'success', delay = 2000) => {
+            $hiddenMessage.appendTo($container);
+            $hiddenMessage.children('.callout-title').text(title);
+            $hiddenMessage.fadeIn(function () {
+                setTimeout(() => $hiddenMessage.fadeOut(), delay);
+            });
+        };
+
         constructConfigPanel();
 
         function constructConfigPanel() {
@@ -610,17 +622,6 @@ var oaldpeInit = {
             // Construct the configuration panel based on the 'oaldpeConfig' object
             Object.values(oaldpeConfig).forEach(configGroup => {
                 const $group = $('<ol>', { class: 'oaldpe-config-group' });
-
-                // Hidden message to show the success of saving settings
-                const $hiddenMessage = oaldpeInit.createCallout({ type: 'success', title: '保存成功' });
-                $hiddenMessage.addClass('hidden-message');
-                $group.append($hiddenMessage);
-
-                const showHiddenMessage = (delay = 1000) => {
-                    $hiddenMessage.fadeIn(function () {
-                        setTimeout(() => $hiddenMessage.fadeOut(), delay);
-                    });
-                };
 
                 Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
                     if (settingItemKey === 'groupTitle') {
@@ -652,14 +653,14 @@ var oaldpeInit = {
                         });
                         $select.on('change', function () {
                             settingItem.selectedValue = parseInt($select.val());
-                            oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                            oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
                         });
                     } else if (settingItem.type === 'checkbox') {
                         const $checkboxContainer = oaldpeInit.createCheckboxContainer({
                             initialState: settingItem.selectedValue, checkboxCallback: $checkbox => {
                                 $checkbox.on('change', function () {
                                     settingItem.selectedValue = $checkbox.prop('checked');
-                                    oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                                    oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
                                 });
                             }
                         });
@@ -672,7 +673,7 @@ var oaldpeInit = {
                                 initialState: value, checkboxCallback: $checkbox => {
                                     $checkbox.on('change', function () {
                                         settingItem.selectedValue[key].value = $checkbox.prop('checked');
-                                        oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage);
+                                        oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
                                     });
                                 }
                             });
@@ -694,6 +695,20 @@ var oaldpeInit = {
         /* Construct help center */
         const $configHelp = $configContainer.children('#oaldpe-config-help').appendTo($configContent);
         $configHelp.prepend($('<div>', { class: 'page-title', text: 'HELP' }));
+
+        // Post processing
+        $configHelp.find('a.external-link').each(function () {
+            const $externalLink = $(this);
+            if (oaldpeInit.isEudic()) {
+                $externalLink.data('text', $externalLink.data('text').replace('eudic-', ''));
+                $externalLink.data('href', $externalLink.data('href').replace('eudic-', ''));
+            }
+            $externalLink.text($externalLink.data('text'));
+            $externalLink.css('cursor', 'pointer').on('click', function () {
+                copyToClipboard($externalLink.data('href'));
+                showHiddenMessage($externalLink.closest('.block-wrapper, .callout'), '已复制链接');
+            });
+        });
 
         // Page Navigation
         $configNavbar.append([
@@ -731,7 +746,7 @@ var oaldpeInit = {
         }
 
         if (oaldpeConfig.otherFeatures.enableErudaConsole.selectedValue) {
-            await loadScript('eruda', 'https://cdn.jsdelivr.net/npm/eruda', 'eruda');
+            await loadScript('scripts/eruda', 'https://cdn.jsdelivr.net/npm/eruda', 'eruda');
 
             eruda.init({
                 defaults: {
@@ -742,11 +757,11 @@ var oaldpeInit = {
         }
 
         if (oaldpeConfig.chineseTranslation.showTraditional.selectedValue) {
-            await loadScript('full.min.js', 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js', 'OpenCC');
+            await loadScript('scripts/full.min.js', 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js', 'OpenCC');
         }
 
         if (oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) {
-            await loadScript('crypto-js.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js', 'CryptoJS');
+            await loadScript('scripts/crypto-js.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js', 'CryptoJS');
         }
     }
 
@@ -989,10 +1004,14 @@ function main() {
                         {
                             label: 'Online (official)',
                             checkboxConfig: {
-                                initialState: oaldpeConfig.onlineResources.officialExPronOpt.selectedValue,
+                                initialState: oaldpeConfig.onlineResources.officialExPronOpt.selectedValue === 1,
                                 checkboxCallback: $checkbox => {
                                     $checkbox.on('change', function () {
-                                        oaldpeConfig.onlineResources.officialExPronOpt.selectedValue = $checkbox.prop('checked');
+                                        // Take effect immediately
+                                        $oaldpe.attr('online-example-pron', $checkbox.prop('checked'));
+
+                                        // Update the local storage
+                                        oaldpeConfig.onlineResources.officialExPronOpt.selectedValue = $checkbox.prop('checked') ? 1 : 2;
                                         oaldpeInit.setItem('officialExPronOpt', oaldpeConfig.onlineResources.officialExPronOpt);
                                     });
                                 }
@@ -1203,8 +1222,8 @@ function main() {
         // 翻译来源标签
         const sourceDescription = {
             'ai': 'Google 机翻',
-            'leon': 'leon406 翻译',
-            'oald': '原双解版翻译参考'
+            'oald': '原双解版翻译',
+            'leon': 'leon406 翻译'
         };
 
         // 是否存在非官方翻译（除 AI 机翻外）
@@ -1222,7 +1241,7 @@ function main() {
                     hasUnofficialTranslation = true;
                 }
 
-                if (!$this.is($definitionChn) && $this.data('source') !== 'ai') {
+                if ($this.is($exampleChn) && $this.data('source') !== 'ai') {
                     $this.append($('<span>', { class: 'question-circle', text: '?' }));
                 }
             }
@@ -1230,13 +1249,21 @@ function main() {
             return { $chn: $this, $target: $target }
         }).get();
 
-        const $allChnTarget = $(chnMapping.map(mapping => mapping.$target.get()).flat());
+        // TODO: 除释义中文和例句中文外，特殊处理
+        $oaldpe.find('.un[un="help"] unx chn').each(function () {
+            const $this = $(this);
+            if ($this.data('source') === 'oald' || $this.data('source') === 'leon') {
+                $this.append($('<span>', { class: 'question-circle', text: '?' }));
+            }
+        });
 
         if (!hasUnofficialTranslation) {
             const $checkbox = $oaldpe.find('#highlight-unofficial');
             $checkbox.prop('disabled', true);
             $checkbox.parent().addClass('disabled');
         }
+
+        const $allChnTarget = $(chnMapping.map(mapping => mapping.$target.get()).flat());
 
         // region 中文翻译相关
         fnExamplesChineseBeAlone();
@@ -1464,7 +1491,10 @@ function main() {
 
         function setupExamplePron() {
             // 不启用官方例句发音
-            if (!oaldpeConfig.onlineResources.officialExPronOpt.selectedValue) return;
+            if (!oaldpeConfig.onlineResources.officialExPronOpt.selectedValue) {
+                $oaldpe.find('.audio_play_button').filter('.app, .app-ext').remove();
+                return;
+            }
 
             // 启用官方例句在线发音
             if (oaldpeConfig.onlineResources.officialExPronOpt.selectedValue === 1) {
@@ -1627,7 +1657,7 @@ function main() {
                     $unbox.toggleClass('is-active');
                 });
 
-                if (oaldpeConfig.collapseControl.unfoldUnbox.selectedValue || oaldpeConfig.collapseControl.autoUnfoldUnbox.selectedValue[$unbox.attr('unbox')].value) {
+                if (oaldpeConfig.collapseControl.unfoldUnbox.selectedValue || oaldpeConfig.collapseControl.autoUnfoldUnbox.selectedValue[$unbox.attr('unbox')]?.value) {
                     $content.css('display', 'block');
                     $unbox.addClass('is-active');
 
@@ -1748,7 +1778,14 @@ function main() {
         function Eudic_overflowVisible() {
             if (oaldpeInit.isEudic()) {
                 const $ancestor = $oaldpe.closest('.explain_wrap_styleless');
-                $ancestor.css('overflow', 'visible');
+                const $configGearBody = $oaldpe.find('.oaldpe-config-gear__body');
+
+                const additionalMargin = 200;
+                $configGearBody.on('transitionend', function () {
+                    if ($configGearBody.height() + additionalMargin > $ancestor.height()) {
+                        $ancestor.css('overflow', 'visible');
+                    }
+                });
             }
         }
 

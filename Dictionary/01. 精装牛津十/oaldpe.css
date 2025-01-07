@@ -60,6 +60,20 @@
     font-weight: 300 800;
 }
 
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url(fonts/SourceSans3/SourceSans3-VariableFont_wght.ttf) format('truetype');
+    font-style: normal;
+    font-weight: 200 900;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url(fonts/SourceSans3/SourceSans3-Italic-VariableFont_wght.ttf) format('truetype');
+    font-style: italic;
+    font-weight: 200 900;
+}
+
 /* Mimic `:root {}`, which is disabled in Eudic */
 .oaldpe {
     --color-red: #de002d;
@@ -789,7 +803,8 @@ dtxtx chn {
     margin-left: 4px !important;
 }
 
-/* 原双解版翻译参考 */
+/* 原双解版翻译 */
+.style-example deft chn[data-source='oald'],
 .oaldpe[highlight-unofficial="true"] deft chn[data-source='oald'],
 .oaldpe[highlight-unofficial="true"] dtxtx chn[data-source='oald'] {
     color: var(--text-grey-color);
@@ -797,11 +812,20 @@ dtxtx chn {
 }
 
 /* leon406 翻译 */
+.style-example deft chn[data-source='leon'],
 .oaldpe[highlight-unofficial="true"] deft chn[data-source='leon'],
 .oaldpe[highlight-unofficial="true"] dtxtx chn[data-source='leon'] {
     color: #009d8a;
     background: rgb(0 122 108 / 10%);
     border: 1px solid rgb(0 122 108 / 20%);
+}
+
+.style-example deft chn {
+    display: inline-block !important;
+}
+
+.style-example deft chn:not(:first-of-type) {
+    margin-left: 4px;
 }
 
 /* 例句排版 */
@@ -894,6 +918,7 @@ ul.examples > li a.pron-us {
 .oaldpe .oaldpe-config-gear .dictname::before {
     display: none;
 }
+
 .oaldpe[pron='uk'] .oaldpe-config-gear .dictname::before,
 .oaldpe[pron='us'] .oaldpe-config-gear .dictname::before {
     display: unset;
@@ -956,11 +981,12 @@ ul.examples > li .unx + undt chn {
     transition: opacity .3s;
 }
 
+.style-example .question-circle,
 .oaldpe[highlight-unofficial="true"] .question-circle {
     opacity: 1;
 }
 
-/* 原双解版翻译参考 */
+/* 原双解版翻译 */
 chn[data-source='oald'] .question-circle {
     --stroke-color: var(--color-red);
 }
@@ -1086,10 +1112,10 @@ a.Ref .xs::before {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.6em;
-    height: 1.6em;
+    width: 13.5px;
+    height: 13.5px;
     font-family: var(--font-family-ui);
-    font-size: .7em;
+    font-size: 8px;
     font-weight: 600;
     text-transform: uppercase;
     color: white;
@@ -2258,53 +2284,7 @@ a.Ref .xs::before {
     padding: .5em;
 }
 
-#oaldpe-config-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: .5em 0;
-}
-
-#oaldpe-config-header .old_logo {
-    height: 1em;
-    padding-right: 1em;
-}
-
-#oaldpe-config-navbar {
-    display: flex;
-    gap: 1em;
-    padding: .5em 0 .75em;
-    margin-bottom: 1em;
-    border-bottom: 1px solid var(--grey-3);
-}
-
-#oaldpe-config-navbar .nav-item {
-    font-family: var(--font-family-ui);
-    font-weight: bold;
-    padding: .25em .5em;
-    cursor: pointer;
-    transition: color .3s;
-    position: relative;
-}
-
-#oaldpe-config-navbar .nav-item.active,
-#oaldpe-config-navbar .nav-item:hover {
-    color: var(--primary-color);
-}
-
-#oaldpe-config-navbar .nav-item.active::after {
-    content: '';
-    display: block;
-    width: 50%;
-    height: 2px;
-    background-color: var(--primary-color);
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.page-title {
+.oaldpe-config .page-title {
     font-family: var(--font-family-sans-serif);
     font-size: 1.6em;
     font-weight: bold;
@@ -2314,42 +2294,40 @@ a.Ref .xs::before {
     position: relative;
 }
 
-.page-title::before {
+.oaldpe-config .page-title::before {
     content: 'OALDPE ';
     color: var(--color-blue);
 }
 
-#oaldpe-config-panel .page-title .reset-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    border-radius: 4px;
-    background-size: .8em;
-    background-repeat: no-repeat;
-    background-position: center center;
-    margin-left: .2em;
-    cursor: pointer;
-    transition: background-color .3s, background-image .2s;
+.oaldpe-config p {
+    margin: 1em 0;
 }
 
-#oaldpe-config-panel .page-title .reset-button:hover {
-    background-color: var(--grey-3);
+.oaldpe-config p:first-child {
+    margin-top: unset;
 }
 
-#oaldpe-config-panel .oaldpe-config-group, #oaldpe-config-help .content-wrapper {
-    padding: 1em;
-    border: 1px solid var(--grey-3);
-    border-radius: 8px;
-    max-width: 480px;
-    margin: 0 auto 1.5em;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
+.oaldpe-config p:last-child {
+    margin-bottom: unset;
 }
 
-.group-title, .content-title {
+.oaldpe-config a.Ref:hover {
+    text-decoration: underline;
+}
+
+.oaldpe-config img {
+    max-width: 100%;
+    height: auto;
+}
+
+.oaldpe-config .block-wrapper img,
+.oaldpe-config .oaldpe-config-group img {
+    display: block;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+.group-title, .block-title {
     font-size: 1.2em;
     font-weight: bold;
     color: var(--primary-color);
@@ -2357,55 +2335,50 @@ a.Ref .xs::before {
     margin-bottom: .5em;
 }
 
-.setting-item {
+.setting-item, .list-item {
     list-style: decimal;
     margin: 1em;
 }
 
-.setting-item::marker {
+.setting-item::marker, .list-item::marker {
     font-family: var(--font-family-sans-serif);
     font-weight: bold;
     color: var(--primary-color);
 }
 
-#oaldpe-config-panel .checkbox-container {
-    font-size: 12px;
-}
-
-.nested-checkboxes {
+.oaldpe-config .collapse,
+.wordlist_about_callout_container {
+    font-family: var(--font-family-ui);
     font-size: .9em;
-    padding-top: .5em;
-    margin-left: 1em;
 }
 
-.nested-checkboxes .nested-item {
-    margin-bottom: 2px;
-    position: relative;
+.oaldpe-config .collapse .collapse_heading,
+.wordlist_about_callout_container .wordlist_heading {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: .5em;
 }
 
-.nested-checkboxes .nested-item::before {
-    position: absolute;
-    content: '▶︎';
-    top: 0;
-    left: -1em;
-    color: var(--primary-color);
+.oaldpe-config .collapse {
+    border-right: 2px solid var(--border-color);
 }
 
-.setting-item:not([data-type='nested-checkboxes']) .config-item,
-.nested-checkboxes .nested-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.oaldpe-config .collapse .unbox .box_title chn {
+    display: inline !important;
+    opacity: 1 !important;
 }
 
-.setting-item-info, .nested-item-label {
-    margin-right: 1em;
+.oaldpe-config .collapse .unbox .box_title + * {
+    padding: 1em;
 }
 
-.setting-item-description {
-    font-size: .8em;
-    color: var(--text-grey-color);
-    margin-top: 4px;
+.oaldpe-config .collapse .callout {
+    font-size: inherit;
+    margin: 1em 0;
+}
+
+.oaldpe-config .collapse .callout:first-child {
+    margin-top: unset;
 }
 
 .callout {
@@ -2414,6 +2387,7 @@ a.Ref .xs::before {
     background-color: rgba(var(--callout-color), .1);
     border-radius: 4px;
     margin: .5em 0;
+    position: relative; /* For hidden message */
 }
 
 .callout:is(.local-storage-warning) {
@@ -2441,6 +2415,10 @@ a.Ref .xs::before {
     text-transform: capitalize;
 }
 
+.callout:not(.callout-empty) > .callout-title {
+    margin-bottom: .5em;
+}
+
 .callout .callout-title::before {
     content: '';
     display: inline-block;
@@ -2451,36 +2429,265 @@ a.Ref .xs::before {
     margin-right: .5em;
 }
 
-.callout .callout-content p {
-    margin: 1em 0;
+.callout[data-callout='tip'] { --callout-color: 0, 191, 188; }
+.callout[data-callout='info'] { --callout-color: 8, 109, 221; }
+.callout[data-callout='success'] { --callout-color: 8, 185, 78; }
+.callout[data-callout='warning'] { --callout-color: 236, 117, 0; }
+.callout[data-callout='danger'] { --callout-color: 233, 49, 71; }
+
+#oaldpe-config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5em 0;
 }
 
-.callout .callout-content p:last-child {
-    margin-bottom: unset;
+#oaldpe-config-header .old_logo {
+    height: 1em;
+    padding-right: 1em;
 }
 
-.callout[data-callout='tip'] {
-    --callout-color: 0, 191, 188;
+#oaldpe-config-navbar {
+    display: flex;
+    /* gap: 1em; */
+    padding: .5em 0 .75em;
+    border-bottom: 1px solid var(--grey-3);
+    margin-bottom: 1em;
 }
 
-.callout[data-callout='info'] {
-    --callout-color: 8, 109, 221;
+#oaldpe-config-navbar .nav-item {
+    font-family: var(--font-family-ui);
+    font-weight: bold;
+    padding: .25em .5em;
+    cursor: pointer;
+    transition: color .3s;
+    position: relative;
 }
 
-.callout[data-callout='success'] {
-    --callout-color: 8, 185, 78;
+#oaldpe-config-navbar .nav-item:not(:first-of-type) {
+    margin-left: 1em; /* QT 5 workaround */
 }
 
-.callout[data-callout='warning'] {
-    --callout-color: 236, 117, 0;
+#oaldpe-config-navbar .nav-item.active,
+#oaldpe-config-navbar .nav-item:hover {
+    color: var(--primary-color);
 }
 
-.callout[data-callout='danger'] {
-    --callout-color: 233, 49, 71;
+#oaldpe-config-navbar .nav-item.active::after {
+    content: '';
+    display: block;
+    width: 50%;
+    height: 2px;
+    background-color: var(--primary-color);
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
+/* 配置界面 */
+#oaldpe-config-panel .page-title .reset-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 4px;
+    background-size: .8em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin-left: .2em;
+    cursor: pointer;
+    transition: background-color .3s, background-image .2s;
+}
+
+#oaldpe-config-panel .page-title .reset-button:hover {
+    background-color: var(--grey-3);
+}
+
+#oaldpe-config-panel .oaldpe-config-group {
+    max-width: 480px;
+    padding: 1em;
+    border: 1px solid var(--grey-3);
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto 1.5em;
+    position: relative; /* For hidden message */
+}
+
+#oaldpe-config-panel .checkbox-container {
+    font-size: 12px;
+}
+
+.nested-checkboxes {
+    font-size: .9em;
+    padding-top: .5em;
+    margin-left: 1em;
+}
+
+.nested-checkboxes .nested-item {
+    margin-bottom: 2px;
+    position: relative;
+}
+
+.nested-checkboxes .nested-item::before {
+    position: absolute;
+    content: '▶︎';
+    color: var(--primary-color);
+    top: 0;
+    left: -1em;
+}
+
+.setting-item:not([data-type='nested-checkboxes']) .config-item,
+.nested-checkboxes .nested-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.setting-item-info, .nested-item-label {
+    margin-right: 1em;
+}
+
+.setting-item-description {
+    font-size: .8em;
+    color: var(--text-grey-color);
+    margin-top: 4px;
+}
+
+/* 帮助界面 */
 #oaldpe-config-help {
+    --primary-color: #e9546b;
     display: none; /* Hide by default */
+    font-family: 'Source Sans Pro', 'Source Han Serif CN', sans-serif;
+}
+
+#oaldpe-config-help > .block-wrapper {
+    padding: 1em;
+    border: 1px solid var(--grey-3);
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; /* For hidden message */
+}
+
+#oaldpe-config-help .page-title ~ * {
+    max-width: 648px;
+    margin: 0 auto 1.5em;
+}
+
+#oaldpe-config-help h1,
+#oaldpe-config-help h2,
+#oaldpe-config-help h3 {
+    font-weight: 600;
+    margin: 20px 0 15px;
+}
+
+#oaldpe-config-help h1:first-child,
+#oaldpe-config-help h2:first-child,
+#oaldpe-config-help h3:first-child {
+    margin-top: unset;
+}
+
+#oaldpe-config-help h1 {
+    font-size: 1.5em;
+}
+
+#oaldpe-config-help h2 {
+    font-size: 1.2em;
+}
+
+#oaldpe-config-help h3 {
+    font-size: 1em;
+}
+
+#oaldpe-config-help ul:not(.style-example) li {
+    margin-left: 1.25em;
+    margin-bottom: .5em;
+    position: relative;
+}
+
+#oaldpe-config-help ul:not(.style-example) li::before {
+    position: absolute;
+    content: '▪';
+    left: -1em;
+    color: var(--grey-5);
+}
+
+.content-wrapper h1,
+.content-wrapper h2 {
+    color: #0d3880;
+}
+
+.wordlist_about_callout_container {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-color);
+    margin-bottom: 1em;
+}
+
+.wordlist_about_callout_container > * {
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.wordlist_about_callout_image {
+    width: 20%;
+}
+
+.wordlist_about_callout_text {
+    width: 80%;
+    padding: 1em;
+}
+
+.question {
+    margin-bottom: 1em;
+}
+
+.question .question-category {
+    font-size: .9em;
+    font-weight: bold;
+    color: #3da874;
+}
+
+.question .question-category::before {
+    content: '（';
+}
+
+.question .question-category::after {
+    content: '）';
+}
+
+.answer {
+    font-size: .9em;
+}
+
+ul.examples:is(.style-example) {
+    margin-bottom: 1.5em;
+}
+
+ul.examples:is(.style-example) > li {
+    font-family: var(--font-family-serif);
+}
+
+ul.examples:is(.style-example) > li .x chn {
+    display: block !important;
+    height: auto !important;
+}
+
+@media (max-width: 648px) {
+    #oaldpe-config-help .content-wrapper {
+        padding: 0 .5em;
+    }
+
+    .wordlist_about_callout_image {
+        width: 30%;
+        padding-left: 1em;
+    }
+
+    .wordlist_about_callout_text {
+        width: 70%;
+    }
 }
 
 /* Light Mode */
