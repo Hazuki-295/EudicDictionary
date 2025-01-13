@@ -1,0 +1,95 @@
+.callout {
+    --callout-info: 8, 109, 221; // blue
+    --callout-todo: 8, 109, 221;
+    --callout-default: 8, 109, 221;
+    --callout-bug: 233, 49, 71; // red
+    --callout-error: 233, 49, 71;
+    --callout-fail: 233, 49, 71;
+    --callout-success: 8, 185, 78; // green
+    --callout-example: 120, 82, 238; // purple
+    --callout-important: 0, 191, 188; // cyan
+    --callout-summary: 0, 191, 188;
+    --callout-tip: 0, 191, 188;
+    --callout-question: 236, 117, 0; // orange
+    --callout-warning: 236, 117, 0;
+    --callout-quote: 158, 158, 158;
+    --callout-collapse-icon: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0ibTkgMThsNi02bC02LTYiLz48L3N2Zz4=');
+
+    --callout-color: var(--callout-default);
+    --callout-icon: lucide-pencil;
+
+    &[data-callout='todo'] {
+        --callout-color: var(--callout-todo);
+        --callout-icon: lucide-check-circle-2;
+    }
+
+    &[data-callout='success'], &[data-callout='check'], &[data-callout='done'] {
+        --callout-color: var(--callout-success);
+        --callout-icon: lucide-check;
+    }
+
+    &[data-callout='warning'], &[data-callout='caution'], &[data-callout='attention'] {
+        --callout-color: var(--callout-warning);
+        --callout-icon: lucide-alert-triangle;
+    }
+
+    &[data-callout='danger'], &[data-callout='error'] {
+        --callout-color: var(--callout-error);
+        --callout-icon: lucide-zap;
+    }
+
+    &[data-callout='tip'], &[data-callout='hint'] {
+        --callout-color: var(--callout-tip);
+        --callout-icon: lucide-flame;
+    }
+
+    &[data-callout='example'] {
+        --callout-color: var(--callout-example);
+        --callout-icon: lucide-list;
+    }
+
+    &[data-callout='abstract'], &[data-callout='summary'], &[data-callout='tldr'] {
+        --callout-color: var(--callout-summary);
+        --callout-icon: lucide-clipboard-list;
+    }
+
+    &[data-callout='quote'], &[data-callout='cite'] {
+        --callout-color: var(--callout-quote);
+        --callout-icon: quote-glyph;
+    }
+}
+
+@css {
+    .callout {
+        font-family: var(--font-family-ui);
+        font-size: .9em;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: rgba(var(--callout-color), .1);
+    }
+
+    .callout .callout-title {
+        display: flex;
+        gap: 4px;
+        color: rgb(var(--callout-color));
+        margin-bottom: .5em;
+    }
+
+    details.callout .callout-title {
+        cursor: pointer;
+    }
+
+    .callout .callout-title .callout-title-icon {
+        display: flex;
+        align-items: center;
+    }
+
+    .callout .callout-title .callout-title-icon svg {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    .callout .callout-title .callout-title-inner {
+        font-weight: 600;
+    }
+}

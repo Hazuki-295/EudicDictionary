@@ -161,10 +161,6 @@ li {
     display: none; /* Hide by default */
 }
 
-.oald:first-of-type {
-    display: block;
-}
-
 .oald.visible {
     display: block;
 }
@@ -273,7 +269,6 @@ h1.headword .hm, .xhm {
 
 .phon {
     font-family: 'Lucida Sans Unicode', 'Lucida Grande';
-    cursor: pointer;
 }
 
 .phons_br .phon, .phons_n_am .phon {
@@ -298,7 +293,11 @@ h1.headword .hm, .xhm {
 
 /* Symbols: o3k/o5k, OPAL */
 .symbols {
-    display: inline-block;
+    display: inline;
+}
+
+.sense .symbols::after {
+    content: ' ';
 }
 
 .symbols a {
@@ -308,15 +307,10 @@ h1.headword .hm, .xhm {
 .symbols span[class^='ox3ksym_'], .symbols span[class^='ox3ksymsub_'],
 .symbols span[class^='ox5ksym_'], .symbols span[class^='ox5ksymsub_'] {
     display: inline-block;
-    min-width: 2.5em;
-    min-height: 1.5em;
+    width: 2.75em;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
-}
-
-.sense .symbols span[class^='ox5ksym_'] {
-    margin-right: 5px;
 }
 
 .symbols .opal_symbol {

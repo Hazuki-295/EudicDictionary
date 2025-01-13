@@ -32,21 +32,20 @@ h1.headword .hm {
 
 /* Symbols: o3k/o5k */
 .symbols {
-    display: inline-block;
+    display: inline;
+}
+
+.sense .symbols::after {
+    content: ' ';
 }
 
 .symbols span[class^='ox3ksym_'], .symbols span[class^='ox3ksymsub_'],
 .symbols span[class^='ox5ksym_'], .symbols span[class^='ox5ksymsub_'] {
     display: inline-block;
-    min-width: 2.5em;
-    min-height: 1.5em;
+    width: 2.75em;
     background-size: contain;
     background-repeat: no-repeat;
-    vertical-align: middle;
-}
-
-.sense .symbols span[class^='ox5ksym_'] {
-    margin-right: 5px;
+    background-position: center center;
 }
 
 /* 词头排版微调 */
@@ -124,14 +123,6 @@ h2.shcut shcut chn::before {
 /* 语法 */
 .grammar {
     color: seagreen;
-
-    &::before {
-        content: '[';
-    }
-
-    &::after {
-        content: ']';
-    }
 }
 
 /* 标签 */
@@ -265,15 +256,19 @@ dtxtx chn {
 
 /* CEFR */
 .topic .topic_cefr {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13.5px;
+    height: 13.5px;
+    font-family: var(--font-family-ui);
     font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
     color: white;
     background: #223a68;
     border-radius: 4px;
-    padding: 0 2px;
     margin: 0 5px;
-    text-transform: uppercase;
-    line-height: 1.75;
     vertical-align: 1px;
 }
 

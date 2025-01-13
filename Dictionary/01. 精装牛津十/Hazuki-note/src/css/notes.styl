@@ -29,9 +29,10 @@
     --border-color: rgb(0 136 221 / 35%);
     --background-color-purple: rgb(138 81 192 / 6%);
     --border-color-purple: rgb(138 81 192 / 35%);
-    --background-highlight: linear-gradient(rgb(0 114 207 / 0%) 55%, rgb(0 114 207 / 15%) 55%, rgb(0 114 207 / 15%) 100%);
+    --background-highlight: linear-gradient(rgba(0, 114, 207, 0) 55%, rgba(0, 114, 207, .15) 55%, rgba(0, 114, 207, .15) 100%);
     --font-family-sans-serif: 'Optima', helvetica, arial, sans-serif;
     --font-family-serif: 'Bookerly', georgia, 'Times New Roman', serif;
+    --font-family-ui: 'Open Sans', helvetica, arial, sans-serif;
     --font-size: 15px;
     --line-height: 1.4;
 }
@@ -67,13 +68,7 @@
     .single-note {
         .note-block {
             @import 'note-oaldpe';
-
-            .note-card[data-comment='ODE'] {
-                --font-family-sans-serif: 'Open Sans', helvetica, arial, sans-serif;
-                font-family: var(--font-family-sans-serif);
-
-                @import 'note-ode';
-            }
+            @import 'note-ode';
         }
     }
 }
@@ -97,98 +92,7 @@
 .Hazuki-note .i-tag::before { content: '\e759'; }
 .Hazuki-note .i-angle-right::before { content: '\ef1f'; }
 
-/* Swiper */
-.swiper-wrapper, .swiper-slide {
-    height: auto;
-}
-
-.swiper-button-prev, .swiper-button-next {
-    opacity: .5;
-}
-
-.swiper-button-disabled {
-    pointer-events: auto !important;
-}
-
-.swiper-button-prev::after, .swiper-button-next::after, .vertical-view-button::after {
-    display: none;
-    font-size: 1rem;
-    color: var(--grey-4);
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    background: white;
-    border-radius: 50%;
-    border: 1px solid #e3e5e7;
-    box-shadow: 0 0 2px rgba(0, 0, 0, .02), 0 4px 10px rgba(0, 0, 0, .06);
-}
-
-.swiper-button-prev:hover::after, .swiper-button-next:hover::after, .vertical-view-button::after {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.Hazuki-note:not(.single-note-mode) {
-    position: relative;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 768px) {
-    .Hazuki-note:not(.single-note-mode) {
-        box-shadow: unset;
-    }
-}
-
-.Hazuki-note:not(.single-note-mode) .single-note {
-    border-radius: unset;
-    box-shadow: unset;
-}
-
-.vertical-view-button {
-    position: absolute;
-    right: 1em;
-    bottom: 1em;
-    z-index: 1;
-    cursor: pointer;
-}
-
-.vertical-view-button::after {
-    font-family: swiper-icons;
-    content: 'next';
-    transform: rotate(90deg);
-    zoom: .8;
-}
-
-.vertical-view .vertical-view-button::after {
-    content: 'prev';
-}
-
-.vertical-view .swiper-wrapper {
-    display: block;
-}
-
-.vertical-view .swiper-slide:not(:last-child) .single-note {
-    border-bottom: 1px dashed rgb(170, 170, 255);
-}
-
-.vertical-view .swiper-slide::after {
-    content: attr(aria-label);
-    font-size: calc(var(--font-size) * 0.8);
-    color: rgb(170, 170, 255);
-    position: absolute;
-    bottom: 1.5em;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid rgb(170, 170, 255);
-    padding: .2em 1em;
-    border-radius: 1em;
-}
-
-.single-note-mode .vertical-view-button {
-    display: none;
-}
+@import 'swiper';
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {

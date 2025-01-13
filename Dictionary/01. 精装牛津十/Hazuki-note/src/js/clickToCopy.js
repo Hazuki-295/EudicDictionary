@@ -34,56 +34,56 @@ const $ = require('jquery');
     }
 
     function jsonToPlainText(json) {
-        /* Three possible keys: type, content, attributes */
-        function processNode(node) {
-            // Key: type (result type: false | string)
-            const typeAttr = (node.type !== 'span') && `htag=${node.type}`;
-
-            // Key: attributes (result type: undefined | string)
-            const classAttr = node.attributes?.class && formatClassAttr(node.attributes.class);
-
-            // Key: content
-            const attrs = [classAttr, typeAttr].filter(Boolean).join(' ');
-
-            if (node.content) {
-                const result = node.content.map(item => {
-                    return typeof item === 'string' ? item.replace(/\[(.*?)\]/g, '$1') : processNode(item);
-                }).join('');
-                return attrs ? `[${result}]{${attrs}}` : result;
-            }
-
-            // Base case: no content
-            return attrs ? `[]{${attrs}}` : '';
+        // Function to encode special characters (e.g., brackets and '&nbsp;') to placeholders
+        function encodeSpecialCharsInContent(content) {
+            return content
+                .replace(/\[/g, '{OPEN_BRACKET}')
+                .replace(/\]/g, '{CLOSE_BRACKET}')
+                .replace(/&nbsp;/g, '{NBSP}');
         }
 
+        // Recursively process each node and its content, including attributes
+        function processNode(node) {
+            // Add attribute that indicates the tag name if it is not a span tag
+            const nodeTypeAttribute = node.type !== 'span' && 'htag=' + node.type;
+
+            // Add class attribute if available
+            const classAttribute = node.attributes?.class && 'hclass=' + `"${node.attributes.class}"`;
+
+            // Combine the attributes: type and class
+            const nodeAttributes = [nodeTypeAttribute, classAttribute].filter(Boolean).join(' ');
+
+            // If the node has content, process it further
+            if (node.content) {
+                const processedContent = node.content.map(content => {
+                    return typeof content === 'string'
+                        ? encodeSpecialCharsInContent(content)
+                        : processNode(content);
+                }).join('');
+
+                // Wrap content with attributes, if any, and return
+                return nodeAttributes ? `[${processedContent}]{${nodeAttributes}}` : processedContent;
+            }
+
+            // Wrap nothing with attributes, if any, and return
+            return nodeAttributes ? `[]{${nodeAttributes}}` : '';
+        }
+
+        // Start the recursive processing of the JSON object
         return processNode(json);
     }
 
     // Helper functions
-    function formatClassAttr(classNames) {
-        return classNames.split(' ').map(className => `.${className}`).join(' ');
-    }
-
     function wrapTextWithAttrs(text, attrs) {
-        const formattedAttrs = Object.entries(attrs).map(([key, value]) => {
-            return key === 'class' ? formatClassAttr(value) : `${key}="${value}"`;
-        }).join(' ');
-
-        return `[${text}]{${formattedAttrs}}`;
+        return `[${text}]{${Object.entries(attrs).map(([key, value]) => `${key}="${value}"`).join(' ')}}`;
     }
 
     function createNoteCard(note, comment) {
-        return wrapTextWithAttrs(note, {
-            class: 'note-card',
-            'data-label': 'definition',
-            'data-comment': comment
-        });
+        return wrapTextWithAttrs(note, { hclass: 'note-card', 'data-label': 'definition', 'data-comment': comment });
     };
 
     function createNoteCards() {
-        return wrapTextWithAttrs(' ', {
-            class: 'note-cards'
-        });
+        return wrapTextWithAttrs(' ', { hclass: 'note-cards' });
     };
 
     // Dictionary 1: Oxford Advanced Learner's Dictionary

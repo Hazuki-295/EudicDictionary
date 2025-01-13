@@ -1,0 +1,33 @@
+table {
+    font-family: var(--font-family-base);
+    font-size: .9em;
+    color: var(--text-color);
+    border-collapse: collapse;
+
+    tbody tr {
+        &:nth-of-type(odd) {
+            background: var(--grey-1);
+        }
+
+        &:hover {
+            background: var(--grey-2);
+        }
+    }
+
+    caption, th, td {
+        font-weight: normal;
+        text-align: left;
+        padding: .5rem;
+    }
+
+    th, td {
+        border: .0625rem solid var(--grey-3);
+    }
+
+    th {
+        font-weight: bold;
+        text-align: center;
+        padding-bottom: .625rem;
+        border-bottom-width: .1875rem;
+    }
+}

@@ -28,7 +28,6 @@ const $ = require('jquery');
 
     const swiper = new Swiper($swiper[0], {
         direction: 'horizontal',
-        touchStartPreventDefault: false,
         pagination: {
             el: '.swiper-pagination',
             clickable: true,
@@ -36,7 +35,9 @@ const $ = require('jquery');
         navigation: {
             prevEl: '.swiper-button-prev',
             nextEl: '.swiper-button-next',
-        }
+        },
+        autoHeight: true,
+        touchStartPreventDefault: false
     });
 
     // Markdown-it plugins
@@ -45,18 +46,30 @@ const $ = require('jquery');
         .use(require('markdown-it-bracketed-spans'))
         .use(require('markdown-it-ins'))
         .use(require('markdown-it-mark'))
+        .use(require('markdown-it-obsidian-callouts'))
         .use(require('markdown-it-multimd-table'), { multiline: true, rowspan: true, headerless: true })
         .use(require('markdown-it-toc-and-anchor').default, { tocClassName: 'toc', anchorClassName: 'anchor' });
-    initMarkdownItContainer(md);
 
-    function replaceWithSpans(text) {
-        const pattern = /\[([^\[\]]*)]\{([^\}]+)\}/g;
-        var previousText;
+    function replaceWithRenderedSpans(text) {
+        // Function to decode the placeholders back to their original special characters
+        function decodeSpecialCharsFromContent(content) {
+            return content
+                .replace(/{OPEN_BRACKET}/g, '[')
+                .replace(/{CLOSE_BRACKET}/g, ']')
+                .replace(/{NBSP}/g, '&nbsp;');
+        }
+
+        // Regular expression to match the custom Markdown format: [content]{attributes}
+        const spanPattern = /\[([^\[\]]*)]\{([^\}]+)\}/g;
+
+        let previousText;
+
         do {
             previousText = text;
-            text = text.replace(pattern, (match) => md.renderInline(match));
+            text = text.replace(spanPattern, (match) => md.renderInline(match));
         } while (text !== previousText);
-        return text;
+
+        return decodeSpecialCharsFromContent(text);
     }
 
     // Append items to Swiper
@@ -114,13 +127,13 @@ const $ = require('jquery');
         if (wordPhrase) {
             const regex = new RegExp(`\\b${wordPhrase}\\b`, 'gi');
             originalText = originalText.replace(regex, match => {
-                return `**${match}**{.blue}`;
+                return `[${match}]{.keyword}`;
             });
         }
 
         $('<div>', {
             class: 'md content',
-            html: md.render(replaceWithSpans(originalText))
+            html: md.render(replaceWithRenderedSpans(originalText))
         }).appendTo($originalTextBlock);
 
         /* 笔记 notes */
@@ -129,7 +142,7 @@ const $ = require('jquery');
 
             $('<div>', {
                 class: 'md notes',
-                html: md.render(replaceWithSpans(notes))
+                html: md.render(replaceWithRenderedSpans(notes))
             }).appendTo($notesBlock);
 
             const $label = $notesBlock.children('.label');
@@ -154,19 +167,27 @@ const $ = require('jquery');
             });
         }
 
-        // Replace elements that have 'htag' attribute
+        // For each span that generated from the custom Markdown format: [content]{attributes}
         $container.find('.md span').each(function () {
-            const $this = $(this);
-            const htag = $this.attr('htag');
+            const $element = $(this);
 
-            if (htag) {
-                const $newElement = $(`<${htag}>`).append($this.contents());
+            // Class attribute
+            const classAttribute = $element.attr('hclass');
+            if (classAttribute) {
+                $element.attr('class', classAttribute);
+                $element.removeAttr('hclass');
+            }
+
+            // Attribute that indicates the tag name if it is not a span tag
+            const nodeTypeAttribute = $element.attr('htag');
+            if (nodeTypeAttribute) {
+                const $newElement = $(`<${nodeTypeAttribute}>`).append($element.contents());
                 $.each(this.attributes, function () {
                     if (this.name !== 'htag') {
                         $newElement.attr(this.name, this.value);
                     }
                 });
-                $this.replaceWith($newElement);
+                $element.replaceWith($newElement);
             }
         });
 
@@ -198,79 +219,5 @@ const $ = require('jquery');
         });
 
         return $container;
-    }
-
-    // Vertical view
-    const $verticalViewButton = $('<div>', { class: 'vertical-view-button' }).appendTo($noteContainer);
-    $verticalViewButton.on('click', () => {
-        const isVerticalView = $noteContainer.toggleClass('vertical-view').hasClass('vertical-view');
-        swiper.slideTo(0);
-        isVerticalView ? swiper.disable() : swiper.enable();
-    });
-
-    /* markdown-it-container */
-    function initMarkdownItContainer(md) {
-
-        let plugin = require('markdown-it-container');
-
-        md.use(plugin, 'note', {
-            validate: function (params) {
-                return params.trim().match(/^(default|primary|success|info|warning|danger)(.*)$/);
-            },
-            render: function (tokens, idx) {
-                var m = tokens[idx].info.trim().match(/^(.*)$/);
-
-                if (tokens[idx].nesting === 1) {
-                    // opening tag
-                    return '<div class="note ' + m[1].trim() + '">\n';
-
-                } else {
-                    // closing tag
-                    return '</div>\n';
-                }
-            }
-        });
-
-        md.use(plugin, 'tab', {
-            marker: ';',
-
-            validate: function (params) {
-                return params.trim().match(/^(\w+)+(.*)$/);
-            },
-
-            render: function (tokens, idx) {
-                var m = tokens[idx].info.trim().match(/^(\w+)+(.*)$/);
-
-                if (tokens[idx].nesting === 1) {
-                    // opening tag
-                    return '<div class="tab" data-id="' + m[1].trim() + '" data-title="' + m[2].trim() + '">\n';
-
-                } else {
-                    // closing tag
-                    return '</div>\n';
-                }
-            }
-        });
-
-        md.use(plugin, 'collapse', {
-            marker: '+',
-
-            validate: function (params) {
-                return params.match(/^(primary|success|info|warning|danger|\s)(.*)$/);
-            },
-
-            render: function (tokens, idx) {
-                var m = tokens[idx].info.match(/^(primary|success|info|warning|danger|\s)(.*)$/);
-
-                if (tokens[idx].nesting === 1) {
-                    // opening tag
-                    var style = m[1].trim()
-                    return '<details' + (style ? ' class="' + style + '"' : '') + '><summary>' + m[2].trim() + '</summary><div>\n';
-                } else {
-                    // closing tag
-                    return '</div></details>\n';
-                }
-            }
-        });
     }
 })();

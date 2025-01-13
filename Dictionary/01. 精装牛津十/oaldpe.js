@@ -411,362 +411,698 @@ window.copyToClipboard = function (text) {
     $temp.remove();
 };
 
-var oaldpeInit = {
-    // User agent and platform
-    USER_AGENT: navigator.userAgent.toLowerCase(),
-    isEudic: function () {
-        return this.USER_AGENT.includes('eudic');
-    },
-    isEudicMobile: function () {
-        return this.isEudic() && (this.USER_AGENT.includes('android') || this.USER_AGENT.includes('iphone'));
-    },
-    isEudicAPP: function () {
-        return this.isEudic() && (this.USER_AGENT.includes('android') || this.USER_AGENT.includes('iphone') || this.USER_AGENT.includes('ipad'));
-    },
-    isGoldenDict: function () {
-        return this.USER_AGENT.includes('goldendict');
-    },
-    isMacosIpadSim: function () {
-        return this.USER_AGENT.includes('ipad') && navigator.maxTouchPoints === 0;
-    },
-    isPreview: function () {
-        try {
-            return window.self !== window.top && parent.document.querySelector('#k_iframe');
-        } catch { return false; }
-    },
+if (typeof oaldpeInit === 'undefined') {
+    class oaldpeInit {
+        // Environment variables
+        static USER_AGENT = navigator.userAgent.toLowerCase();
 
-    // Environment variables
-    SRC_FILE: 'oaldpe.js',
-    resolveFilePath: function (relativePath) {
-        const scriptUrl = $(`script[src*="${this.SRC_FILE}"]`).attr('src');
-        return scriptUrl.slice(0, scriptUrl.lastIndexOf('/') + 1) + relativePath;
-    },
-    LOCAL_STORAGE_PREFIX: 'OALDPE_',
-    LOCAL_STORAGE_AVAILABLE: (() => {
-        try {
-            localStorage.setItem('__test__', '__test__');
-            localStorage.removeItem('__test__');
-            return true;
-        } catch { return false; }
-    })(),
+        static SRC_FILE = 'oaldpe.js';
+        static SRC_URL = $(`script[src*="${oaldpeInit.SRC_FILE}"]`).attr('src');
 
-    // Helper functions
-    clear: function (callback) {
-        if (!this.LOCAL_STORAGE_AVAILABLE) return;
+        static LOCAL_STORAGE_PREFIX = 'OALDPE_';
+        static LOCAL_STORAGE_AVAILABLE = (() => {
+            try {
+                localStorage.setItem('__test__', '__test__');
+                localStorage.removeItem('__test__');
+                return true;
+            } catch { return false; }
+        })();
 
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith(this.LOCAL_STORAGE_PREFIX)) {
-                localStorage.removeItem(key);
-            }
-        });
+        // Log
+        static LOG_SOURCE = 'oaldpe';
+        static LOG_LEVEL = { DEBUG: 'DEBUG', INFO: 'INFO', WARNING: 'WARNING', ERROR: 'ERROR' };
 
-        if (typeof callback === 'function') callback();
-    },
+        // Global references
+        static scriptExecutionCounter = 0;
+        static containerSelector = '.oaldpe';
 
-    setItem: function (settingItemKey, settingItem, callback) {
-        if (!this.LOCAL_STORAGE_AVAILABLE) return;
+        // Create a deep copy of the 'oaldpeConfig' object for reset
+        static oaldpeConfigDuplicate = JSON.parse(JSON.stringify(oaldpeConfig));
 
-        const localStoragekey = this.LOCAL_STORAGE_PREFIX + settingItemKey;
-        const localStorageValue = settingItem.type === 'nested-checkboxes'
-            ? JSON.stringify(Object.fromEntries(Object.entries(settingItem.selectedValue).map(([key, { value }]) => [key, value])))
-            : JSON.stringify(settingItem.selectedValue);
-
-        localStorage.setItem(localStoragekey, localStorageValue);
-
-        if (typeof callback === 'function') callback();
-    },
-
-    createCheckboxContainer: function (checkboxConfig) {
-        const $checkboxContainer = $('<span>', { class: 'checkbox-container' });
-        $checkboxContainer.attr('option-false', checkboxConfig.options?.[0] || 'Off');
-        $checkboxContainer.attr('option-true', checkboxConfig.options?.[1] || 'On');
-
-        const $checkbox = $('<input>', { type: 'checkbox' });
-        $checkboxContainer.append($checkbox);
-
-        // Initialize the checkbox state
-        const isChecked = checkboxConfig.initialState || false;
-        $checkbox.prop('checked', isChecked);
-
-        // Initialize the container class
-        $checkboxContainer.toggleClass('checked', isChecked);
-
-        // Update the container class when the checkbox changes
-        $checkbox.on('change', function () {
-            $checkboxContainer.toggleClass('checked', $checkbox.prop('checked'));
-        });
-
-        // Execute the callback function if it exists
-        if (typeof checkboxConfig.checkboxCallback === 'function') {
-            checkboxConfig.checkboxCallback($checkbox);
+        // Dictionary app
+        static isEudic() {
+            return oaldpeInit.USER_AGENT.includes('eudic');
+        }
+        static isGoldenDict() {
+            return oaldpeInit.USER_AGENT.includes('goldendict');
+        }
+        static isPreview() {
+            try {
+                return window.self !== window.top && parent.document.querySelector('#k_iframe');
+            } catch { return false; }
         }
 
-        // Assign the ID attribute to locate the checkbox
-        if (checkboxConfig.id) {
-            $checkbox.attr('id', checkboxConfig.id);
+        // Platform detection
+        static isMacosIpadSim() {
+            return oaldpeInit.USER_AGENT.includes('ipad') && navigator.maxTouchPoints === 0;
+        }
+        static isMobile() {
+            return oaldpeInit.USER_AGENT.includes('android') || oaldpeInit.USER_AGENT.includes('iphone');
+        }
+        static isMobileOrTablet() {
+            return oaldpeInit.USER_AGENT.includes('android') || oaldpeInit.USER_AGENT.includes('iphone') || oaldpeInit.USER_AGENT.includes('ipad');
         }
 
-        return $checkboxContainer;
-    },
+        // Resolve links
+        static resolveFilePath(relativePath) {
+            return oaldpeInit.SRC_URL.slice(0, oaldpeInit.SRC_URL.lastIndexOf('/') + 1) + relativePath;
+        }
+        static replacePlaceholder(template = '', value) {
+            return template.replace('placeholder', value);
+        }
 
-    createCallout: function (calloutConfig) {
-        const $callout = $('<div>', { class: 'callout', 'data-callout': calloutConfig.type });
-        $callout.append($('<div>', {
-            class: 'callout-title',
-            text: calloutConfig.title || calloutConfig.type
-        }));
+        // Local storage
+        static oaldpeConfigUpdate() {
+            if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) return;
 
-        if (calloutConfig.content) {
-            const $calloutContent = $('<div>', { class: 'callout-content' }).appendTo($callout);
+            Object.entries(oaldpeConfig).forEach(([configGroupKey, configGroup]) => {
+                Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
+                    const localStorageKey = oaldpeInit.LOCAL_STORAGE_PREFIX + settingItemKey;
+                    const localStorageValue = localStorage.getItem(localStorageKey);
 
-            [].concat(calloutConfig.content).forEach(item => {
-                if (typeof item === 'string') {
-                    $calloutContent.append($('<p>', { text: item }));
-                } else if (item instanceof jQuery) {
-                    $calloutContent.append(item);
-                }
-            });
-        } else { $callout.addClass('callout-empty'); }
-
-        return $callout;
-    }
-};
-
-(function oaldpeConfigInit() {
-    const oaldpeConfigDuplicate = JSON.parse(JSON.stringify(oaldpeConfig)); // Deep copy
-
-    oaldpeConfigUpdate();
-
-    oaldpeConfigEvent();
-
-    const scriptsPromise = loadExternalScripts();
-
-    function oaldpeConfigUpdate() {
-        if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) return;
-
-        Object.entries(oaldpeConfig).forEach(([configGroupKey, configGroup]) => {
-            Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
-                const localStorageKey = oaldpeInit.LOCAL_STORAGE_PREFIX + settingItemKey;
-                const localStorageValue = localStorage.getItem(localStorageKey);
-
-                if (localStorageValue !== null) {
-                    const selectedValue = JSON.parse(localStorageValue);
-                    if (settingItem.type === 'dropdown' || settingItem.type === 'checkbox') {
-                        oaldpeConfig[configGroupKey][settingItemKey].selectedValue = selectedValue;
-                    } else if (settingItem.type === 'nested-checkboxes') {
-                        Object.keys(selectedValue).forEach(key => {
-                            oaldpeConfig[configGroupKey][settingItemKey].selectedValue[key].value = selectedValue[key];
-                        });
+                    if (localStorageValue !== null) {
+                        const selectedValue = JSON.parse(localStorageValue);
+                        if (settingItem.type === 'dropdown' || settingItem.type === 'checkbox') {
+                            oaldpeConfig[configGroupKey][settingItemKey].selectedValue = selectedValue;
+                        } else if (settingItem.type === 'nested-checkboxes') {
+                            Object.keys(selectedValue).forEach(key => {
+                                oaldpeConfig[configGroupKey][settingItemKey].selectedValue[key].value = selectedValue[key];
+                            });
+                        }
                     }
-                }
+                });
             });
-        });
-    }
+        }
 
-    function oaldpeConfigEvent() {
-        const $configContainer = $('.oaldpe-config');
-        if (!$configContainer.length) return;
+        static oaldpeConfigEvent() {
+            const $configContainer = $('.oaldpe-config');
+            if (!$configContainer.length) return;
 
-        // Initial setup
-        const $configNavbar = $('<div>', { id: 'oaldpe-config-navbar' }).appendTo($configContainer);
-        const $configContent = $('<div>', { id: 'oaldpe-config-content' }).appendTo($configContainer);
+            // Initial setup
+            const $configNavbar = $('<div>', { id: 'oaldpe-config-navbar' }).appendTo($configContainer);
+            const $configContent = $('<div>', { id: 'oaldpe-config-content' }).appendTo($configContainer);
 
-        /* Construct configuration panel */
-        const $configPanel = $('<div>', { id: 'oaldpe-config-panel' }).appendTo($configContent);
-        const $configPanelTitle = $('<div>', { class: 'page-title', text: 'Configuration' }).appendTo($configPanel);
+            /* Construct configuration panel */
+            const $configPanel = $('<div>', { id: 'oaldpe-config-panel' }).appendTo($configContent);
+            const $configPanelTitle = $('<div>', { class: 'page-title', text: 'Configuration' }).appendTo($configPanel);
 
-        // Reset button
-        $('<span>').addClass('reset-button').appendTo($configPanelTitle).on('click', function () {
-            const $resetButton = $(this);
+            // Reset button
+            $('<span>').addClass('reset-button').appendTo($configPanelTitle).on('click', function () {
+                const $resetButton = $(this);
 
-            oaldpeConfig = JSON.parse(JSON.stringify(oaldpeConfigDuplicate));
+                oaldpeConfig = JSON.parse(JSON.stringify(oaldpeInit.oaldpeConfigDuplicate));
+                constructConfigPanel();
+
+                oaldpeInit.clear(() => {
+                    $resetButton.addClass('reset-success');
+                    setTimeout(() => $resetButton.removeClass('reset-success'), 2000);
+                });
+            });
+
+            // Print the warning message if local storage is not available
+            if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) {
+                const warningMessage = oaldpeInit.createCallout({
+                    type: 'danger', title: 'Error',
+                    content: [
+                        `检测到当前环境不支持通过配置界面设置，请直接修改 ${oaldpeInit.SRC_FILE} 文件中的配置项。`,
+                        '推荐使用词典软件：', '(1) 欧路词典 Eudic (全平台)', '(2) GoldenDict-ng (电脑端)'
+                    ]
+                });
+                warningMessage.addClass('local-storage-warning');
+                $configPanel.append(warningMessage);
+            }
+
+            // Hidden message to show the success of user actions
+            const $hiddenMessage = oaldpeInit.createCallout({ type: 'success' });
+            $hiddenMessage.addClass('hidden-message');
+
+            const showHiddenMessage = ($container, title = 'success', delay = 2000) => {
+                $hiddenMessage.appendTo($container);
+                $hiddenMessage.children('.callout-title').text(title);
+                $hiddenMessage.fadeIn(function () {
+                    setTimeout(() => $hiddenMessage.fadeOut(), delay);
+                });
+            };
+
             constructConfigPanel();
 
-            oaldpeInit.clear(() => {
-                $resetButton.addClass('reset-success');
-                setTimeout(() => $resetButton.removeClass('reset-success'), 2000);
-            });
-        });
+            function constructConfigPanel() {
+                // Clear up if constructed before
+                $configPanel.children('.oaldpe-config-group').remove();
 
-        // Print the warning message if local storage is not available
-        if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) {
-            const warningMessage = oaldpeInit.createCallout({
-                type: 'danger', title: 'Error',
-                content: [
-                    `检测到当前环境不支持通过配置界面设置，请直接修改 ${oaldpeInit.SRC_FILE} 文件中的配置项。`,
-                    '推荐使用词典软件：', '(1) 欧路词典 Eudic (全平台)', '(2) GoldenDict-ng (电脑端)'
-                ]
-            });
-            warningMessage.addClass('local-storage-warning');
-            $configPanel.append(warningMessage);
-        }
+                // Construct the configuration panel based on the 'oaldpeConfig' object
+                Object.values(oaldpeConfig).forEach(configGroup => {
+                    const $group = $('<ol>', { class: 'oaldpe-config-group' });
 
-        // Hidden message to show the success of user actions
-        const $hiddenMessage = oaldpeInit.createCallout({ type: 'success' });
-        $hiddenMessage.addClass('hidden-message');
+                    Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
+                        if (settingItemKey === 'groupTitle') {
+                            $group.append($('<div>', { class: 'group-title', text: configGroup['groupTitle'] }));
+                            return;
+                        }
 
-        const showHiddenMessage = ($container, title = 'success', delay = 2000) => {
-            $hiddenMessage.appendTo($container);
-            $hiddenMessage.children('.callout-title').text(title);
-            $hiddenMessage.fadeIn(function () {
-                setTimeout(() => $hiddenMessage.fadeOut(), delay);
-            });
-        };
+                        // Create a UI element for each setting item
+                        const $settingItem = $('<li>', { class: 'setting-item', 'data-type': settingItem.type }).appendTo($group);
 
-        constructConfigPanel();
+                        // 1. Main content of the setting item
+                        const $configItem = $('<div>', { class: 'config-item' }).appendTo($settingItem);
 
-        function constructConfigPanel() {
-            // Clear up if constructed before
-            $configPanel.children('.oaldpe-config-group').remove();
+                        // Title and description
+                        const $settingItemInfo = $('<div>', { class: 'setting-item-info' }).appendTo($configItem);
+                        $settingItemInfo.append($('<div>', { class: 'setting-item-title', text: settingItem['title'] }));
+                        if (settingItem.description) {
+                            $settingItemInfo.append($('<div>', { class: 'setting-item-description', text: settingItem['description'] }));
+                        }
 
-            // Construct the configuration panel based on the 'oaldpeConfig' object
-            Object.values(oaldpeConfig).forEach(configGroup => {
-                const $group = $('<ol>', { class: 'oaldpe-config-group' });
-
-                Object.entries(configGroup).forEach(([settingItemKey, settingItem]) => {
-                    if (settingItemKey === 'groupTitle') {
-                        $group.append($('<div>', { class: 'group-title', text: configGroup['groupTitle'] }));
-                        return;
-                    }
-
-                    // Create a UI element for each setting item
-                    const $settingItem = $('<li>', { class: 'setting-item', 'data-type': settingItem.type }).appendTo($group);
-
-                    // 1. Main content of the setting item
-                    const $configItem = $('<div>', { class: 'config-item' }).appendTo($settingItem);
-
-                    // Title and description
-                    const $settingItemInfo = $('<div>', { class: 'setting-item-info' }).appendTo($configItem);
-                    $settingItemInfo.append($('<div>', { class: 'setting-item-title', text: settingItem['title'] }));
-                    if (settingItem.description) {
-                        $settingItemInfo.append($('<div>', { class: 'setting-item-description', text: settingItem['description'] }));
-                    }
-
-                    // Create the control element based on the setting type
-                    const $settingItemControl = $('<div>', { class: 'setting-item-control' }).appendTo($configItem);
-                    if (settingItem.type === 'dropdown') {
-                        const $select = $('<select>').appendTo($settingItemControl);
-                        settingItem.options.forEach(option => {
-                            $select.append($('<option>').val(option.value).text(option.label)
-                                .prop('selected', option.value === settingItem.selectedValue)
-                            );
-                        });
-                        $select.on('change', function () {
-                            settingItem.selectedValue = parseInt($select.val());
-                            oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
-                        });
-                    } else if (settingItem.type === 'checkbox') {
-                        const $checkboxContainer = oaldpeInit.createCheckboxContainer({
-                            initialState: settingItem.selectedValue, checkboxCallback: $checkbox => {
-                                $checkbox.on('change', function () {
-                                    settingItem.selectedValue = $checkbox.prop('checked');
-                                    oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
-                                });
-                            }
-                        });
-                        $checkboxContainer.appendTo($settingItemControl);
-                    } else if (settingItem.type === 'nested-checkboxes') {
-                        const $nestedContainer = $('<ul>', { class: 'nested-checkboxes' }).appendTo($settingItemControl);
-                        Object.entries(settingItem.selectedValue).forEach(([key, { value, label }]) => {
-                            const $nested = $('<li>', { class: 'nested-item' });
+                        // Create the control element based on the setting type
+                        const $settingItemControl = $('<div>', { class: 'setting-item-control' }).appendTo($configItem);
+                        if (settingItem.type === 'dropdown') {
+                            const $select = $('<select>').appendTo($settingItemControl);
+                            settingItem.options.forEach(option => {
+                                $select.append($('<option>').val(option.value).text(option.label)
+                                    .prop('selected', option.value === settingItem.selectedValue)
+                                );
+                            });
+                            $select.on('change', function () {
+                                settingItem.selectedValue = typeof settingItem.selectedValue === 'number' ? parseInt($select.val()) : $select.val();
+                                oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
+                            });
+                        } else if (settingItem.type === 'checkbox') {
                             const $checkboxContainer = oaldpeInit.createCheckboxContainer({
-                                initialState: value, checkboxCallback: $checkbox => {
+                                initialState: settingItem.selectedValue, checkboxCallback: $checkbox => {
                                     $checkbox.on('change', function () {
-                                        settingItem.selectedValue[key].value = $checkbox.prop('checked');
+                                        settingItem.selectedValue = $checkbox.prop('checked');
                                         oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
                                     });
                                 }
                             });
-                            $nested.append($('<span>', { class: 'nested-item-label', text: label })).append($checkboxContainer);
-                            $nested.appendTo($nestedContainer);
+                            $checkboxContainer.appendTo($settingItemControl);
+                        } else if (settingItem.type === 'nested-checkboxes') {
+                            const $nestedContainer = $('<ul>', { class: 'nested-checkboxes' }).appendTo($settingItemControl);
+                            Object.entries(settingItem.selectedValue).forEach(([key, { value, label }]) => {
+                                const $nested = $('<li>', { class: 'nested-item' });
+                                const $checkboxContainer = oaldpeInit.createCheckboxContainer({
+                                    initialState: value, checkboxCallback: $checkbox => {
+                                        $checkbox.on('change', function () {
+                                            settingItem.selectedValue[key].value = $checkbox.prop('checked');
+                                            oaldpeInit.setItem(settingItemKey, settingItem, showHiddenMessage($group, '保存成功'));
+                                        });
+                                    }
+                                });
+                                $nested.append($('<span>', { class: 'nested-item-label', text: label })).append($checkboxContainer);
+                                $nested.appendTo($nestedContainer);
+                            });
+                        }
+
+                        // 2. Callout
+                        settingItem.callout?.forEach(calloutConfig => {
+                            $settingItem.append(oaldpeInit.createCallout(calloutConfig));
                         });
-                    }
-
-                    // 2. Callout
-                    settingItem.callout?.forEach(calloutConfig => {
-                        $settingItem.append(oaldpeInit.createCallout(calloutConfig));
                     });
-                });
 
-                $configPanel.append($group);
+                    $configPanel.append($group);
+                });
+            }
+
+            /* Construct help center */
+            const $configHelp = $configContainer.children('#oaldpe-config-help').appendTo($configContent);
+            $configHelp.prepend($('<div>', { class: 'page-title', text: 'HELP' }));
+
+            // Post processing
+            $configHelp.find('a.external-link').each(function () {
+                const $externalLink = $(this);
+                if (oaldpeInit.isEudic()) {
+                    $externalLink.data('text', $externalLink.data('text').replace('eudic-', ''));
+                    $externalLink.data('href', $externalLink.data('href').replace('eudic-', ''));
+                }
+                $externalLink.text($externalLink.data('text'));
+                $externalLink.css('cursor', 'pointer').on('click', function () {
+                    copyToClipboard($externalLink.data('href'));
+                    showHiddenMessage($externalLink.closest('.block-wrapper, .callout'), '已复制链接');
+                });
+            });
+
+            // Page Navigation
+            $configNavbar.append([
+                $('<span>', { class: 'nav-item', text: 'Configuration', 'data-target': 'oaldpe-config-panel' }),
+                $('<span>', { class: 'nav-item', text: 'Help', 'data-target': 'oaldpe-config-help' })
+            ]);
+            $configNavbar.children().first().addClass('active');
+            $configNavbar.on('click', 'span', function () {
+                const $clickedSpan = $(this);
+                if ($clickedSpan.hasClass('active')) return;
+
+                $clickedSpan.addClass('active');
+                $clickedSpan.siblings().removeClass('active');
+
+                const animationDuration = 100;
+                const $target = $configContent.children(`#${$clickedSpan.data('target')}`);
+                $target.siblings().fadeOut(animationDuration, function () {
+                    $target.fadeIn(animationDuration);
+                });
             });
         }
 
-        /* Construct help center */
-        const $configHelp = $configContainer.children('#oaldpe-config-help').appendTo($configContent);
-        $configHelp.prepend($('<div>', { class: 'page-title', text: 'HELP' }));
+        // Helper functions
+        static log(level, message) {
+            console.log(`[${oaldpeInit.LOG_SOURCE}]: [${level}] ${message}`);
+        }
 
-        // Post processing
-        $configHelp.find('a.external-link').each(function () {
-            const $externalLink = $(this);
-            if (oaldpeInit.isEudic()) {
-                $externalLink.data('text', $externalLink.data('text').replace('eudic-', ''));
-                $externalLink.data('href', $externalLink.data('href').replace('eudic-', ''));
-            }
-            $externalLink.text($externalLink.data('text'));
-            $externalLink.css('cursor', 'pointer').on('click', function () {
-                copyToClipboard($externalLink.data('href'));
-                showHiddenMessage($externalLink.closest('.block-wrapper, .callout'), '已复制链接');
+        static clear(callback) {
+            if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) return;
+
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(oaldpeInit.LOCAL_STORAGE_PREFIX)) {
+                    localStorage.removeItem(key);
+                }
             });
-        });
 
-        // Page Navigation
-        $configNavbar.append([
-            $('<span>', { class: 'nav-item', text: 'Configuration', 'data-target': 'oaldpe-config-panel' }),
-            $('<span>', { class: 'nav-item', text: 'Help', 'data-target': 'oaldpe-config-help' })
-        ]);
-        $configNavbar.children().first().addClass('active');
-        $configNavbar.on('click', 'span', function () {
-            const $clickedSpan = $(this);
-            if ($clickedSpan.hasClass('active')) return;
+            if (typeof callback === 'function') callback();
+        }
 
-            $clickedSpan.addClass('active');
-            $clickedSpan.siblings().removeClass('active');
+        static setItem(settingItemKey, settingItem, callback) {
+            if (!oaldpeInit.LOCAL_STORAGE_AVAILABLE) return;
 
-            const animationDuration = 100;
-            const $target = $configContent.children(`#${$clickedSpan.data('target')}`);
-            $target.siblings().fadeOut(animationDuration, function () {
-                $target.fadeIn(animationDuration);
-            });
-        });
-    }
+            const localStoragekey = oaldpeInit.LOCAL_STORAGE_PREFIX + settingItemKey;
+            const localStorageValue = settingItem.type === 'nested-checkboxes'
+                ? JSON.stringify(Object.fromEntries(Object.entries(settingItem.selectedValue).map(([key, { value }]) => [key, value])))
+                : JSON.stringify(settingItem.selectedValue);
 
-    async function loadExternalScripts() {
-        async function loadScript(localPath, cdnUrl, globalVar) {
+            localStorage.setItem(localStoragekey, localStorageValue);
+
+            if (typeof callback === 'function') callback();
+        }
+
+        static async loadScript(localPath, cdnUrl, globalVar, callback) {
             if (typeof window[globalVar] === 'undefined') {
                 const resolvedLocalPath = oaldpeInit.resolveFilePath(localPath);
                 try {
                     await $.getScript(resolvedLocalPath);
                     if (typeof window[globalVar] === 'undefined') throw new Error();
                 } catch (error) {
-                    console.log(`Failed to load the local script '${resolvedLocalPath}', attempting to load from the CDN: ${cdnUrl}`);
+                    oaldpeInit.log(oaldpeInit.LOG_LEVEL.ERROR, `Failed to load the local script '${resolvedLocalPath}', attempting to load from the CDN: ${cdnUrl}`);
                     await $.getScript(cdnUrl);
                 }
+
+                if (typeof callback === 'function') callback();
             }
         }
 
-        if (oaldpeConfig.otherFeatures.enableErudaConsole.selectedValue) {
-            await loadScript('scripts/eruda', 'https://cdn.jsdelivr.net/npm/eruda', 'eruda');
+        static createCheckboxContainer(checkboxConfig) {
+            const $checkboxContainer = $('<span>', { class: 'checkbox-container' });
+            $checkboxContainer.attr('option-false', checkboxConfig.options?.[0] || 'Off');
+            $checkboxContainer.attr('option-true', checkboxConfig.options?.[1] || 'On');
 
+            const $checkbox = $('<input>', { type: 'checkbox' });
+            $checkboxContainer.append($checkbox);
+
+            // Initialize the checkbox state
+            const isChecked = checkboxConfig.initialState || false;
+            $checkbox.prop('checked', isChecked);
+
+            // Initialize the container class
+            $checkboxContainer.toggleClass('checked', isChecked);
+
+            // Update the container class when the checkbox changes
+            $checkbox.on('change', function () {
+                $checkboxContainer.toggleClass('checked', $checkbox.prop('checked'));
+            });
+
+            // Execute the callback function if it exists
+            if (typeof checkboxConfig.checkboxCallback === 'function') {
+                checkboxConfig.checkboxCallback($checkbox);
+            }
+
+            // Assign the ID attribute to locate the checkbox
+            if (checkboxConfig.id) {
+                $checkbox.attr('id', checkboxConfig.id);
+            }
+
+            return $checkboxContainer;
+        }
+
+        static createCallout(calloutConfig) {
+            const $callout = $('<div>', { class: 'callout', 'data-callout': calloutConfig.type });
+            $callout.append($('<div>', {
+                class: 'callout-title',
+                text: calloutConfig.title || calloutConfig.type
+            }));
+
+            if (calloutConfig.content) {
+                const $calloutContent = $('<div>', { class: 'callout-content' }).appendTo($callout);
+
+                [].concat(calloutConfig.content).forEach(item => {
+                    if (typeof item === 'string') {
+                        $calloutContent.append($('<p>', { text: item }));
+                    } else if (item instanceof jQuery) {
+                        $calloutContent.append(item);
+                    }
+                });
+            } else { $callout.addClass('callout-empty'); }
+
+            return $callout;
+        }
+
+        // region 欧路词典相关
+        static Eudic_widerScreen() {
+            if (oaldpeInit.isMobile() && oaldpeConfig.dictionaryAppRelated.widerScreenEudic.selectedValue) {
+                oaldpeInit.$parent.css('padding', '5px 8px 5px 5px');
+            }
+        }
+
+        static Eudic_removeHeader() {
+            if (oaldpeInit.isMobileOrTablet() && oaldpeConfig.dictionaryAppRelated.removeEudicHeader.selectedValue) {
+                const $wordInfoHead = $('#wordInfoHead');
+                $wordInfoHead.remove();
+            }
+        }
+
+        static Eudic_customNote_autoFold() {
+            if (oaldpeInit.isMobileOrTablet() && oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote.selectedValue) {
+                const $expHead = $('#expCustomNote .expHead');
+                $expHead.trigger('click');
+            }
+        }
+
+        static Eudic_customNote_modify() {
+            const $expCustomNote = $('#expCustomNote');
+            const $customeNoteText = $expCustomNote.find('#customeNoteText');
+            try {
+                window.noteDataArray = JSON.parse($customeNoteText.text());
+            } catch { return; }
+            $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
+
+            async function constructNotes() {
+                await $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/notes.bundle.js'));
+
+                // Move the image container to the inside of the flex container
+                const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
+                if ($elementToMove.length) {
+                    const $newParent = $('.Hazuki-note .single-note').first();
+                    $newParent.prepend($elementToMove);
+                }
+            }
+
+            constructNotes();
+
+            // Create a copy button to get the 'noteDataArray'
+            const $eudicNoteHead = $expCustomNote.find('.eudic_note_head');
+            var $copyButton = $('<button>', {
+                text: '复制',
+                class: 'editNote',
+                css: { marginLeft: '10px' },
+                click: function () {
+                    copyToClipboard(JSON.stringify(noteDataArray));
+                }
+            });
+            $eudicNoteHead.append($copyButton);
+
+            // Remove Eudic '查看公开笔记'
+            $expCustomNote.find('.eudicNoteMore').remove();
+            $expCustomNote.find('.customeHorizonal').css('margin-bottom', 'unset');
+        }
+
+        static Eudic_customNote_observeAdded(callback) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    mutation.addedNodes.forEach(function (node) {
+                        if (node.nodeType === Node.ELEMENT_NODE && node.id === 'customeNoteText') {
+                            callback();
+                            observer.disconnect();
+                        }
+                    });
+                });
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        // region 其他功能
+        static detectDarkModeEnabled() {
+            if (!oaldpeConfig.otherFeatures.autoDarkMode.selectedValue) return;
+
+            if (!oaldpeInit.isGoldenDict() && !oaldpeInit.isEudic()) {
+                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                const handleThemeChange = (event) => {
+                    const isDarkMode = event.matches;
+                    oaldpeInit.$allContainers.attr('data-theme', isDarkMode ? 'dark' : 'light');
+                    if (oaldpeInit.isPreview()) $('body').css('background-color', isDarkMode ? 'rgb(26, 26, 26)' : '');
+                };
+
+                handleThemeChange(darkModeMediaQuery); // Initial check
+                darkModeMediaQuery.addEventListener('change', handleThemeChange); // Listen for changes
+
+                return;
+            }
+
+            if (oaldpeInit.isGoldenDict()) {
+                oaldpeInit.$allContainers.attr('data-theme', $('html').attr('data-darkreader-scheme') === 'dark' ? 'dark' : 'light');
+                return;
+            }
+
+            // Delete the Eudic fixed style to prevent conflicts
+            oaldpeInit.$parent.children('.eudic_custom_night').remove(); // Initial check
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    mutation.addedNodes.forEach(function (node) {
+                        if (node.classList?.contains('eudic_custom_night')) {
+                            node.remove();
+                        }
+                    });
+                });
+            });
+            observer.observe(oaldpeInit.$parent[0], { childList: true });
+
+            // Set the theme based on the body's class
+            const setEudicTheme = () => oaldpeInit.$allContainers.attr('data-theme', $('body').is('.black, .night') ? 'dark' : 'light');
+            setEudicTheme(); // Initial check
+            const attributeObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.attributeName === 'class') {
+                        setEudicTheme();
+                    }
+                });
+            });
+            attributeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        // region TTS 相关
+        static createEdgeTTS() {
+            const ttsConfig = {
+                '美音女1': { locale: 'en-US', voice: 'en-US-MichelleNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音女2': { locale: 'en-US', voice: 'en-US-AriaNeural', pitch: '+0Hz', rate: '+20%', volume: '+0%' },
+                '美音女3': { locale: 'en-US', voice: 'en-US-AnaNeural', pitch: '+0Hz', rate: '+20%', volume: '+0%' },
+                '美音女4': { locale: 'en-US', voice: 'en-US-JennyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音男1': { locale: 'en-US', voice: 'en-US-ChristopherNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音男2': { locale: 'en-US', voice: 'en-US-EricNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音男3': { locale: 'en-US', voice: 'en-US-GuyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音男4': { locale: 'en-US', voice: 'en-US-RogerNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '美音男5': { locale: 'en-US', voice: 'en-US-SteffanNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '英音女1': { locale: 'en-GB', voice: 'en-GB-SoniaNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '英音女2': { locale: 'en-GB', voice: 'en-GB-MaisieNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '英音女3': { locale: 'en-GB', voice: 'en-GB-LibbyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '英音男1': { locale: 'en-GB', voice: 'en-GB-RyanNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
+                '英音男2': { locale: 'en-GB', voice: 'en-GB-ThomasNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' }
+            };
+
+            const ttsGlobalAudio = new Audio();
+
+            const TRUSTED_CLIENT_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+            const SYNTH_URL = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`;
+            const AUDIO_FORMAT = 'audio-24khz-48kbitrate-mono-mp3';
+
+            const BINARY_DELIM = 'Path:audio\r\n';
+            const CONTENT_TYPE_JSON = 'Content-Type:application/json\r\nPath:speech.config\r\n\r\n';
+            const CONTENT_TYPE_SSML = 'Content-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n';
+
+            let socket = null, requests = {};
+
+            const createSSML = (inputText, { locale, voice, pitch, rate, volume }) =>
+                `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${locale}">
+                <voice name="${voice}"><prosody pitch="${pitch}" rate="${rate}" volume="${volume}">${inputText}</prosody></voice>
+            </speak>`;
+
+            function generateSecMsGecToken() {
+                // Get the current time in Windows file time format (100ns intervals since 1601-01-01)
+                let ticks = BigInt((Date.now() / 1000 + 11644473600) * 10000000);
+
+                // Round down to the nearest 5 minutes (3,000,000,000 * 100ns = 5 minutes)
+                ticks -= ticks % BigInt(3000000000);
+
+                // Create the string to hash by concatenating the ticks and the trusted client token
+                const strToHash = `${ticks}${TRUSTED_CLIENT_TOKEN}`;
+
+                // Compute the SHA256 hash
+                const hash = CryptoJS.SHA256(strToHash);
+
+                // Return the hexadecimal representation of the hash
+                return hash.toString(CryptoJS.enc.Hex).toUpperCase();
+            }
+
+            async function ensureSocketReady() {
+                if (!socket || socket.readyState === WebSocket.CLOSED) {
+                    const reopened = !!socket; // Check if the socket existed before
+
+                    const Sec_MS_GEC = generateSecMsGecToken();
+                    const Sec_MS_GEC_VERSION = '1-130.0.2849.68';
+
+                    socket = new WebSocket(`${SYNTH_URL}&Sec-MS-GEC=${Sec_MS_GEC}&Sec-MS-GEC-Version=${Sec_MS_GEC_VERSION}`);
+                    socket.onmessage = onSocketMessage;
+                    socket.onclose = () => oaldpeInit.log(oaldpeInit.LOG_LEVEL.WARNING, 'WebSocket closed.');
+                    socket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        socket.close();
+                    };
+                    await new Promise((resolve) => {
+                        socket.onopen = () => {
+                            oaldpeInit.log(oaldpeInit.LOG_LEVEL.INFO, reopened ? 'WebSocket reopened.' : 'WebSocket opened.');
+                            setAudioOutputFormat();
+                            resolve();
+                        };
+                    });
+                } else if (socket.readyState === WebSocket.CONNECTING) {
+                    await new Promise((resolve) => socket.addEventListener('open', resolve, { once: true }));
+                }
+            }
+
+            async function sendWhenReady(message) {
+                await ensureSocketReady();
+                socket.send(message);
+            }
+
+            async function setAudioOutputFormat(format = AUDIO_FORMAT) {
+                const messagePayload = JSON.stringify({ context: { synthesis: { audio: { outputFormat: format } } } });
+                await sendWhenReady(`${CONTENT_TYPE_JSON}${messagePayload}`);
+            }
+
+            async function onSocketMessage(event) {
+                if (!(event.data instanceof Blob)) return;
+
+                const dataText = await event.data.text();
+                const requestId = dataText.match(/X-RequestId:(.*?)\r\n/)[1];
+                const request = requests[requestId];
+                if (!request) return;
+
+                const arrayBuffer = await event.data.arrayBuffer();
+                const dataView = new DataView(arrayBuffer);
+
+                /* Check if the audio fragment is the last one */
+                if (dataView.getUint8(0) === 0x00 && dataView.getUint8(1) === 0x67 && dataView.getUint8(2) === 0x58) {
+                    if (request.audioDataChunks.length) {
+                        const audioBlob = new Blob(request.audioDataChunks, { type: 'audio/mp3' });
+                        request.resolve(URL.createObjectURL(audioBlob));
+                        delete requests[requestId];
+                    }
+                } else {
+                    const audioStartIndex = dataText.indexOf(BINARY_DELIM) + BINARY_DELIM.length;
+                    const audioData = new Blob([arrayBuffer.slice(audioStartIndex)]);
+                    request.audioDataChunks.push(audioData);
+                }
+            }
+
+            async function sendSSMLRequest(inputText, ttsConfigKey) {
+                const ssml = createSSML(inputText, ttsConfig[ttsConfigKey]);
+                const requestId = uuidv4().replace(/-/g, '');
+                const requestMessage = `X-RequestId:${requestId}\r\n${CONTENT_TYPE_SSML}${ssml}`;
+
+                requests[requestId] = { audioDataChunks: [], resolve: null, reject: null };
+                await sendWhenReady(requestMessage);
+
+                return new Promise((resolve, reject) => {
+                    requests[requestId].resolve = resolve;
+                    requests[requestId].reject = reject;
+                });
+            }
+
+            function uuidv4() {
+                return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+            }
+
+            async function playText(inputText, config) {
+                try {
+                    const audioUrl = await sendSSMLRequest(inputText, config);
+                    if (!ttsGlobalAudio.paused) ttsGlobalAudio.pause();
+                    ttsGlobalAudio.src = audioUrl;
+
+                    const cleanup = () => URL.revokeObjectURL(audioUrl);
+                    ttsGlobalAudio.addEventListener('ended', cleanup, { once: true });
+                    ttsGlobalAudio.play();
+                } catch (error) {
+                    console.error('Failed to play audio:', error);
+                }
+            }
+
+            return { playText };
+        }
+
+        constructor() {
+            // Initialization
+            oaldpeInit.oaldpeConfigUpdate();
+            oaldpeInit.oaldpeConfigEvent();
+
+            const $container = $(oaldpeInit.containerSelector);
+            oaldpeInit.entryLinkHrefTemplate = $container.find('.pseudo-footer .entry-link-placeholder').attr('href');
+
+            if (oaldpeInit.isEudic()) {
+                oaldpeInit.$ancestor = $container.closest('.explain_wrap_styleless');
+                oaldpeInit.$parent = $container.parent('.expDiv');
+
+                oaldpeInit.Eudic_widerScreen();
+                oaldpeInit.Eudic_removeHeader();
+
+                $(function () {
+                    oaldpeInit.Eudic_customNote_observeAdded(() => {
+                        oaldpeInit.Eudic_customNote_autoFold();
+                        oaldpeInit.Eudic_customNote_modify();
+                    });
+                });
+            }
+
+            $(function () {
+                oaldpeInit.$allContainers = $(oaldpeInit.containerSelector);
+                oaldpeInit.detectDarkModeEnabled();
+            });
+
+            $(async function () {
+                await loadExternalScripts();
+
+                oaldpeInit.log(oaldpeInit.LOG_LEVEL.INFO, 'Initialization completed.');
+
+                main();
+
+                if (oaldpeInit.isEudic() && oaldpeInit.isMacosIpadSim()) {
+                    $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/clickToCopy.bundle.js'));
+                }
+            });
+        }
+    }
+
+    window.oaldpeInit = oaldpeInit;
+
+    new oaldpeInit();
+}
+
+async function loadExternalScripts() {
+    if (oaldpeConfig.otherFeatures.enableErudaConsole.selectedValue) {
+        await oaldpeInit.loadScript('scripts/eruda', 'https://cdn.jsdelivr.net/npm/eruda', 'eruda', () => {
             eruda.init({
                 defaults: {
                     displaySize: 40,
                     theme: 'Atom One Light'
                 }
             });
-        }
-
-        if (oaldpeConfig.chineseTranslation.showTraditional.selectedValue) {
-            await loadScript('scripts/full.min.js', 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js', 'OpenCC');
-        }
-
-        if (oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) {
-            await loadScript('scripts/crypto-js.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js', 'CryptoJS');
-        }
+        });
     }
 
-    return scriptsPromise;
-}()).then(main);
+    if (oaldpeConfig.chineseTranslation.showTraditional.selectedValue) {
+        await oaldpeInit.loadScript('scripts/full.min.js', 'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js', 'OpenCC');
+    }
+
+    if (oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) {
+        await oaldpeInit.loadScript('scripts/crypto-js.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js', 'CryptoJS', () => {
+            oaldpeInit.EdgeTTS = oaldpeInit.createEdgeTTS();
+        });
+    }
+}
 
 function main() {
     const OALDPE_PREFIX_WORD_UK = 'https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/';
@@ -894,14 +1230,14 @@ function main() {
         '[transitive, intransitive, usually passive]': '[T, I, usu psv]',
     }
 
-    $('.oaldpe').each(function () {
+    oaldpeInit.$allContainers.each(function () {
+        oaldpeInit.log(oaldpeInit.LOG_LEVEL.INFO, `The script has been executed ${++oaldpeInit.scriptExecutionCounter} times.`);
+
         const $oaldpe = $(this);
-        if ($oaldpe.attr('script-loaded') === 'true') return;
-        $oaldpe.attr('script-loaded', 'true');
 
         // region 初始化
-        const $oald = $oaldpe.find('.oald');
-        const $webtop = $oaldpe.find('.entry > .top-container .webtop');
+        const $entryContainers = $oaldpe.find('.oald-entry-root').filter('.oald');
+        const $entryHeaders = $entryContainers.children('.entry').children('.top-container').find('.webtop');
 
         setupHeadword();
 
@@ -909,10 +1245,8 @@ function main() {
 
         setupNavigation();
 
-        detectDarkModeEnabled();
-
         function setupHeadword() {
-            $webtop.each(function () {
+            $entryHeaders.each(function () {
                 const $headword = $(this).children('.headword');
                 const syllable = $headword.attr('syllable');
                 const headword = $headword.attr('headword');
@@ -952,8 +1286,17 @@ function main() {
             const $configGearBody = $('<div>', { class: 'oaldpe-config-gear__body' });
             $configGear.append($configGearHead, $configGearIcon, $configGearBody);
 
-            if ($webtop.length) {
-                $webtop.first().prepend($configGear);
+            if (oaldpeInit.isEudic()) {
+                const additionalMargin = 200;
+                $configGearBody.on('transitionend', function () {
+                    if ($configGearBody.height() + additionalMargin > oaldpeInit.$ancestor.height()) {
+                        oaldpeInit.$ancestor.css('overflow', 'visible');
+                    }
+                });
+            }
+
+            if ($entryHeaders.length) {
+                $entryHeaders.first().prepend($configGear);
             } else {
                 const $container = $oaldpe.children('.idm-g');
                 $container.first().prepend($configGear);
@@ -1057,7 +1400,7 @@ function main() {
 
             configGroups.forEach(group => {
                 // Check conditions and skip rendering
-                if (group.groupTitle === 'Eudic Related' && !oaldpeInit.isEudicAPP()) return;
+                if (group.groupTitle === 'Eudic Related' && !(oaldpeInit.isEudic() && oaldpeInit.isMobileOrTablet())) return;
                 if (group.groupTitle === 'Example Pronunciation' && (!oaldpeConfig.onlineResources.officialExPronOpt.selectedValue && !oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue)) return;
 
                 const $configGroup = $('<ul>', { class: 'config-group' });
@@ -1089,7 +1432,7 @@ function main() {
             const $configEntryContainer = $('<div>', { class: 'config-entry-container' });
             const $configEntry = $('<a>', {
                 class: 'Ref', text: 'Configuration',
-                href: $oaldpe.find('.pseudo-footer .entry-link-placeholder').attr('href')?.replace('placeholder', 'oaldpeconfig')
+                href: oaldpeInit.replacePlaceholder(oaldpeInit.entryLinkHrefTemplate, 'oaldpeconfig')
             });
 
             $configEntryContainer.append($configEntry);
@@ -1097,100 +1440,40 @@ function main() {
         }
 
         function setupNavigation() {
-            if (!oaldpeConfig.posNavbar.showNavbar.selectedValue || $oald.length <= 1) {
-                $oald.addClass('visible');
+            const $navbar = $oaldpe.children('.oaldpe-nav');
+
+            if (!$navbar.length) return;
+
+            if (!oaldpeConfig.posNavbar.showNavbar.selectedValue) {
+                $entryContainers.addClass('visible');
+                $navbar.remove();
                 return;
             }
 
-            // Switch control of visibility to JavaScript
-            $oald.first().addClass('visible'); // avoid reflow
-
-            const $navbar = $('<div>').addClass('oaldpe-nav').prependTo($oaldpe);
-            $webtop.each(function () {
-                const $this = $(this);
-                const $pos = $this.children('.pos');
-                const $headword = $this.children('.headword');
-                const $span = $('<span>').appendTo($navbar);
-                $span.text($pos.text() || $headword.attr('headword') || $headword.text());
-            });
-
-            // Additional span for "All" and default active state setup
-            const $spanAll = $('<span>').text('All').appendTo($navbar);
             const $navbarSpan = $navbar.children('span');
-
-            if (oaldpeConfig.posNavbar.selectNavbarAll.selectedValue) {
-                $spanAll.addClass('active');
-                $oald.addClass('visible');
-            } else {
-                $navbarSpan.first().addClass('active');
-                $oald.first().addClass('visible');
-            }
+            const $spanAll = $navbarSpan.last();
 
             // Handle navbar clicks
             const $configGear = $oaldpe.find('.oaldpe-config-gear');
             $navbar.on('click', 'span', function () {
                 const $clickedSpan = $(this);
-                if ($clickedSpan.hasClass('active')) return;
+                const index = $navbarSpan.index($clickedSpan);
 
-                $clickedSpan.addClass('active');
-                $clickedSpan.siblings().removeClass('active');
+                if ($clickedSpan.hasClass('active')) return;
+                $navbarSpan.removeClass('active').eq(index).addClass('active');
 
                 if ($clickedSpan.is($spanAll)) {
-                    $oald.addClass('visible');
-                    $webtop.first().prepend($configGear);
+                    $entryContainers.addClass('visible');
+                    $entryHeaders.first().prepend($configGear);
                 } else {
-                    const index = $navbarSpan.index($clickedSpan);
-                    $oald.removeClass('visible').eq(index).addClass('visible');
-                    $webtop.eq(index).prepend($configGear);
+                    $entryContainers.removeClass('visible').eq(index).addClass('visible');
+                    $entryHeaders.eq(index).prepend($configGear);
                 }
             });
-        }
 
-        function detectDarkModeEnabled() {
-            if (!oaldpeConfig.otherFeatures.autoDarkMode.selectedValue) return;
-
-            if (!oaldpeInit.isGoldenDict() && !oaldpeInit.isEudic()) {
-                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                const handleThemeChange = (event) => {
-                    const isDarkMode = event.matches;
-                    $oaldpe.attr('data-theme', isDarkMode ? 'dark' : 'light');
-                    if (oaldpeInit.isPreview()) $('body').css('background-color', isDarkMode ? 'rgb(26, 26, 26)' : '');
-                };
-
-                handleThemeChange(darkModeMediaQuery); // Initial check
-                darkModeMediaQuery.addEventListener('change', handleThemeChange); // Listen for changes
-
-                return;
+            if (oaldpeConfig.posNavbar.selectNavbarAll.selectedValue) {
+                $spanAll.trigger('click');
             }
-
-            if (oaldpeInit.isGoldenDict()) {
-                $oaldpe.attr('data-theme', $('html').attr('data-darkreader-scheme') === 'dark' ? 'dark' : 'light');
-                return;
-            }
-
-            // Delete the Eudic fixed style to prevent conflicts
-            $oaldpe.siblings('.eudic_custom_night').remove(); // Initial check
-            if (!$oaldpe.parent().attr('observer-attached')) {
-                new MutationObserver((mutationsList) => {
-                    mutationsList.forEach((mutation) => {
-                        mutation.addedNodes.forEach((node) => {
-                            if (node.classList?.contains('eudic_custom_night')) node.remove();
-                        });
-                    });
-                }).observe($oaldpe.parent()[0], { childList: true });
-                $oaldpe.parent().attr('observer-attached', 'true');
-            }
-
-            // Set the theme based on the body's class
-            const setEudicTheme = () => $oaldpe.attr('data-theme', $('body').is('.black, .night') ? 'dark' : 'light');
-            setEudicTheme(); // Initial check
-            new MutationObserver((mutationsList) => {
-                mutationsList.forEach((mutation) => {
-                    if (mutation.attributeName === 'class') {
-                        setEudicTheme();
-                    }
-                });
-            }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
         }
 
         // region 全局选择器
@@ -1432,6 +1715,8 @@ function main() {
 
         setupExamplePron();
 
+        setupExamplePronTTS();
+
         function getOnlineWordPronUrl(src) {
             const name = src.split('/').pop();
             const prefix = name.indexOf('_gb_') > -1 ? OALDPE_PREFIX_WORD_UK : OALDPE_PREFIX_WORD_US;
@@ -1456,7 +1741,7 @@ function main() {
             $oaldpe.find('.audio_play_button').not('.app, .app-ext').each(function () {
                 const $audio = $(this);
                 const $phon = $audio.next('.phon');
-                $phon.on('click', () => $audio[0].click());
+                $phon.css('cursor', 'pointer').on('click', () => $audio[0].click());
 
                 if (oaldpeConfig.onlineResources.onlineWordPron.selectedValue) {
                     $audio.attr('data-href', getOnlineWordPronUrl($audio.attr('href')));
@@ -1525,11 +1810,52 @@ function main() {
                             event.preventDefault();
                             globalAudio.pause();
 
-                            console.log(`(online) audio: ${$audio.data('href')}`);
+                            oaldpeInit.log(oaldpeInit.LOG_LEVEL.INFO, `(online) audio: ${$audio.data('href')}`);
                             globalAudio.src = $audio.data('href');
                             globalAudio.play();
                         }
                     });
+                }
+            });
+        }
+
+        function setupExamplePronTTS() {
+            if (!oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) return;
+
+            $allExample.each(function () {
+                const $example = $(this);
+                const $audioContainer = $example.find('.x, .unx');
+
+                if (!$audioContainer.length) return;
+
+                const $pron_uk = $audioContainer.find('.pron-uk');
+                const $pron_us = $audioContainer.find('.pron-us');
+
+                function createAudioElement(className, ttsConfigKey) {
+                    const $audio = $('<a>', { class: `sound audio_play_button ${className} icon-audio tts` }).appendTo($audioContainer);
+                    $audio.on('click', (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+
+                        let inputText = $audioContainer.clone().find('.gloss, chn, script').remove().end().text()
+                            .replace(/somebody\/something/g, 'somebody or something')
+                            .replace(/&/g, 'and').replace(/\u200B/g, '');
+
+                        const match = inputText.match(/\b(\w+(?:\/\w+)+)\b/);
+                        if (match) inputText = match[0].split('/').map(word => inputText.replace(match[0], word)).join('\nor ');
+
+                        oaldpeInit.EdgeTTS.playText(inputText, ttsConfigKey);
+                    });
+                }
+
+                if (!$pron_uk.length) {
+                    createAudioElement('pron-uk', oaldpeConfig.onlineResources.britishTTS.selectedValue);
+                    $example.attr('pron-uk', 'true');
+                }
+
+                if (!$pron_us.length) {
+                    createAudioElement('pron-us', oaldpeConfig.onlineResources.americanTTS.selectedValue);
+                    $example.attr('pron-us', 'true');
                 }
             });
         }
@@ -1579,11 +1905,11 @@ function main() {
 
         function fnUsePlaceholder() {
             if (oaldpeConfig.contentSimplification.usePlaceholder.selectedValue) {
-                $oaldpe.find('.oald').each(function () {
-                    const $oald = $(this);
-                    const $webtop = $oald.find('.entry > .top-container .webtop');
-                    const headword = $webtop.children('.headword').text().replace(/·/g, '');
-                    $oald.find('.cf').contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).each(function () {
+                $entryContainers.each(function () {
+                    const $entryContainer = $(this);
+                    const $entryHeader = $entryContainer.children('.entry').children('.top-container').find('.webtop');
+                    const headword = $entryHeader.children('.headword').text().replace(/·/g, '');
+                    $entryContainer.find('.cf').contents().filter((_, node) => node.nodeType === Node.TEXT_NODE).each(function () {
                         this.nodeValue = this.nodeValue.replace(headword, '~');
                     });
                 });
@@ -1762,311 +2088,6 @@ function main() {
                     $phraseSectionHeading.filter((_, e) => $(e).parent().hasClass('expanded')).trigger('click');
                 }
             });
-        }
-
-        // region 欧路词典相关
-        Eudic_overflowVisible();
-
-        Eudic_widerScreen();
-
-        Eudic_removeHeader();
-
-        Eudic_autoFoldCustomNote();
-
-        setupEudicConfigurations();
-
-        function Eudic_overflowVisible() {
-            if (oaldpeInit.isEudic()) {
-                const $ancestor = $oaldpe.closest('.explain_wrap_styleless');
-                const $configGearBody = $oaldpe.find('.oaldpe-config-gear__body');
-
-                const additionalMargin = 200;
-                $configGearBody.on('transitionend', function () {
-                    if ($configGearBody.height() + additionalMargin > $ancestor.height()) {
-                        $ancestor.css('overflow', 'visible');
-                    }
-                });
-            }
-        }
-
-        function Eudic_widerScreen() {
-            if (oaldpeInit.isEudicMobile() && oaldpeConfig.dictionaryAppRelated.widerScreenEudic.selectedValue) {
-                const $parent = $oaldpe.parent('.expDiv');
-                $parent.css('padding', '5px 8px 5px 5px');
-            }
-        }
-
-        function Eudic_removeHeader() {
-            if (oaldpeInit.isEudicAPP() && oaldpeConfig.dictionaryAppRelated.removeEudicHeader.selectedValue) {
-                $('#wordInfoHead').remove();
-            }
-        }
-
-        function Eudic_autoFoldCustomNote() {
-            if (oaldpeInit.isEudicAPP() && oaldpeConfig.dictionaryAppRelated.autoFoldEudicNote.selectedValue) {
-                Promise.resolve().then(() => observeCustomNoteAdded(() => {
-                    const $expHead = $('#expCustomNote .expHead');
-                    if (!$expHead.hasClass('Folded')) {
-                        $expHead.addClass('Folded');
-                        $expHead.trigger('click');
-                    }
-                }));
-            }
-        }
-
-        function observeCustomNoteAdded(callback) {
-            var observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    $(mutation.addedNodes).each(function () {
-                        var $node = $(this);
-                        if ($node.attr('id') === 'customeNoteText') {
-                            callback();
-                            observer.disconnect();
-                        }
-                    });
-                });
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        }
-
-        function modifyCustomNote() {
-            const $expCustomNote = $('#expCustomNote');
-            const $customeNoteText = $expCustomNote.find('#customeNoteText');
-            try {
-                window.noteDataArray = JSON.parse($customeNoteText.text());
-            } catch { return; }
-            $customeNoteText.empty().append($('<div>').addClass('Hazuki-note'));
-
-            async function constructNotes() {
-                await $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/notes.bundle.js'));
-
-                // Move the image container to the inside of the flex container
-                const $elementToMove = $expCustomNote.find('#customeNoteImageContainer');
-                if ($elementToMove.length) {
-                    const $newParent = $('.Hazuki-note .single-note').first();
-                    $newParent.prepend($elementToMove);
-                }
-            }
-
-            constructNotes();
-
-            // Create a copy button to get the 'noteDataArray'
-            const $eudicNoteHead = $expCustomNote.find('.eudic_note_head');
-            var $copyButton = $('<button>', {
-                text: '复制',
-                class: 'editNote',
-                css: { marginLeft: '10px' },
-                click: function () {
-                    copyToClipboard(JSON.stringify(noteDataArray));
-                }
-            });
-            $eudicNoteHead.append($copyButton);
-
-            // Remove Eudic '查看公开笔记'
-            $expCustomNote.find('.eudicNoteMore').remove();
-            $expCustomNote.find('.customeHorizonal').css('margin-bottom', 'unset');
-        }
-
-        async function setupEudicConfigurations() {
-            if (!oaldpeInit.isEudic()) return;
-
-            Promise.resolve().then(() => observeCustomNoteAdded(modifyCustomNote));
-
-            if (oaldpeInit.isMacosIpadSim()) {
-                await $.getScript(oaldpeInit.resolveFilePath('Hazuki-note/dist/clickToCopy.bundle.js'));
-            }
-        }
-
-        // region TTS 相关
-        const ttsConfig = {
-            '美音女1': { locale: 'en-US', voice: 'en-US-MichelleNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音女2': { locale: 'en-US', voice: 'en-US-AriaNeural', pitch: '+0Hz', rate: '+20%', volume: '+0%' },
-            '美音女3': { locale: 'en-US', voice: 'en-US-AnaNeural', pitch: '+0Hz', rate: '+20%', volume: '+0%' },
-            '美音女4': { locale: 'en-US', voice: 'en-US-JennyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音男1': { locale: 'en-US', voice: 'en-US-ChristopherNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音男2': { locale: 'en-US', voice: 'en-US-EricNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音男3': { locale: 'en-US', voice: 'en-US-GuyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音男4': { locale: 'en-US', voice: 'en-US-RogerNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '美音男5': { locale: 'en-US', voice: 'en-US-SteffanNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '英音女1': { locale: 'en-GB', voice: 'en-GB-SoniaNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '英音女2': { locale: 'en-GB', voice: 'en-GB-MaisieNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '英音女3': { locale: 'en-GB', voice: 'en-GB-LibbyNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '英音男1': { locale: 'en-GB', voice: 'en-GB-RyanNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' },
-            '英音男2': { locale: 'en-GB', voice: 'en-GB-ThomasNeural', pitch: '+0Hz', rate: '+0%', volume: '+0%' }
-        };
-
-        (async function initTTS() {
-            if (!oaldpeConfig.onlineResources.enableOnlineTTS.selectedValue) return;
-
-            const ttsService = createEdgeTTS();
-
-            $allExample.each(function () {
-                const $example = $(this);
-                const $audioContainer = $example.find('.x, .unx');
-
-                if (!$audioContainer.length) return;
-
-                const $pron_uk = $audioContainer.find('.pron-uk');
-                const $pron_us = $audioContainer.find('.pron-us');
-
-                function createAudioElement(className, ttsConfig) {
-                    const $audio = $('<a>', { class: `sound audio_play_button ${className} icon-audio tts` }).appendTo($audioContainer);
-                    $audio.on('click', (event) => {
-                        event.stopPropagation();
-                        event.preventDefault();
-
-                        let inputText = $audioContainer.clone().find('chn, script').remove().end().text()
-                            .replace(/somebody\/something/g, 'somebody or something')
-                            .replace(/&/g, 'and').replace(/\u200B/g, '')
-                            .replace(/\(.*?\)/g, '');
-
-                        const match = inputText.match(/\b(\w+(?:\/\w+)+)\b/);
-                        if (match) inputText = match[0].split('/').map(word => inputText.replace(match[0], word)).join('\nor ');
-
-                        ttsService.playText(inputText, ttsConfig);
-                    });
-                }
-
-                if (!$pron_uk.length) {
-                    createAudioElement('pron-uk', ttsConfig[oaldpeConfig.onlineResources.britishTTS.selectedValue]);
-                    $example.attr('pron-uk', 'true');
-                }
-
-                if (!$pron_us.length) {
-                    createAudioElement('pron-us', ttsConfig[oaldpeConfig.onlineResources.americanTTS.selectedValue]);
-                    $example.attr('pron-us', 'true');
-                }
-            });
-        })();
-
-        function createEdgeTTS() {
-            const TRUSTED_CLIENT_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
-            const SYNTH_URL = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`;
-            const AUDIO_FORMAT = 'audio-24khz-48kbitrate-mono-mp3';
-
-            const BINARY_DELIM = 'Path:audio\r\n';
-            const CONTENT_TYPE_JSON = 'Content-Type:application/json\r\nPath:speech.config\r\n\r\n';
-            const CONTENT_TYPE_SSML = 'Content-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n';
-
-            let socket = null, requests = {};
-
-            const createSSML = (inputText, { locale, voice, pitch, rate, volume }) =>
-                `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${locale}">
-                    <voice name="${voice}"><prosody pitch="${pitch}" rate="${rate}" volume="${volume}">${inputText}</prosody></voice>
-                </speak>`;
-
-            function generateSecMsGecToken() {
-                // Get the current time in Windows file time format (100ns intervals since 1601-01-01)
-                let ticks = BigInt((Date.now() / 1000 + 11644473600) * 10000000);
-
-                // Round down to the nearest 5 minutes (3,000,000,000 * 100ns = 5 minutes)
-                ticks -= ticks % BigInt(3000000000);
-
-                // Create the string to hash by concatenating the ticks and the trusted client token
-                const strToHash = `${ticks}${TRUSTED_CLIENT_TOKEN}`;
-
-                // Compute the SHA256 hash
-                const hash = CryptoJS.SHA256(strToHash);
-
-                // Return the hexadecimal representation of the hash
-                return hash.toString(CryptoJS.enc.Hex).toUpperCase();
-            }
-
-            async function ensureSocketReady() {
-                if (!socket || socket.readyState === WebSocket.CLOSED) {
-                    const reopened = !!socket; // Check if the socket existed before
-
-                    const Sec_MS_GEC = generateSecMsGecToken();
-                    const Sec_MS_GEC_VERSION = '1-130.0.2849.68';
-
-                    socket = new WebSocket(`${SYNTH_URL}&Sec-MS-GEC=${Sec_MS_GEC}&Sec-MS-GEC-Version=${Sec_MS_GEC_VERSION}`);
-                    socket.onmessage = onSocketMessage;
-                    socket.onclose = () => console.warn('WebSocket closed.');
-                    socket.onerror = (error) => {
-                        console.error('WebSocket error:', error);
-                        socket.close();
-                    };
-                    await new Promise((resolve) => {
-                        socket.onopen = () => {
-                            console.log(reopened ? 'WebSocket reopened.' : 'WebSocket opened.');
-                            setAudioOutputFormat();
-                            resolve();
-                        };
-                    });
-                } else if (socket.readyState === WebSocket.CONNECTING) {
-                    await new Promise((resolve) => socket.addEventListener('open', resolve, { once: true }));
-                }
-            }
-
-            async function sendWhenReady(message) {
-                await ensureSocketReady();
-                socket.send(message);
-            }
-
-            async function setAudioOutputFormat(format = AUDIO_FORMAT) {
-                const messagePayload = JSON.stringify({ context: { synthesis: { audio: { outputFormat: format } } } });
-                await sendWhenReady(`${CONTENT_TYPE_JSON}${messagePayload}`);
-            }
-
-            async function onSocketMessage(event) {
-                if (!(event.data instanceof Blob)) return;
-
-                const dataText = await event.data.text();
-                const requestId = dataText.match(/X-RequestId:(.*?)\r\n/)[1];
-                const request = requests[requestId];
-                if (!request) return;
-
-                const arrayBuffer = await event.data.arrayBuffer();
-                const dataView = new DataView(arrayBuffer);
-
-                /* Check if the audio fragment is the last one */
-                if (dataView.getUint8(0) === 0x00 && dataView.getUint8(1) === 0x67 && dataView.getUint8(2) === 0x58) {
-                    if (request.audioDataChunks.length) {
-                        const audioBlob = new Blob(request.audioDataChunks, { type: 'audio/mp3' });
-                        request.resolve(URL.createObjectURL(audioBlob));
-                        delete requests[requestId];
-                    }
-                } else {
-                    const audioStartIndex = dataText.indexOf(BINARY_DELIM) + BINARY_DELIM.length;
-                    const audioData = new Blob([arrayBuffer.slice(audioStartIndex)]);
-                    request.audioDataChunks.push(audioData);
-                }
-            }
-
-            async function sendSSMLRequest(inputText, config) {
-                const ssml = createSSML(inputText, config);
-                const requestId = uuidv4().replace(/-/g, '');
-                const requestMessage = `X-RequestId:${requestId}\r\n${CONTENT_TYPE_SSML}${ssml}`;
-
-                requests[requestId] = { audioDataChunks: [], resolve: null, reject: null };
-                await sendWhenReady(requestMessage);
-
-                return new Promise((resolve, reject) => {
-                    requests[requestId].resolve = resolve;
-                    requests[requestId].reject = reject;
-                });
-            }
-
-            function uuidv4() {
-                return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-            }
-
-            async function playText(inputText, config) {
-                try {
-                    const audioUrl = await sendSSMLRequest(inputText, config);
-                    if (!globalAudio.paused) globalAudio.pause();
-                    globalAudio.src = audioUrl;
-
-                    const cleanup = () => URL.revokeObjectURL(audioUrl);
-                    globalAudio.addEventListener('ended', cleanup, { once: true });
-                    globalAudio.play();
-                } catch (error) {
-                    console.error('Failed to play audio:', error);
-                }
-            }
-
-            return { playText };
         }
     });
 }

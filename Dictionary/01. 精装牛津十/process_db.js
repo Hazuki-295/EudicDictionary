@@ -175,9 +175,10 @@ function processHTML(htmlContent) {
 }
 
 function cleanUpHTML($) {
-    // Add a container element
+    // Wrap all content in a container element
     const $container = $('<oaldpe>').addClass('oaldpe');
-    $container.append($('body').contents()).appendTo('body');
+    $('body').contents().appendTo($container);
+    $('body').append($container);
 
     // Clean up styles and scripts
     $('link[href*="oald.css"], script[src*="oald.js"]').remove();
@@ -205,21 +206,29 @@ function cleanUpHTML($) {
 }
 
 function setupEntryHeader($) {
-    $('.entry > .top-container .webtop').each(function () {
-        const $webtop = $(this);
-        const $symbols = $webtop.children('.symbols');
+    const $oaldpe = $('.oaldpe');
+    const $entryContainers = $oaldpe.find('.oald-entry-root').filter('.oald');
+    const $entryHeaders = $entryContainers.children('.entry').children('.top-container').find('.webtop');
+
+    // Move Oxford 3000 or 5000 symbol to the front
+    $entryHeaders.each(function () {
+        const $entryHeader = $(this);
+        const $symbols = $entryHeader.children('.symbols');
         const $ox3k_ox5k = $symbols.children('a[href*="oxford3000-5000"]');
 
         if ($ox3k_ox5k.length) {
             const $container = $('<div>').addClass('symbols');
-            $container.append($ox3k_ox5k).prependTo($webtop);
+            $container.append($ox3k_ox5k).prependTo($entryHeader);
 
             if (!$symbols.children().length) {
                 $symbols.remove();
             }
         }
+    });
 
-        const $headword = $webtop.children('.headword');
+    // Remove redundant syllable information
+    $entryHeaders.each(function () {
+        const $headword = $(this).children('.headword');
         const syllable = $headword.attr('syllable');
         if (syllable) {
             const headword = syllable.replace(/·/g, '');
@@ -227,6 +236,23 @@ function setupEntryHeader($) {
             $headword.html($headword.html().replace(syllable, headword));
         }
     });
+
+    // Setup navigation for multiple entries
+    $entryContainers.first().addClass('visible');
+
+    if ($entryContainers.length > 1) {
+        const $navbar = $('<div>').addClass('oaldpe-nav').prependTo($oaldpe);
+
+        $entryHeaders.each(function () {
+            const $entryHeader = $(this);
+            const $pos = $entryHeader.children('.pos');
+            const $headword = $entryHeader.children('.headword');
+            $('<span>').text($pos.text() || $headword.attr('headword') || $headword.text()).appendTo($navbar);
+        });
+        $navbar.children('span').first().addClass('active');
+
+        $('<span>').text('All').appendTo($navbar);
+    }
 }
 
 function setupSense($) {
