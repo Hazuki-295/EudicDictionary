@@ -1,0 +1,39 @@
+$font-size-headings-step = .125em;
+$font-size-headings-base = 1.625em;
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-base);
+    font-style: normal;
+    font-weight: bold;
+    line-height: 1.5;
+    margin: 1.25rem 0 .9375rem;
+
+    &:first-child {
+        margin-top: unset;
+    }
+}
+
+for n in 1 .. 6 {
+    h{n} {
+        font-size: $font-size-headings-base - $font-size-headings-step * n;
+    }
+}
+
+h1 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid var(--grey-3);
+}
+
+/* markdown-it-toc-and-anchor */
+h1, h2, h3, h4, h5, h6 {
+    .anchor {
+        float: right;
+        color: var(--grey-4);
+        margin-left: .625rem;
+        transition();
+
+        &:hover {
+            color: inherit;
+        }
+    }
+}

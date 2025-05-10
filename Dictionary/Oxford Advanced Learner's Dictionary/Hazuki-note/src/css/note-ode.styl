@@ -1,0 +1,66 @@
+.note-card[data-comment='ODE'] {
+    font-family: var(--font-family-ui);
+
+    /* 第一层 */
+    /* 及物性说明 */
+    .transivityStatement {
+        font-family: var(--font-family-serif);
+        font-style: normal;
+        font-size: .9em;
+        color: var(--color-green-oxford);
+    }
+
+    /* 第二层 */
+    /* 标签元素 */
+    em {
+        font-style: italic;
+        color: var(--color-blue-oxford);
+    }
+
+    strong {
+        font-weight: normal;
+        color: var(--color-blue-oxford);
+    }
+
+    /* 变体 */
+    .variantGroup {
+        font-family: var(--font-family-serif);
+        font-size: .9em;
+    }
+
+    .variantGroup .variant {
+        color: var(--color-blue-oxford);
+    }
+
+    strong.wordForm {
+        font-family: var(--font-family-serif);
+        font-size: .9em;
+    }
+
+    /* 语域、语体风格 */
+    em.languageGroup {
+        font-family: var(--font-family-serif);
+        font-style: italic;
+        font-size: .9em;
+        color: #27a058;
+    }
+
+    .reg {
+        font-family: var(--font-family-serif);
+        font-size: .85em;
+        color: #e3533a;
+        background-color: #f9e8e2;
+        padding: 1px .5em;
+    }
+
+    /* 相关词汇 */
+    a.crossRef {
+        color: #3c9ae3;
+        transition: color .3s;
+    }
+
+    a.crossRef:hover {
+        color: #f15a24;
+        text-decoration: underline;
+    }
+}

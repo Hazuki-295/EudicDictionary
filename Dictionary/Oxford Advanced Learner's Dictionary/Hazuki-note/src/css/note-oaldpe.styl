@@ -1,0 +1,380 @@
+/* 第一层 */
+.webtop {
+    display: inline;
+}
+
+/* 词头样式 */
+h1.headword {
+    display: inline-block;
+    font-family: var(--font-family-serif);
+    font-size: 1.1em;
+    font-weight: normal;
+    color: var(--color-blue-oxford);
+}
+
+h1.headword .st {
+    font-size: inherit;
+    color: var(--color-red-oxford);
+}
+
+h1.headword .hm {
+    display: none;
+}
+
+/* 词性样式 */
+.pos {
+    font-family: var(--font-family-serif);
+    font-style: italic;
+    font-size: .9em;
+    color: var(--color-orange-oxford);
+    padding: 0 2px;
+}
+
+/* Symbols: o3k/o5k */
+.symbols {
+    display: inline;
+}
+
+.sense .symbols::after {
+    content: ' ';
+}
+
+.symbols span[class^='ox3ksym_'], .symbols span[class^='ox3ksymsub_'],
+.symbols span[class^='ox5ksym_'], .symbols span[class^='ox5ksymsub_'] {
+    display: inline-block;
+    width: 2.75em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+/* 词头排版微调 */
+.webtop > .symbols {
+    margin-right: .5em;
+}
+
+.webtop + h2.shcut {
+    margin-left: .5em !important;
+}
+
+.webtop + .idm, .webtop + .pv {
+    margin-left: .5em;
+}
+
+/* 第二层 */
+/* 释义 Shortcut */
+h2.shcut {
+    display: inline-block;
+    font-family: var(--font-family-sans-serif);
+    font-size: inherit;
+    color: var(--color-blue-oxford);
+    background: var(--background-highlight);
+}
+
+h2.shcut shcut chn {
+    font-weight: normal;
+}
+
+h2.shcut shcut chn::before {
+    content: ' ';
+}
+
+/* Idioms, Phrasal Verbs */
+.idm {
+    display: inline-block;
+    color: #004d99;
+}
+
+.idmsep {
+    color: var(--color-red-oxford);
+}
+
+.pv {
+    display: inline-block;
+    color: var(--color-blue-oxford);
+    background: var(--background-highlight);
+}
+
+.pvarr::before {
+    content: '⇿';
+    color: var(--color-red-oxford);
+}
+
+/* 第三层 */
+/* 释义样式 */
+.variants, .grammar, .labels, .use {
+    display: inline;
+    font-size: .9em;
+}
+
+/* 变体 */
+.variants .v-g {
+    color: var(--color-blue-oxford);
+}
+
+.sense .variants::before {
+    content: '[';
+}
+
+.sense .variants::after {
+    content: ']';
+}
+
+/* 语法 */
+.grammar {
+    color: seagreen;
+}
+
+/* 标签 */
+.labels {
+    color: #9f5350;
+}
+
+.labels labelx chn::before {
+    content: ' ';
+}
+
+/* 用法 */
+.use {
+    color: var(--text-grey-color);
+}
+
+/* 固定搭配 */
+.cf {
+    color: var(--color-blue-oxford);
+}
+
+/* Non-defining Vocabulary */
+.ndv {
+    font-style: italic;
+    color: var(--color-green-oxford);
+    cursor: pointer;
+}
+
+.ndv:hover {
+    text-decoration: underline;
+}
+
+/* Italic */
+.ei {
+    font-style: italic;
+    color: var(--color-blue-oxford);
+}
+
+/* Bold */
+.eb {
+    font-weight: normal;
+    color: var(--color-blue-oxford);
+}
+
+/* 释义英文 */
+.def::after {
+    content: ' ';
+}
+
+/* 中文翻译全局设置 */
+chn {
+    font-family: var(--font-family-serif), 'Source Han Serif CN';
+    font-style: normal;
+    font-size: .9em;
+}
+
+/* 释义中文 */
+deft chn, dtxtx chn {
+    display: inline-block;
+    color: var(--color-green-oxford);
+    background: rgba(0, 122, 108, .2)
+    border-radius: 3px;
+    padding: 0 2px !important;
+}
+
+dtxtx chn {
+    margin-left: 4px !important;
+}
+
+/* 第四层 */
+/* 相关词条、Topics */
+.xrefs, .topic-g {
+    display: block;
+    font-size: .85em;
+    margin-top: 5px;
+}
+
+.xrefs .prefix, .topic-g .prefix {
+    display: inline-block;
+    font-family: var(--font-family-sans-serif);
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: white;
+    height: 16px;
+    line-height: 15px;
+    border-radius: 4px 0 0 4px;
+    background-color: var(--color-blue-oxford);
+    padding: 0 2px 0 5px;
+    margin-right: 5px;
+    user-select(none);
+    cursor: default;
+    position: relative;
+}
+
+.xrefs .prefix::after, .topic-g .prefix::after {
+    position: absolute;
+    content: '';
+    left: 100%;
+    border: 8px solid transparent;
+    border-left: 6px solid var(--color-blue-oxford);
+}
+
+/* 词条链接 */
+.xrefs .xr-g .xh, .topic-g .topic .topic_name {
+    color: var(--color-blue-oxford);
+    cursor: pointer;
+}
+
+.xrefs .xr-g:hover .xh, .topic-g .topic:hover .topic_name {
+    text-decoration: underline;
+}
+
+.xrefs a.Ref + .sep, .topic-g a.Ref + .sep {
+    display: none;
+}
+
+.xrefs a.Ref:not(:last-of-type)::after {
+    content: ' •';
+    color: var(--grey-5);
+}
+
+.topic-g a.Ref:not(:last-of-type)::after {
+    content: '•';
+    color: var(--grey-5);
+}
+
+.topic-g a.Ref:first-of-type .topic::before {
+    content: ' ';
+}
+
+/* CEFR */
+.topic .topic_cefr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13.5px;
+    height: 13.5px;
+    font-family: var(--font-family-ui);
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    background: #223a68;
+    border-radius: 4px;
+    margin: 0 5px;
+    vertical-align: 1px;
+}
+
+/* Base64 */
+.ox3ksym_a1, .ox3ksymsub_a1 {
+    background-image: url(../assets/images/ox3000_a1.svg);
+}
+
+.ox3ksym_a2, .ox3ksymsub_a2 {
+    background-image: url(../assets/images/ox3000_a2.svg);
+}
+
+.ox3ksym_b1, .ox3ksymsub_b1 {
+    background-image: url(../assets/images/ox3000_b1.svg);
+}
+
+.ox3ksym_b2, .ox3ksymsub_b2 {
+    background-image: url(../assets/images/ox3000_b2.svg);
+}
+
+.ox3ksym_c1, .ox3ksymsub_c1 {
+    background-image: url(../assets/images/ox3000_c1.svg);
+}
+
+.ox3ksym_c2, .ox3ksymsub_c2 {
+    background-image: url(../assets/images/ox3000_c2.svg);
+}
+
+.ox5ksym_a1, .ox5ksymsub_a1 {
+    background-image: url(../assets/images/ox5000_a1.svg);
+}
+
+.ox5ksym_a2, .ox5ksymsub_a2 {
+    background-image: url(../assets/images/ox5000_a2.svg);
+}
+
+.ox5ksym_b1, .ox5ksymsub_b1 {
+    background-image: url(../assets/images/ox5000_b1.svg);
+}
+
+.ox5ksym_b2, .ox5ksymsub_b2 {
+    background-image: url(../assets/images/ox5000_b2.svg);
+}
+
+.ox5ksym_c1, .ox5ksymsub_c1 {
+    background-image: url(../assets/images/ox5000_c1.svg);
+}
+
+.ox5ksym_c2, .ox5ksymsub_c2 {
+    background-image: url(../assets/images/ox5000_c2.svg);
+}
+
+.ox3ksym_a1:hover, .ox3ksymsub_a1:hover {
+    background-image: url(../assets/images/ox3000_a1_hover.svg);
+}
+
+.ox3ksym_a2:hover, .ox3ksymsub_a2:hover {
+    background-image: url(../assets/images/ox3000_a2_hover.svg);
+}
+
+.ox3ksym_b1:hover, .ox3ksymsub_b1:hover {
+    background-image: url(../assets/images/ox3000_b1_hover.svg);
+}
+
+.ox3ksym_b2:hover, .ox3ksymsub_b2:hover {
+    background-image: url(../assets/images/ox3000_b2_hover.svg);
+}
+
+.ox3ksym_c1:hover, .ox3ksymsub_c1:hover {
+    background-image: url(../assets/images/ox3000_c1_hover.svg);
+}
+
+.ox3ksym_c2:hover, .ox3ksymsub_c2:hover {
+    background-image: url(../assets/images/ox3000_c2_hover.svg);
+}
+
+.ox5ksym_a1:hover, .ox5ksymsub_a1:hover {
+    background-image: url(../assets/images/ox5000_a1_hover.svg);
+}
+
+.ox5ksym_a2:hover, .ox5ksymsub_a2:hover {
+    background-image: url(../assets/images/ox5000_a2_hover.svg);
+}
+
+.ox5ksym_b1:hover, .ox5ksymsub_b1:hover {
+    background-image: url(../assets/images/ox5000_b1_hover.svg);
+}
+
+.ox5ksym_b2:hover, .ox5ksymsub_b2:hover {
+    background-image: url(../assets/images/ox5000_b2_hover.svg);
+}
+
+.ox5ksym_c1:hover, .ox5ksymsub_c1:hover {
+    background-image: url(../assets/images/ox5000_c1_hover.svg);
+}
+
+.ox5ksym_c2:hover, .ox5ksymsub_c2:hover {
+    background-image: url(../assets/images/ox5000_c2_hover.svg);
+}
+
+/* markdown conflict */
+h1.headword  {
+    margin: unset;
+    border-bottom: unset;
+}
+
+h2.shcut  {
+    margin: unset;
+}

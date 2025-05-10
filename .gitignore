@@ -1,0 +1,40 @@
+node_modules
+package-lock.json
+
+# Ignore everything in Dictionary
+Dictionary/*
+
+# Allow specific folders and their contents
+!Dictionary/Oxford Advanced Learner's Dictionary/
+!Dictionary/Oxford Dictionary of English/
+
+# Re-ignore everything inside those folders
+Dictionary/Oxford Advanced Learner's Dictionary/**
+Dictionary/Oxford Dictionary of English/**
+
+# Oxford Advanced Learner's Dictionary
+!Dictionary/Oxford Advanced Learner's Dictionary/oaldpe.css
+!Dictionary/Oxford Advanced Learner's Dictionary/oaldpe.js
+
+!Dictionary/Oxford Advanced Learner's Dictionary/build
+!Dictionary/Oxford Advanced Learner's Dictionary/build/config.html
+!Dictionary/Oxford Advanced Learner's Dictionary/build/main.mjs
+!Dictionary/Oxford Advanced Learner's Dictionary/build/Makefile
+!Dictionary/Oxford Advanced Learner's Dictionary/build/transform-html.mjs
+
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/css
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/css/components
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/css/components/*.styl
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/css/*.styl
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/js
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/src/js/*.js
+!Dictionary/Oxford Advanced Learner's Dictionary/Hazuki-note/webpack.config.js
+
+# Oxford Dictionary of English
+!Dictionary/Oxford Dictionary of English/ODE_2024.css
+!Dictionary/Oxford Dictionary of English/ODE_2024.js
+
+!Dictionary/Oxford Dictionary of English/Makefile
+!Dictionary/Oxford Dictionary of English/process_db.js

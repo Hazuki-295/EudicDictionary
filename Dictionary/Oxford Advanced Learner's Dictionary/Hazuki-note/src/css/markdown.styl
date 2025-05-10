@@ -1,0 +1,42 @@
+.md {
+    @import 'components/callout.styl';
+    @import 'components/headings.styl';
+    @import 'components/mark.styl';
+    @import 'components/table.styl';
+
+    --font-family-base: 'Mulish', 'PingFang SC', sans-serif;
+
+    blockquote, p, pre, table, .callout {
+        margin: 0 0 .8rem;
+
+        &:last-child {
+            margin-bottom: unset;
+        }
+    }
+
+    blockquote {
+        font-family: var(--font-family-base);
+        font-size: .9em;
+        padding: .625rem 1.25rem;
+        border-left: .25rem solid var(--primary-color);
+        border-radius: .1875rem;
+    }
+
+    hr {
+        border: none;
+        border-bottom: 1px solid var(--grey-3);
+        margin: 1.25rem 0;
+    }
+
+    pre {
+        font-family: monospace;
+        padding: 1rem;
+        background: var(--grey-2);
+        overflow: auto;
+    }
+
+    /* list */
+    li {
+        list-style: none;
+    }
+}

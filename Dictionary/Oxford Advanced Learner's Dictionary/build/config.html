@@ -1,0 +1,234 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="oaldpe.css">
+</head>
+
+<body>
+    <oaldpe class="oaldpe">
+        <div class="oaldpe-config">
+            <div id="oaldpe-config-header">
+                <img src="images/config/OLD_logo.svg" class="old_logo">
+            </div>
+            <div id="oaldpe-config-help">
+                <div class="block-wrapper">
+                    <div class="block-title">词典介绍</div>
+                    <div class="block-content">
+                        <h3>词典数据来源</h3>
+                        <p>本词典中的数据来自牛津学习词典官方网站（<a class="external-link" data-text="https://www.oxfordlearnersdictionaries.com/" data-href="https://www.oxfordlearnersdictionaries.com/"></a>），基于 2024 年 9 月网站公开资源整理而成。</p>
+                        <h3>用途限制</h3>
+                        <p>本词典仅供个人学习、学术研究和教育用途使用，禁止商业用途或其他未经授权的行为。</p>
+                        <h3>版权声明</h3>
+                        <p>所有内容受版权及商标法保护，其知识产权归牛津大学出版社（Oxford University Press, OUP）所有。如需获取最新或完整的内容，请访问牛津学习词典官方网站。</p>
+                        <h3>词典信息</h3>
+                        <p>更新日期：2025 年 2 月 14 日</p>
+                    </div>
+                </div>
+                <div class="callout" data-callout="info">
+                    <div class="callout-title">info</div>
+                    <div class="callout-content">
+                        <p>本词典通过 <a class="external-link" data-text="FreeMdict Forum" data-href="https://forum.freemdict.com/t/topic/30466"></a> 免费提供，用户可自由获取，且不会以任何形式向用户收取费用。</p>
+                        <p>请注意，本词典禁止任何形式的商业用途或未经授权的再分发行为。如您通过其他渠道以任何形式购得本词典，该行为未经授权，由此产生的后果需由用户自行承担。</p>
+                    </div>
+                </div>
+                <div class="block-wrapper">
+                    <div class="block-title">常见问题 FAQ</div>
+                    <div class="block-content">
+                        <ol class="faq">
+                            <li class="list-item">
+                                <div class="question"><span class="question-category">词性导航栏</span>点击词性切换（例如 adjective）却变成了查询词性本身？</div>
+                                <div class="answer">
+                                    <p>触发了词典软件的点击查词，在词典软件设置里关掉即可，关闭后可双击查词。</p>
+                                    <p>欧路词典见【解释显示】-【解释界面单击查词】，确保其为关闭状态。</p>
+                                </div>
+                            </li>
+                            <li class="list-item">
+                                <div class="question"><span class="question-category">中文翻译相关</span>不同翻译来源的样式区别？</div>
+                                <div class="answer">
+                                    <p>① 释义翻译：问题多集中于灰色释义。leon406 个人审校翻译可能存在争议。</p>
+                                    <p class="style-example">
+                                        <deft>
+                                            <chn>官方权威翻译</chn>
+                                            <chn><leon>leon406 翻译</leon></chn>
+                                            <chn><oald>原双解版翻译</oald></chn>
+                                        </deft>
+                                    </p>
+                                    <p>② 例句翻译：问题集中于 Google 机翻。</p>
+                                    <ul class="style-example examples">
+                                        <li><span class="x">An example sentence with the official translation.<xt><chn>官方权威翻译</chn></xt></span></li>
+                                        <li><span class="x">An example sentence with the translation reviewed by leon406.<xt><chn><leon>leon406 翻译</leon></chn></xt></span></li>
+                                        <li><span class="x">An example sentence with the translation from the older version of the dictionary.<xt><chn><oald>原双解版翻译</oald></chn></xt></span></li>
+                                        <li><span class="x">An example sentence with the Google translation.<xt><chn><ai>Google 机翻</ai></chn></xt></span></li>
+                                    </ul>
+                                </div>
+                                <div class="callout" data-callout="info">
+                                    <div class="callout-title">info</div>
+                                    <div class="callout-content">
+                                        <p>不同翻译来源默认统一样式，减少阅读干扰。若对翻译有疑惑，可以在 O10 小图标展开的界面中开启样式区分。</p>
+                                        <p>若是不介意阅读干扰，配置界面提供了默认开启样式区分的选项。</p>
+                                        <p>当前词条不存在非官方翻译（除 AI 机翻外）时，将自动禁用开关。</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-item">
+                                <div class="question">单词或释义前的小钥匙是什么？例句中的小三角又是什么？</div>
+                                <div class="answer">
+                                    <p><img src="images/config/illustrate_wordlists.png"></p>
+                                    <ul>
+                                        <li>小钥匙表示该词条为 Oxford 3000 或 Oxford 5000 核心词汇，后面的标注表示该词汇的 CEFR 分级。</li>
+                                        <li>例句中的小三角后面的正体部分为 Common Phrase，即英语中常见的短语搭配。</li>
+                                    </ul>
+                                </div>
+                                <div class="callout" data-callout="success">
+                                    <div class="callout-title">success</div>
+                                    <div class="callout-content">
+                                        <p>更多信息请参阅下方的 Oxford Learner’s Word Lists 部分，内容摘自牛津学习词典官方网站。</p>
+                                        <p>查看完整内容：<a class="external-link" data-text="https://www.oxfordlearnersdictionaries.com/us/wordlists/" data-href="https://www.oxfordlearnersdictionaries.com/us/wordlists/"></a></p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-item">
+                                <div class="question"><span class="question-category">词典软件相关</span>词典软件清理缓存后，保存的配置也被重置了？</div>
+                                <div class="answer">
+                                    <p>清理缓存的效果因设备和词典软件而异。例如，欧路词典的清理缓存，在 iPhone 上不会导致保存的配置被重置，而在 iPad 上则会被重置。</p>
+                                    <p>如果发现清理缓存后配置被重置，可以尝试直接修改 oaldpe.js 文件中的配置：</p>
+                                    <ul>
+                                        <li>oaldpe.js 文件中的配置项与配置界面完全对应，按需修改对应配置项中 selectedValue 的值即可。</li>
+                                        <li>修改完成后，保存文件 - 清理缓存 - 重启词典软件，即可生效。</li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="list-item">
+                                <div class="question"><span class="question-category">词典软件相关</span>配置界面提示不支持通过配置界面设置？</div>
+                                <div class="answer">
+                                    <p>可以更换词典软件，推荐使用：欧路词典（全平台），GoldenDict-ng（电脑端）</p>
+                                    <p>否则，请直接修改 oaldpe.js 文件中的配置，修改方法同上。</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="content-wrapper">
+                    <h1>Oxford Learner’s Word Lists</h1>
+                    <p>Our word lists are designed to help English language learners at any level focus on the most important words to learn in their area of study. Based on our extensive corpora (= collections of written and spoken texts) and aligned to the Common European Framework of Reference for Languages (<a class="Ref" href="entry://CEFR">CEFR</a>), the word lists have been carefully researched and developed together with vocabulary experts, so that you know you can rely on them in your learning or teaching.</p>
+                    <div class="collapse">
+                        <span class="unbox">
+                            <span class="box_title">What is the CEFR?</span>
+                            <div class="wordlist-info-page">
+                                <p>CEFR stands for the ‘Common European Framework of Reference’ for languages, which is a description of the language abilities of students at different levels of learning. The CEFR can be used to compare standards in language learning and create teaching programmes.</p>
+                                <p>It grades language skills at six levels:</p>
+                                <ul>
+                                    <li>A1 and A2 indicate elementary and pre-intermediate levels of ability.</li>
+                                    <li>B1 and B2 indicate lower- and upper-intermediate levels.</li>
+                                    <li>C1 indicates advanced level.</li>
+                                    <li>C2 indicates complete proficiency in the language.</li>
+                                </ul>
+                                <p>The CEFR grades language skills – what students can do in the language, for example ‘can understand the main ideas of complex text on both concrete and abstract topics’ (at B2). It does not grade specific grammar points or vocabulary items. However, we have aligned our core vocabulary lists, the Oxford 3000 and Oxford 5000, and the Oxford Phrase List, to the levels of the CEFR in order to guide learners of English on the most important words and phrases to learn at each level.</p>
+                                <p>The Oxford 3000 includes words from A1 to B2 level; the Oxford 5000 contains an additional 2000 words at B2 to C1 level. The Oxford Phrase List includes phrases from A1 to C1 level.</p>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="collapse">
+                        <span class="unbox">
+                            <span class="box_title">International language standards<chn>（扩展材料）</chn></span>
+                            <span class="body">
+                                <div class="callout" data-callout="info">
+                                    <div class="callout-title">info</div>
+                                    <div class="callout-content">
+                                        <p>以下内容摘自剑桥英语：</p>
+                                        <a class="external-link" data-text="https://www.cambridgeenglish.org/exams-and-tests/cefr/" data-href="https://www.cambridgeenglish.org/exams-and-tests/cefr/"></a>
+                                    </div>
+                                </div>
+                                <div class="collapse_heading">About the Common European Framework of Reference for Languages (CEFR)</div>
+                                <p>The Common European Framework of Reference for Languages (CEFR) is an international standard for describing language ability. It describes language ability on a six-point scale, from A1 for beginners, up to C2 for those who have mastered a language. This makes it easy for anyone involved in language teaching and testing, such as teachers or learners, to see the level of different qualifications. It also means that employers and educational institutions can easily compare our qualifications to other exams in their country.</p>
+                                <div class="collapse_heading">What exams are on the CEFR?</div>
+                                <p>The diagram below shows all of our English exams on the CEFR.</p>
+                                <img src="images/config/CEFR-Design_28.07.20.jpg">
+                            </span>
+                        </span>
+                    </div>
+                    <h2>The Oxford 3000 and the Oxford 5000</h2>
+                    <div class="wordlist_about_callout_container">
+                        <div class="wordlist_about_callout_image">
+                            <img src="images/config/Ox3000_logo_about_large.svg">
+                        </div>
+                        <div class="wordlist_about_callout_text">
+                            <div class="wordlist_heading">What is the Oxford 3000?</div>
+                            <p>The Oxford 3000 is a list of the 3,000 core words that every learner of English needs to know.</p>
+                            <p>The words have been chosen based on their frequency in the Oxford English Corpus and relevance to learners of English. Every word is aligned to the <a class="Ref" href="entry://CEFR">CEFR</a>, guiding learners on the words they should know at A1-B2 level.</p>
+                        </div>
+                    </div>
+                    <div class="wordlist_about_callout_container">
+                        <div class="wordlist_about_callout_image">
+                            <img src="images/config/Ox5000_logo_about_large.svg">
+                        </div>
+                        <div class="wordlist_about_callout_text">
+                            <div class="wordlist_heading">What is the Oxford 5000?</div>
+                            <p>The Oxford 5000 is an expanded core word list for advanced learners of English.</p>
+                            <p>As well as the Oxford 3000 core word list, it includes an additional 2,000 words that are aligned to the <a class="Ref" href="entry://CEFR">CEFR</a>, guiding advanced learners at B2-C1 level on the most useful high-level words to learn to expand their vocabulary.</p>
+                        </div>
+                    </div>
+                    <div class="collapse">
+                        <span class="unbox">
+                            <span class="box_title">In the dictionary</span>
+                            <span class="body">
+                                <p>Every definition in the <span class="eb">Oxford Advanced Learner's Dictionary</span> is written using words from the Oxford 3000, making it easier for users of these lists to look up and understand the definitions.</p>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="collapse">
+                        <span class="unbox">
+                            <span class="box_title">Using the Oxford 3000 and 5000</span>
+                            <span class="body">
+                                <p><strong>Learners:</strong></p>
+                                <ul>
+                                    <li>Filter the words by CEFR level to see which words you should know at your level and which words to learn.</li>
+                                    <li>Check if the new words that you’ve come across in a text or a language activity are on the list, then look up the meaning in the <span class="eb">Oxford Advanced Learner's Dictionary</a>.</li>
+                                    <li>The keywords make an excellent starting point for expanding your vocabulary. With most keywords, there is far more to learn about them than the first meaning in the entry. Often these words have many meanings, have a large family of words derived from them, or are used in a variety of patterns. You will also find a wide variety of usage notes at the keyword entries.</li>
+                                </ul>
+                                <p><strong>Teachers:</strong></p>
+                                <p>The Oxford 3000 and 5000 are the perfect tools to get your students to focus on their vocabulary.</p>
+                                <ul>
+                                    <li>Filter the words by CEFR level to decide which words are most important for your students to target next, and which words to focus on in your teaching.</li>
+                                    <li>Encourage your students to use the dictionary, not just to look up words they don’t know, but to expand their knowledge of words they partly know.</li>
+                                </ul>
+                            </span>
+                        </span>
+                    </div>
+                    <h2>OPAL (Oxford Phrasal Academic Lexicon)</h2>
+                    <div class="wordlist_about_callout_container">
+                        <div class="wordlist_about_callout_image">
+                            <img src="images/config/opal_logo_about_large.svg">
+                        </div>
+                        <div class="wordlist_about_callout_text">
+                            <p>The <strong>Oxford Phrasal Academic Lexicon</strong>, or <strong>OPAL</strong> for short, is a collection of four different word lists that together provide an essential guide to the most important words to know in the field of English for Academic Purposes (EAP):</p>
+                            <ul>
+                                <li>Written words</li>
+                                <li>Spoken words</li>
+                                <li>Written phrases</li>
+                                <li>Spoken phrases</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h2>The Oxford Phrase List</h2>
+                    <div class="wordlist_about_callout_container">
+                        <div class="wordlist_about_callout_image">
+                            <img src="images/config/oxphrase_logo_about_large.svg">
+                        </div>
+                        <div class="wordlist_about_callout_text">
+                            <p>The Oxford Phrase List is a list of common phrases that learners are likely to come across in English, including idioms, phrasal verbs, collocations and common prepositional phrases.</p>
+                            <p>Every phrase is aligned to the <a class="Ref" href="entry://CEFR">CEFR</a>, guiding learners on the language they should know at each level.</p>
+                            <p>Take your vocabulary learning beyond individual words. Use the Oxford Phrase List alongside the single words in the Oxford 3000 and 5000 to expand your vocabulary.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </oaldpe>
+    <script src="oaldpe-jquery.js"></script>
+    <script src="oaldpe.js"></script>
+</body>
+
+</html>

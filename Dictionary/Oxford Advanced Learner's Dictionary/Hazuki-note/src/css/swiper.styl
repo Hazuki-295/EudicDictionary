@@ -1,0 +1,22 @@
+.swiper-button-prev, .swiper-button-next {
+    opacity: .35;
+
+    &.swiper-button-disabled {
+        display: none;
+    }
+
+    &::after {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1em;
+        width: 2em;
+        height: 2em;
+        flex-shrink: 0;
+        color: var(--grey-4);
+        background: white;
+        border-radius: 50%;
+        border: 1px solid #e3e5e7;
+        box-shadow: 0 0 2px rgba(0, 0, 0, .02), 0 4px 10px rgba(0, 0, 0, .06);
+    }
+}
